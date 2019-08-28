@@ -113,7 +113,7 @@ Configure ESXi network : vSwitch, Physical NICs, Port groups, VMkernel NIC for i
 
 ### Deploying iSCSI VMs on each ESXi
 - Re-open vSphere Host Client
-- Deploy iSCSI Cluster on both ESXi and boot them.
+- Deploy [iSCSI Cluster](iSCSI-cluster.md) on both ESXi and boot them.
 
 ### Setting up ESXi - iSCSI Initiator
   - Connect to ESXi-A by putty then run the below shell script.
