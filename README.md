@@ -42,7 +42,7 @@ The general procedure to deploy HAUC on two ESXi server machines (Primary and St
 | root password			| passwd1		| passwd2		|
 |				|			|			|
 | IP address for Management	| 172.31.255.2		| 172.31.255.3		|
-| IP address for VMkernel1(*) 	| 172.31.254.2		| 172.31.254.3		|
+| [IP address for VMkernel1](*)	| 172.31.254.2		| 172.31.254.3		|
 | iSCSI Initiator WWN		| iqn.1998-01.com.vmware:1 | iqn.1998-01.com.vmware:2 |
 
 (*) for iSCSI Initiator
@@ -206,7 +206,7 @@ http://www.nec.com/global/prod/expresscluster/en/support/manuals.html
 
 ## Disclaimer
 
-NEC Corporation assumes no responsibility for technical or editorial mistakes in or omissions from this document. To obtain the benefits of the product, it is the customerÅfs responsibility to install and use the product in accordance with this document. The copyright for the contents of this document belongs to NEC Corporation.
+NEC Corporation assumes no responsibility for technical or editorial mistakes in or omissions from this document. To obtain the benefits of the product, it is the customer¬Åfs responsibility to install and use the product in accordance with this document. The copyright for the contents of this document belongs to NEC Corporation.
 
 ## Revision history
 
