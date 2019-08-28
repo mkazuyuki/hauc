@@ -1,4 +1,4 @@
-# Howto setup iSCSI Target Cluster on EXPRESSCLUSTER for Linux with block device backstore
+﻿# Howto setup iSCSI Target Cluster on EXPRESSCLUSTER for Linux with block device backstore
 
 ----
 
@@ -381,7 +381,7 @@ for md2 do the same like md1 by using
       - [LocalServer] > [OK]
     - [Finish]
 
-<!--	TBD	genw-md2 �̗v�ۊm�F	-->
+<!--	TBD	genw-md2 の要否確認	-->
 
 #### Adding the second custom monitor resource for keeping remote iSCSI VM and ECX online.
 - Click [Add monitor Resource] button in right side of [Monitors]
