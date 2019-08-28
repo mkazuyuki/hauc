@@ -159,7 +159,7 @@ Configure ESXi network : vSwitch, Physical NICs, Port groups, VMkernel NIC for i
   These VMs should be deployed on the iSCSI datastore.
 
 ### Deploying vMA VMs on each ESXi
-- Deploy vMA OVA on both ESXi and boot them.
+- Deploy [vMA Cluster](vMA-cluster.md) on both ESXi and boot them.
 
 ### Configuring vMA Cluster
 
