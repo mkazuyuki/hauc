@@ -42,10 +42,8 @@ The general procedure to deploy HAUC on two ESXi server machines (Primary and St
 | root password			| passwd1		| passwd2		|
 |				|			|			|
 | IP address for Management	| 172.31.255.2		| 172.31.255.3		|
-| [IP address for VMkernel1](*)	| 172.31.254.2		| 172.31.254.3		|
+| IP address for VMkernel(Software iSCSI Adapter)	| 172.31.254.2		| 172.31.254.3		|
 | iSCSI Initiator WWN		| iqn.1998-01.com.vmware:1 | iqn.1998-01.com.vmware:2 |
-
-(*) for iSCSI Initiator
 
 ## Procedure
 
