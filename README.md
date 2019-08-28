@@ -36,19 +36,15 @@ The general procedure to deploy HAUC on two ESXi server machines (Primary and St
 
 ### Nodes configuration
 
-|				| Primary		| Secondary		|
-|:---				|:---			|:---			|
-| Hostname			| esxi1			| esxi2			|
-| root password			| passwd1		| passwd2		|
-|				|			|			|
-| IP address for Management	| 172.31.255.2		| 172.31.255.3		|
-| IP address for VMkernel(Software iSCSI Adapter)	| 172.31.254.2		| 172.31.254.3		|
-| iSCSI Initiator WWN		| iqn.1998-01.com.vmware:1 | iqn.1998-01.com.vmware:2 |
+|							| Primary ESXi			| Secondary ESXi		|
+|:---							|:---				|:---				|
+| IP address for Management				| 172.31.255.2			| 172.31.255.3			|
+| IP address for VMkernel(Software iSCSI Adapter)	| 172.31.254.2			| 172.31.254.3			|
+| iSCSI Initiator WWN					| iqn.1998-01.com.vmware:1	| iqn.1998-01.com.vmware:2	|
 
 ## Procedure
 
 ### Preparing 64bit Windows PC
-
 - Download and extract the [**Docs-Master.zip**](https://github.com/mkazuyuki/docs/archive/master.zip)
 - Install Strawberry Perl
 - Download
@@ -60,99 +56,35 @@ The general procedure to deploy HAUC on two ESXi server machines (Primary and St
 ### Setting up ESXi - Network
 
 Install vSphere ESXi.
+- Set up IP address.
 
-- Set up hostname and IP address.
-
-	|		| Primary	| Secondary	|
-	|---		|---		|---		|
-	| Hostname	| esxi1		| esxi2		|
-	| Management IP	| 172.31.255.2	| 172.31.255.3	|
+	|		| Primary ESXi	| Secondary ESXi	|
+	|:---		|:---		|:---			|
+	| Management IP	| 172.31.255.2	| 172.31.255.3		|
 
 Start ssh service and configure it to start automatically.
-
 - Open vSphere Host Client
   - [Manage] in [Navigator] pane > [Services] tab
     - [TSM-SSH] >  [Actions] > [Start]
     - [TSM-SSH] >  [Actions] > [Polilcy] > [Start and stop with host]
 
 Configure ESXi network : vSwitch, Physical NICs, Port groups, VMkernel NIC for iSCSI Initiator
+- Open cmd.exe, change current working directory to *cf* and run the below commands.
 
-  - Connect to esxi1 by putty then run the below shell script.
-
-		#!/bin/sh
-		esxcfg-vswitch -a Mirror_vswitch
-		esxcfg-vswitch -a iSCSI_vswitch
-		esxcfg-vswitch -a uc_vm_vswitch
-		esxcfg-vswitch -L vmnic1 Mirror_vswitch
-		esxcfg-vswitch -L vmnic2 iSCSI_vswitch
-		esxcfg-vswitch -L vmnic3 uc_vm_vswitch
-		esxcfg-vswitch -A Mirror_portgroup Mirror_vswitch
-		esxcfg-vswitch -A iSCSI_portgroup iSCSI_vswitch
-		esxcfg-vswitch -A iSCSI_Initiator iSCSI_vswitch
-		esxcfg-vswitch -A uc_vm_portgroup uc_vm_vswitch
-		esxcfg-vmknic -a -i 172.31.254.2 -n 255.255.255.0 iSCSI_Initiator
-		/etc/init.d/hostd restart
-
-  - Connect to esxi2 by putty then run the below shell script.
-
-		#!/bin/sh
-		esxcfg-vswitch -a Mirror_vswitch
-		esxcfg-vswitch -a iSCSI_vswitch
-		esxcfg-vswitch -a uc_vm_vswitch
-		esxcfg-vswitch -L vmnic1 Mirror_vswitch
-		esxcfg-vswitch -L vmnic2 iSCSI_vswitch
-		esxcfg-vswitch -L vmnic3 uc_vm_vswitch
-		esxcfg-vswitch -A Mirror_portgroup Mirror_vswitch
-		esxcfg-vswitch -A iSCSI_portgroup iSCSI_vswitch
-		esxcfg-vswitch -A iSCSI_Initiator iSCSI_vswitch
-		esxcfg-vswitch -A uc_vm_portgroup uc_vm_vswitch
-		esxcfg-vmknic -a -i 172.31.254.3 -n 255.255.255.0 iSCSI_Initiator
-		/etc/init.d/hostd restart
+		.\plink.exe -no-antispoof -l root -pw NEC123nec! 172.31.255.2 -m ESXi-scripts\cf-esxi-1.sh
+		.\plink.exe -no-antispoof -l root -pw NEC123nec! 172.31.255.3 -m ESXi-scripts\cf-esxi-2.sh
 
 ### Deploying iSCSI VMs on each ESXi
 - Re-open vSphere Host Client
 - Deploy [iSCSI Cluster](iSCSI-cluster.md) on both ESXi and boot them.
 
 ### Setting up ESXi - iSCSI Initiator
-  - Connect to ESXi-A by putty then run the below shell script.
+- Open cmd.exe, change current working directory to *cf* and run the below commands.
 
-		#!/bin/sh
-
-		IQN='iqn.1998-01.com.vmware:1'
-		ADDR='172.31.254.10:3260'
-
-		# Enabling iSCSI Initiator
-		esxcli iscsi software set --enabled=true
-		VMHBA=`esxcli iscsi adapter list | grep 'iSCSI Software Adapter' | sed -r 's/\s.*iSCSI Software Adapter$//'`
-		esxcli iscsi adapter set -n ${IQN} -A ${VMHBA}
-		esxcli iscsi adapter discovery sendtarget add --address=${ADDR} --adapter=${VMHBA}
-		esxcli storage core adapter rescan --all
-
-		# Create then format the partition
-		i=1
-		for DEVICE in `esxcli storage core device list | grep "Display Name: LIO-ORG" | sed -r 's/^.*\((.*)\)/\1/' | xargs`; do
-			END_SECTOR=$(eval expr $(partedUtil getptbl /vmfs/devices/disks/${DEVICE} | tail -1 | awk '{print $1 " \\* " $2 " \\* " $3}') - 1)
-			partedUtil setptbl "/vmfs/devices/disks/${DEVICE}" "gpt" "1 2048 ${END_SECTOR} AA31E02A400F11DB9590000C2911D1B8 0"
-			/sbin/vmkfstools -C vmfs5 -b 1m -S iSCSI${i}  /vmfs/devices/disks/${DEVICE}:1
-			i=$(($i + 1))
-		done
-
-  - Connect to ESXi-B by ssh client then run the below shell script.
-
-		#!/bin/sh
-
-		IQN='iqn.1998-01.com.vmware:2'
-		ADDR='172.31.254.10:3260'
-
-		# Enabling iSCSI Initiator
-		esxcli iscsi software set --enabled=true
-		VMHBA=`esxcli iscsi adapter list | grep 'iSCSI Software Adapter' | sed -r 's/\s.*iSCSI Software Adapter$//'`
-		esxcli iscsi adapter set -n ${IQN} -A ${VMHBA}
-		esxcli iscsi adapter discovery sendtarget add --address=${ADDR} --adapter=${VMHBA}
-		esxcli storage core adapter rescan --all
+		.\plink.exe -no-antispoof -l root -pw NEC123nec! 172.31.255.2 -m ESXi-scripts\cf-esxi-11.sh
+		.\plink.exe -no-antispoof -l root -pw NEC123nec! 172.31.255.3 -m ESXi-scripts\cf-esxi-12.sh
 
 ### Deploying UC VMs on iSCSI datastore
-
 - Deploy UC VMs (to be protected by ECX) on *esxi1* or *esxi2*.
   These VMs should be deployed on the iSCSI datastore.
 
