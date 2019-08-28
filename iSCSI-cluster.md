@@ -1,4 +1,4 @@
-﻿# Howto setup iSCSI Target Cluster on EXPRESSCLUSTER for Linux with block device backstore
+# Howto setup iSCSI Target Cluster on EXPRESSCLUSTER for Linux with block device backstore
 
 ----
 
