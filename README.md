@@ -5,14 +5,14 @@ This guide provides how to set up HAUC (Highly Available Unified Communications)
 
 ## Overview
 
-The general procedure to deploy HAUC on two ESXi server machines (Primary and Standby) consists of the following major steps:
+The general procedure to deploy HAUC on ESXi boxes (Primary and Standby) consists of the following major steps:
 
 1. Perform system planning to determine requirements and specify specific configuration settings.
 2. Set up Primary and Standby ESXi.
-3. Deploy *iSCSI Target Cluster*
+3. Deploy *iSCSI Target Cluster*.
 4. Connect ESXi hosts to the iSCSI Target.
-5. Deploy UC VMs
-6. Deploy and configure *vMA Cluster*.
+5. Deploy UC VMs.
+6. Deploy *vMA Cluster* which managing UC VMs.
     
 
 ## Versions
@@ -22,26 +22,26 @@ The general procedure to deploy HAUC on two ESXi server machines (Primary and St
 
 ## System Requirements and Planning
 
-### Requirement for 2 Physical ESXi servers
+* Requirement for 2 Physical ESXi servers
 
-| Portion	| Description 
-|:--		|:--
-| CPU Cores	| (Cores for VMkernel) + (Cores for UC VMs) + (4 Cores for iSCSI VM) + (2 Cores for vMA VM)
-| Memory	| (2GB for VMkernel) + (required amount for UC VMs) + (8GB for iSCSI VM) + (4GB for vMA VM)
-| LAN Port	| 4 LAN ports (iSCSI, ECX data-mirroring, Management, UC)
-| Storage	| (60GB for ESXi system) + (required amount for UC VMs) + (6GB for iSCSI VM) + (6GB for vMA VM)
+  | Portion	| Description 
+  |:--		|:--
+  | CPU Cores	| (Cores for VMkernel) + (Cores for UC VMs) +   (4 Cores for iSCSI VM) + (2 Cores for vMA VM)
+  | Memory	| (2GB for VMkernel) + (required amount for UC   VMs) + (8GB for iSCSI VM) + (4GB for vMA VM)
+  | LAN Port	| 4 LAN ports (iSCSI, ECX data-mirroring,   Management, UC)
+  | Storage	| (60GB for ESXi system) + (required amount   for UC VMs) + (6GB for iSCSI VM) + (6GB for vMA VM)
 
-### Network configuration
-![Network configuraiton](HAUC-NW-Configuration.png)
+* Network configuration
+  ![Network configuraiton](HAUC-NW-Configuration.png)
 
-### Nodes configuration
+* ESXi configuration
 
-|							| Primary ESXi			| Secondary ESXi		|
-|:---							|:---				|:---				|
-| IP address for Management				| 172.31.255.2			| 172.31.255.3			|
-| IP address for VMkernel(Software iSCSI Adapter)	| 172.31.254.2			| 172.31.254.3			|
-| iSCSI Initiator WWN					| iqn.1998-01.com.vmware:1	| iqn.1998-01.com.vmware:2	|
-
+  |							|   Primary ESXi			| Secondary ESXi	  	|
+  |:---							|:---  				|:---			  	|
+  | IP address for Management				|   172.31.255.2			| 172.31.255.3		  	|
+  | IP address for VMkernel(Software iSCSI Adapter)	|   172.31.254.2			| 172.31.254.3		  	|
+  | iSCSI Initiator WWN					|   iqn.1998-01.com.vmware:1	|  iqn.1998-01.com.vmware:2 	|
+  
 ## Procedure
 
 ### Preparing 64bit Windows PC
@@ -55,28 +55,27 @@ The general procedure to deploy HAUC on two ESXi server machines (Primary and St
 
 ### Setting up ESXi - Network
 
-Install vSphere ESXi.
-- Set up IP address.
+Install vSphere ESXi then set up IP address as following.
 
-	|		| Primary ESXi	| Secondary ESXi	|
-	|:---		|:---		|:---			|
-	| Management IP	| 172.31.255.2	| 172.31.255.3		|
+|		| Primary ESXi	| Secondary ESXi	|
+|:---		|:---		|:---			|
+| Management IP	| 172.31.255.2	| 172.31.255.3		|
 
 Start ssh service and configure it to start automatically.
-- Open vSphere Host Client
+- Open vSphere Host Client for [ESXi#1](http://172.31.255.2/) and [ESXi#2](http://172.31.255.3/)
   - [Manage] in [Navigator] pane > [Services] tab
     - [TSM-SSH] >  [Actions] > [Start]
     - [TSM-SSH] >  [Actions] > [Polilcy] > [Start and stop with host]
 
-Configure ESXi network : vSwitch, Physical NICs, Port groups, VMkernel NIC for iSCSI Initiator
+Configure vSwitch, Physical NICs, Port groups, VMkernel NIC for iSCSI Initiator
 - Open cmd.exe, change current working directory to *cf* and run the below commands.
 
 		.\plink.exe -no-antispoof -l root -pw NEC123nec! 172.31.255.2 -m ESXi-scripts\cf-esxi-1.sh
 		.\plink.exe -no-antispoof -l root -pw NEC123nec! 172.31.255.3 -m ESXi-scripts\cf-esxi-2.sh
 
 ### Deploying iSCSI VMs on each ESXi
-- Re-open vSphere Host Client
-- Deploy [iSCSI Cluster](iSCSI-cluster.md) on both ESXi and boot them.
+- Open vSphere Host Client
+- Deploy VMs for [iSCSI Cluster](iSCSI-cluster.md) on both ESXi and boot them.
 
 ### Setting up ESXi - iSCSI Initiator
 - Open cmd.exe, change current working directory to *cf* and run the below commands.
