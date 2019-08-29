@@ -8,9 +8,6 @@ This guide provides how to create Management VM Cluster on EXPRESSCLUSTER for Li
 - CentOS 7.6 x86_64
 - EXPRESSCLUSTER X for Linux 4.1.1-1
 
-## Network configuration
-![Network configuraiton](HAUC-NW-Configuration.png)
-
 ## Nodes configuration
 
 |Virtual HW	|Number, Amount	|
@@ -35,93 +32,10 @@ This guide provides how to create Management VM Cluster on EXPRESSCLUSTER for Li
 
 - Download CetOS 7.6 (CentOS-7-x86_64-Minimal-1810.iso) and put it on /vmfs/volumes/datastore1/iso of esxi1 and esxi2.
 
-- Run the below script
+- Open cmd.exe, change directory to cf and run the below commands.
 
-  - on esxi1
-
-		#!/bin/sh -ue
-
-		# (0) Parameters
-		DATASTORE_PATH=/vmfs/volumes/datastore1
-		ISO_FILE=/vmfs/volumes/datastore1/iso/CentOS-7-x86_64-Minimal-1810.iso
-		VM_NAME=vMA1
-		VM_CPU_NUM=2
-		VM_MEM_SIZE=4096
-		VM_NETWORK_NAME1="VM Network"
-		VM_GUEST_OS=centos7-64
-		VM_CDROM_DEVICETYPE=cdrom-image  # cdrom-image / atapi-cdrom
-		VM_DISK_SIZE=6g
-
-		VM_DISK_PATH=$DATASTORE_PATH/$VM_NAME/$VM_NAME.vmdk
-		VM_VMX_FILE=$DATASTORE_PATH/$VM_NAME/$VM_NAME.vmx
-
-		# (1) Create dummy VM
-		VM_ID=`vim-cmd vmsvc/createdummyvm $VM_NAME $DATASTORE_PATH`
-
-		# (2) Edit vmx file
-		sed -i -e '/^guestOS /d' $VM_VMX_FILE
-		cat << __EOF__ >> $VM_VMX_FILE
-		guestOS = "$VM_GUEST_OS"
-		numvcpus = "$VM_CPU_NUM"
-		memSize = "$VM_MEM_SIZE"
-		ethernet0.virtualDev = "vmxnet3"
-		ethernet0.present = "TRUE"
-		ethernet0.networkName = "$VM_NETWORK_NAME1"
-		ethernet0.addressType = "generated"
-		ethernet0.wakeOnPcktRcv = "FALSE"
-		ide0:0.present = "TRUE"
-		ide0:0.deviceType = "$VM_CDROM_DEVICETYPE"
-		ide0:0.fileName = "$ISO_FILE"
-		__EOF__
-
-		# (3) Extend disk size
-		vmkfstools -X $VM_DISK_SIZE $VM_DISK_PATH 
-
-		# (4) Reload VM information
-		vim-cmd vmsvc/reload $VM_ID
-
-  - on esxi2
-
-		#!/bin/sh -ue
-
-		# (0) Parameters
-		DATASTORE_PATH=/vmfs/volumes/datastore1
-		ISO_FILE=/vmfs/volumes/datastore1/iso/CentOS-7-x86_64-Minimal-1810.iso
-		VM_NAME=vMA2
-		VM_CPU_NUM=2
-		VM_MEM_SIZE=4096
-		VM_NETWORK_NAME1="VM Network"
-		VM_GUEST_OS=centos7-64
-		VM_CDROM_DEVICETYPE=cdrom-image  # cdrom-image / atapi-cdrom
-		VM_DISK_SIZE=6g
-
-		VM_DISK_PATH=$DATASTORE_PATH/$VM_NAME/$VM_NAME.vmdk
-		VM_VMX_FILE=$DATASTORE_PATH/$VM_NAME/$VM_NAME.vmx
-
-		# (1) Create dummy VM
-		VM_ID=`vim-cmd vmsvc/createdummyvm $VM_NAME $DATASTORE_PATH`
-
-		# (2) Edit vmx file
-		sed -i -e '/^guestOS /d' $VM_VMX_FILE
-		cat << __EOF__ >> $VM_VMX_FILE
-		guestOS = "$VM_GUEST_OS"
-		numvcpus = "$VM_CPU_NUM"
-		memSize = "$VM_MEM_SIZE"
-		ethernet0.virtualDev = "vmxnet3"
-		ethernet0.present = "TRUE"
-		ethernet0.networkName = "$VM_NETWORK_NAME1"
-		ethernet0.addressType = "generated"
-		ethernet0.wakeOnPcktRcv = "FALSE"
-		ide0:0.present = "TRUE"
-		ide0:0.deviceType = "$VM_CDROM_DEVICETYPE"
-		ide0:0.fileName = "$ISO_FILE"
-		__EOF__
-
-		# (3) Extend disk size
-		vmkfstools -X $VM_DISK_SIZE $VM_DISK_PATH 
-
-		# (4) Reload VM information
-		vim-cmd vmsvc/reload $VM_ID
+		.\plink.exe -no-antispoof -l root -pw NEC123nec! 172.31.255.2 -m scripts\cf-vma-1.sh
+		.\plink.exe -no-antispoof -l root -pw NEC123nec! 172.31.255.3 -m scripts\cf-vma-2.sh
 
 - Boot vMA1 and vMA2 and install CentOS
 
