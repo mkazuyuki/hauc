@@ -22,7 +22,7 @@ This guide provides how to create iSCSI Target cluster (with block device backst
 | vCPU		| 4 CPU		| 
 | Memory	| 8 GB		|
 | vNIC		| 3 ports       |
-| vHDD		| 6 GB for OS<br>500 GB for MD1<br>500 GB for MD2 |
+| vHDD		| 10 GB for OS<br>500 GB for MD1<br>500 GB for MD2 |
 
 |				| Primary		| Secondary		|
 |---				|---			|---			|
@@ -74,7 +74,7 @@ This guide provides how to create iSCSI Target cluster (with block device backst
 		VM_NETWORK_NAME3="iSCSI_portgroup"
 		VM_GUEST_OS=centos7-64
 		VM_CDROM_DEVICETYPE=cdrom-image  # cdrom-image / atapi-cdrom
-		VM_DISK_SIZE1=6G
+		VM_DISK_SIZE1=10G
 		VM_DISK_SIZE2=500G
 
 		VM_DISK_PATH1=$DATASTORE_PATH/$VM_NAME/${VM_NAME}.vmdk
@@ -143,7 +143,7 @@ This guide provides how to create iSCSI Target cluster (with block device backst
 		VM_NETWORK_NAME3="iSCSI_portgroup"
 		VM_GUEST_OS=centos7-64
 		VM_CDROM_DEVICETYPE=cdrom-image  # cdrom-image / atapi-cdrom
-		VM_DISK_SIZE1=6G
+		VM_DISK_SIZE1=10G
 		VM_DISK_SIZE2=500G
 
 		VM_DISK_PATH1=$DATASTORE_PATH/$VM_NAME/${VM_NAME}.vmdk
@@ -226,7 +226,7 @@ On both iSCSI Target VMs,
 		nmcli c m ens224 ipv4.method manual ipv4.addresses 172.31.253.11/24 connection.autoconnect yes
 		nmcli c m ens256 ipv4.method manual ipv4.addresses 172.31.254.11/24 connection.autoconnect yes
 		parted /dev/sdb mklabel msdos mkpart primary 1MiB 1025MiB mkpart primary 1025MiB 100%
-		parted /dev/sdc mklabel msdos mkpart primary 1MiB 1025MiB mkpart primary 1025MiB 100%
+		# parted /dev/sdc mklabel msdos mkpart primary 1MiB 1025MiB mkpart primary 1025MiB 100%
 		rpm -ivh expresscls.*.rpm
 		clplcnsc -i [base-license-file]
 		clplcnsc -i [replicator-license-file]
@@ -256,7 +256,7 @@ On both iSCSI Target VMs,
 		nmcli c m ens224 ipv4.method manual ipv4.addresses 172.31.253.12/24 connection.autoconnect yes
 		nmcli c m ens256 ipv4.method manual ipv4.addresses 172.31.254.12/24 connection.autoconnect yes
 		parted /dev/sdb mklabel msdos mkpart primary 1MiB 1025MiB mkpart primary 1025MiB 100%
-		parted /dev/sdc mklabel msdos mkpart primary 1MiB 1025MiB mkpart primary 1025MiB 100%
+		# parted /dev/sdc mklabel msdos mkpart primary 1MiB 1025MiB mkpart primary 1025MiB 100%
 
 		rpm -ivh expresscls.*.rpm
 		clplcnsc -i [base-license-file]
@@ -324,10 +324,12 @@ This resource is enabling more automated MD recovery by supposing the node which
 	- */dev/sdb1* as [Cluster Partition Device Name]
 - [Finish]
 
+<!--
 for md2 do the same like md1 by using
   - *md2* as [Name]
   - */dev/sdc2* as [Data Partition Device Name] 
   - */dev/sdc1* as [Cluster Partition Device Name]
+-->
 
 #### Adding the execute resource for controlling target service
 - Click [Add resource] button in right side of [failover-iscsi]
@@ -447,7 +449,7 @@ On iscsi1, create block backstore and configure it as backstore for the iSCSI Ta
 
 		> cd /backstores/block
 		> create name=idisk1 dev=/dev/NMP1
-		> create name=idisk2 dev=/dev/NMP2
+		> # create name=idisk2 dev=/dev/NMP2
 
 - Creating IQN
 
@@ -458,7 +460,7 @@ On iscsi1, create block backstore and configure it as backstore for the iSCSI Ta
 
 		> cd /iscsi/iqn.1996-10.com.ec/tpg1/luns
 		> create /backstores/block/idisk1
-		> create /backstores/block/idisk2
+		> # create /backstores/block/idisk2
 
 - Allow machine (IQN of iSCSI Initiator) to scan the iSCSI target.
 

@@ -62,7 +62,7 @@ Install vSphere ESXi then set up IP address as following.
 | Management IP	| 172.31.255.2	| 172.31.255.3		|
 
 Start ssh service and configure it to start automatically.
-- Open vSphere Host Client for [ESXi#1](http://172.31.255.2/) and [ESXi#2](http://172.31.255.3/)
+- Open vSphere Host Client for ESXi#1 (http://172.31.255.2/) and ESXi#2 (http://172.31.255.3/)
   - [Manage] in [Navigator] pane > [Services] tab
     - [TSM-SSH] >  [Actions] > [Start]
     - [TSM-SSH] >  [Actions] > [Polilcy] > [Start and stop with host]
