@@ -12,9 +12,6 @@ This guide provides how to create iSCSI Target cluster (with block device backst
 
 ## System Requirements and Planning
 
-### Network configuration
-![Network configuraiton](HAUC-NW-Configuration.png)
-
 ### Nodes configuration
 
 |Virtual HW	|Number, Amount	|
@@ -22,20 +19,19 @@ This guide provides how to create iSCSI Target cluster (with block device backst
 | vCPU		| 4 CPU		| 
 | Memory	| 8 GB		|
 | vNIC		| 3 ports       |
-| vHDD		| 10 GB for OS<br>500 GB for MD1<br>500 GB for MD2 |
+| vHDD		| 10 GB for OS<br>500 GB for MD1 <!-- <br>500 GB for MD2 --> |
 
 |				| Primary		| Secondary		|
 |---				|---			|---			|
 | Hostname			| iscsi1		| iscsi2		|
-| root password			| passwd		| passwd		|
 | IP Address for Management	| 172.31.255.11/24  	| 172.31.255.12/24	|
 | IP Address for iSCSI Network	| 172.31.254.11/24	| 172.31.254.12/24	|
 | IP Address for Mirroring	| 172.31.253.11/24	| 172.31.253.12/24	|
 | Heartbeat Timeout		| 50 sec		| <-- |
 | MD1 - Cluster Partition	| /dev/sdb1		| <-- |
 | MD1 - Data Partition		| /dev/sdb2		| <-- |
-| MD2 - Cluster Partition	| /dev/sdc1		| <-- |
-| MD2 - Data Partition		| /dev/sdc2		| <-- |
+| <!-- MD2 - Cluster Partition	-->| <!-- /dev/sdc1 -->	|  |
+| <!-- MD2 - Data Partition	-->| <!-- /dev/sdc2 -->	|  |
 | FIP for iSCSI Target		| 172.31.254.10		| <-- |
 | WWN for iSCSI Target		| iqn.1996-10.com.ec	| <-- |
 | WWN for iSCSI Initiator 1	| iqn.1998-01.com.vmware:1	| <-- |
@@ -51,19 +47,16 @@ This guide provides how to create iSCSI Target cluster (with block device backst
 
 - Download CetOS 7.6 (CentOS-7-x86_64-Minimal-1810.iso) and put it on /vmfs/volumes/datastore1/iso of esxi1 and esxi2.
 
-- Run the below script
+- Run the below scripts to create VMs (iSCSI1 on ESXi#1, iSCSI2 on ESXi#2).
 
-  you can specify disk size for iSCSI Datastore as you like at the line of "VM_DISK_SIZE2=500G" 
+  The disk size for iSCSI Datastore can be specified at the line of "VM_DISK_SIZE2=500G" 
 
 		.\plink.exe -no-antispoof -l root -pw NEC123nec! 172.31.255.2 -m ESXi-scripts\cf-iscsi-1.sh
 		.\plink.exe -no-antispoof -l root -pw NEC123nec! 172.31.255.3 -m ESXi-scripts\cf-iscsi-2.sh
 
-On both iSCSI Target VMs,
+- Boot and install CentOS to the VMs.
 
-- Install CentOS and configure
-
-  During CentOS installation, no need to set hostname and IP address. These will be setup after CentOS installation.
-  After CentOS installation, login then issue the below commands
+- Login to the VMs then issue the below commands
 
   - for iscsi1 :
 
