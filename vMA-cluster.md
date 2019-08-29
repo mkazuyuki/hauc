@@ -34,8 +34,8 @@ This guide provides how to create Management VM Cluster on EXPRESSCLUSTER for Li
 
 - Open cmd.exe, change directory to cf and run the below commands.
 
-		.\plink.exe -no-antispoof -l root -pw NEC123nec! 172.31.255.2 -m scripts\cf-vma-1.sh
-		.\plink.exe -no-antispoof -l root -pw NEC123nec! 172.31.255.3 -m scripts\cf-vma-2.sh
+		.\plink.exe -no-antispoof -l root -pw NEC123nec! 172.31.255.2 -m ESXi-scripts\cf-vma-1.sh
+		.\plink.exe -no-antispoof -l root -pw NEC123nec! 172.31.255.3 -m ESXi-scripts\cf-vma-2.sh
 
 - Boot vMA1 and vMA2 and install CentOS
 
