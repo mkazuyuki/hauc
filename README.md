@@ -115,30 +115,28 @@ On the client
 
 ## Where to go for more information
 
-For any further information, please visit the EXPRESSCLUSTER web-site at
+For any further information, please visit the [EXPRESSCLUSTER web-site](http://www.nec.com/expresscluster)
 
-http://www.nec.com/expresscluster
+[The following guides are available](http://www.nec.com/global/prod/expresscluster/en/support/manuals.html) for instant support:  
 
-The following guides are available for instant support:  
+- Getting Started Guide - General cluster concepts and overview of EXPRESSCLUSTER functionality.
 
-- Getting Started Guide - This guide explains general cluster concepts and overview of EXPRESSCLUSTER functionality.
+- Installation Guide - EXPRESSCLUSTER installation and configuration procedures in detail.
 
-- Installation Guide - This guide explains EXPRESSCLUSTER installation and configuration procedures in detail.
+- Reference Guide - The reference of commands that can be put in EXPRESSCLUSTER scripts and maintenance commands that can be executed from the server command prompt.
 
-- Reference Guide - This is a reference of commands that can be put in EXPRESSCLUSTER scripts and maintenance commands that can be executed from the server command prompt.
-
-The guides stated in above can be found at:
-
-http://www.nec.com/global/prod/expresscluster/en/support/manuals.html
+<!--
 
 ----
 
 ## Disclaimer
 
-NEC Corporation assumes no responsibility for technical or editorial mistakes in or omissions from this document. To obtain the benefits of the product, it is the customerfs responsibility to install and use the product in accordance with this document. The copyright for the contents of this document belongs to NEC Corporation.
+NEC Corporation assumes no responsibility for technical or editorial mistakes in or omissions from this document. To obtain the benefits of the product, it is the customers responsibility to install and use the product in accordance with this document. The copyright for the contents of this document belongs to NEC Corporation.
 
 ## Revision history
 
 - 2017.08.28 Miyamoto Kazuyuki	1st issue
 - 2018.10.22 Miyamoto Kazuyuki	2nd issue
 - 2019.06.27 Miyamoto Kazuyuki	3rd issue
+
+-->
