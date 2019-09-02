@@ -45,81 +45,50 @@ This guide provides how to create iSCSI Target cluster (with block device backst
 
 ### Creating VMs on both ESXi
 
-- Download CetOS 7.6 (CentOS-7-x86_64-Minimal-1810.iso) and put it on /vmfs/volumes/datastore1/iso of esxi1 and esxi2.
+- Download CetOS 7.6 (CentOS-7-x86_64-DVD-1810.iso) and put it on /vmfs/volumes/datastore1/iso of esxi1 and esxi2.
 
 - Run the below scripts to create VMs (iSCSI1 on ESXi#1, iSCSI2 on ESXi#2).
 
-  The disk size for iSCSI Datastore can be specified at the line of "VM_DISK_SIZE2=500G" 
+  The disk size for iSCSI Datastore can be specified at the line of **my $DATASTORE_SIZE = "500G";** in cf-iscsi-phase1.pl.  
+  e.x.
 
-		.\plink.exe -no-antispoof -l root -pw NEC123nec! 172.31.255.2 -m ESXi-scripts\cf-iscsi-1.sh
-		.\plink.exe -no-antispoof -l root -pw NEC123nec! 172.31.255.3 -m ESXi-scripts\cf-iscsi-2.sh
+		my $DATASTORE_SIZE = "1024G";
 
-- Boot and install CentOS to the VMs.
+  - Run *cf-iscsi-phase1.pl* in the Docs-Master subfolder CF for configuring the VMs.
 
-- Login to the VMs then issue the below commands
+- Boot the VMs and install CentOS to them.
+	- What needed is to select sda as *INSTALLATION DESTINATION* and setting *ROOT PASSWORD*
 
-  - for iscsi1 :
+- On ESXi Host Client, open the VMs console and login to them, then run the below commands to set IP address so that plink.exe can access to the VMs.
 
-		hostnamectl set-hostnme iscsi1
-		systemctrl stop firewalld.service
-		systemctrl disable firewalld.service
-		# Disabling selinux
-		sed -i -e 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config 
-		ssh-keygen -t rsa -f /root/.ssh/id_rsa -N ""
-
-		# Enabling access to the Internet
-		# Configure network so that can access the internet for *yum* command.
-		# The IP address in the below (192.168.137.11/24) is just an example.
-
-		nmcli c m ens192 ipv4.method manual ipv4.addresses 192.168.137.11/24 connection.autoconnect yes
-		yum -y install targetcli targetd open-vm-tools perl
-
-		reboot
-
-	Copy ECX rpm file and license files on iscsi1.
-
-	Configuring iscsi1 cont'd
+  - on iSCSI1 :
 
 		nmcli c m ens192 ipv4.method manual ipv4.addresses 172.31.255.11/24 connection.autoconnect yes
-		nmcli c m ens224 ipv4.method manual ipv4.addresses 172.31.253.11/24 connection.autoconnect yes
-		nmcli c m ens256 ipv4.method manual ipv4.addresses 172.31.254.11/24 connection.autoconnect yes
-		parted /dev/sdb mklabel msdos mkpart primary 1MiB 1025MiB mkpart primary 1025MiB 100%
-		# parted /dev/sdc mklabel msdos mkpart primary 1MiB 1025MiB mkpart primary 1025MiB 100%
-		rpm -ivh expresscls.*.rpm
-		clplcnsc -i [base-license-file]
-		clplcnsc -i [replicator-license-file]
-		reboot
 
-
-  - for iscsi2 :
-
-	The procedure is almost same as iscsi1. Login then configure so that can access the internet for using *yum* command. The IP address in the below (192.168.137.12/24) is just an example.
-
-		hostnamectl set-hostnme iscsi2
-		systemctrl stop firewalld.service
-		systemctrl disable firewalld.service
-		sed -i -e 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config 
-		ssh-keygen -t rsa -f /root/.ssh/id_rsa -N ""
-
-		nmcli c m ens192 ipv4.method manual ipv4.addresses 192.168.137.12/24 connection.autoconnect yes
-		yum -y install targetcli targetd open-vm-tools perl
-
-		reboot
-
-	Copy ECX rpm file and license files on iscsi2.
-
-	Configuring iscsi2 cont'd
+  - on iSCSI2 :
 
 		nmcli c m ens192 ipv4.method manual ipv4.addresses 172.31.255.12/24 connection.autoconnect yes
-		nmcli c m ens224 ipv4.method manual ipv4.addresses 172.31.253.12/24 connection.autoconnect yes
-		nmcli c m ens256 ipv4.method manual ipv4.addresses 172.31.254.12/24 connection.autoconnect yes
-		parted /dev/sdb mklabel msdos mkpart primary 1MiB 1025MiB mkpart primary 1025MiB 100%
-		# parted /dev/sdc mklabel msdos mkpart primary 1MiB 1025MiB mkpart primary 1025MiB 100%
 
-		rpm -ivh expresscls.*.rpm
-		clplcnsc -i [base-license-file]
-		clplcnsc -i [replicator-license-file]
-		reboot
+- Run *cf-iscsi-phase2.pl* in the Docs-Master subfolder CF for configuring the VMs.
+
+  When you get questioned like below, pysh "y" then enter key.
+
+		2019/09/02 09:26:44 [D] | WARNING - POTENTIAL SECURITY BREACH!
+		2019/09/02 09:26:44 [D] | The server's host key does not match the one PuTTY has
+		2019/09/02 09:26:44 [D] | cached in the registry. This means that either the
+		2019/09/02 09:26:44 [D] | server administrator has changed the host key, or you
+		2019/09/02 09:26:44 [D] | have actually connected to another computer pretending
+		2019/09/02 09:26:44 [D] | to be the server.
+		2019/09/02 09:26:44 [D] | The new ssh-ed25519 key fingerprint is:
+		2019/09/02 09:26:44 [D] | ssh-ed25519 255 08:5c:13:b2:6a:24:a2:49:ea:d4:dd:a0:b7:be:8f:85
+		2019/09/02 09:26:44 [D] | If you were expecting this change and trust the new key,
+		2019/09/02 09:26:44 [D] | enter "y" to update PuTTY's cache and continue connecting.
+		2019/09/02 09:26:44 [D] | If you want to carry on connecting but without updating
+		2019/09/02 09:26:44 [D] | the cache, enter "n".
+		2019/09/02 09:26:44 [D] | If you want to abandon the connection completely, press
+		2019/09/02 09:26:44 [D] | Return to cancel. Pressing Return is the ONLY guaranteed
+		2019/09/02 09:26:44 [D] | safe choice.
+
 
 ### Configuring iSCSI Target Cluster
 

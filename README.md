@@ -18,7 +18,7 @@ The general procedure to deploy HAUC on ESXi boxes (Primary and Standby) consist
 ## Versions
 - vSphere ESXi 6.7
 - Strawberry Perl 5.30.0.1 (64bit)   (http://strawberryperl.com/)
-
+- EXPRESSCLUSTER X 4.1 for Linux (4.1.1-1)
 
 ## System Requirements and Planning
 
@@ -37,21 +37,28 @@ The general procedure to deploy HAUC on ESXi boxes (Primary and Standby) consist
 * ESXi configuration
 
   |							|   Primary ESXi			| Secondary ESXi	  	|
-  |:---							|:---  				|:---			  	|
+  |:---							|:---  					|:---			  	|
   | IP address for Management				|   172.31.255.2			| 172.31.255.3		  	|
   | IP address for VMkernel(Software iSCSI Adapter)	|   172.31.254.2			| 172.31.254.3		  	|
-  | iSCSI Initiator WWN					|   iqn.1998-01.com.vmware:1	|  iqn.1998-01.com.vmware:2 	|
+  | iSCSI Initiator WWN					|   iqn.1998-01.com.vmware:1		|  iqn.1998-01.com.vmware:2 	|
   
 ## Procedure
 
 ### Preparing 64bit Windows PC
-- Download and extract the [**Docs-Master.zip**](https://github.com/mkazuyuki/docs/archive/master.zip)
-- Install Strawberry Perl
+- Download [**Docs-Master.zip**](https://github.com/mkazuyuki/docs/archive/master.zip) and extract.
+- Download [**ECX**](https://www.nec.com/en/global/prod/expresscluster/en/trial/zip/ecx41l_x64.zip)
+	-  Extract it and copy *expresscls-4.1.1-1.x86_64.rpm* in it to the Docs-Master subfolder CF.
+- Put the (trial) license files of ECX to the Docs-Master subfolder CF.
+	- ECX4.x-lin1.key
+	- ECX4.x-Rep-lin1.key
+	- ECX4.x-Rep-lin2.key
 - Download
 	[putty](https://the.earth.li/~sgtatham/putty/latest/w64/putty.exe),
 	[plink](https://the.earth.li/~sgtatham/putty/latest/w64/plink.exe),
 	[pscp](https://the.earth.li/~sgtatham/putty/latest/w64/pscp.exe)
-  to the Docs-Master subfolder CF
+  to the Docs-Master subfolder CF.
+- Install Strawberry Perl.
+- Configure the Windows PC to IP reachable to **172.31.255.0/24** network.
 
 ### Setting up ESXi - Network
 

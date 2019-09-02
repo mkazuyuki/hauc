@@ -2,7 +2,7 @@
 
 # (0) Parameters
 DATASTORE_PATH=/vmfs/volumes/datastore1
-ISO_FILE=/vmfs/volumes/datastore1/iso/CentOS-7-x86_64-Minimal-1810.iso
+ISO_FILE=/vmfs/volumes/datastore1/iso/CentOS-7-x86_64-DVD-1810.iso
 VM_NAME=iSCSI2
 VM_CPU_NUM=4
 VM_MEM_SIZE=8192
