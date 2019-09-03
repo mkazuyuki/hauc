@@ -6,9 +6,9 @@ use warnings;
 #-------------------------------------------------------------------------------
 my @esxi_ip	= ('172.31.255.2', '172.31.255.3');		# ESXi IP address
 my @esxi_pw	= ('NEC123nec!', 'NEC123nec!');			# ESXi root password
-my @iscsi_ip1	= ('172.31.255.11', '172.31.255.12');		# iSCSI IP address
-my @iscsi_ip2	= ('172.31.253.11', '172.31.253.12');		# iSCSI IP address
-my @iscsi_ip3	= ('172.31.254.11', '172.31.254.12');		# iSCSI IP address
+my @iscsi_ip1	= ('172.31.255.11/24', '172.31.255.12/24');	# iSCSI IP address
+my @iscsi_ip2	= ('172.31.253.11/24', '172.31.253.12/24');	# iSCSI IP address
+my @iscsi_ip3	= ('172.31.254.11/24', '172.31.254.12/24');	# iSCSI IP address
 my @iscsi_vname	= ('iSCSI1', 'iSCSI2');				# iSCSI VM Name
 my @iscsi_pw	= ('NEC123nec!', 'NEC123nec!');			# iSCSI root password
 my @dsname	= ('iSCSI1');
@@ -21,18 +21,22 @@ my @lines	= ();
 # Main
 #-------------------------------------------------------------------------------
 # Connecting DVD Drive to the VMs
-#&connectDVD;
+&connectDVD;
 
 for my $i (0..1) {
-	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] expresscls-4.1.1-1.x86_64.rpm $iscsi_ip1[$i]:/root/");
-	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] ECX4.x-lin1.key $iscsi_ip1[$i]:/root/");
-	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] ECX4.x-Rep-lin1.key $iscsi_ip1[$i]:/root/");
-	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] ECX4.x-Rep-lin2.key $iscsi_ip1[$i]:/root/");
+	my $iscsi_ip = $iscsi_ip1[$i];
+	$iscsi_ip =~ s/\/.*//;
 
-	my $cmd = ".\\plink.exe -no-antispoof -l root -pw $iscsi_pw[$i] $iscsi_ip1[$i] ";
+	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] expresscls-4.1.1-1.x86_64.rpm $iscsi_ip:/root/");
+	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] ECX4.x-lin1.key $iscsi_ip:/root/");
+	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] ECX4.x-Rep-lin1.key iscsi_$ip:/root/");
+	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] ECX4.x-Rep-lin2.key $iscsi_ip:/root/");
+
+	my $cmd = ".\\plink.exe -no-antispoof -l root -pw $iscsi_pw[$i] $iscsi_ip ";
 	&execution($cmd . "\"mkdir /media/cdrom; mount /dev/cdrom /media/cdrom\"");
 	&execution($cmd . "\"yum --disablerepo=* --enablerepo=c7-media install -y targetcli targetd perl\"");
-	&execution($cmd . "\"hostnamectl set-hostname iscsi1; systemctl stop firewalld.service; systemctl disable firewalld.service\"");
+	&execution($cmd . "\"hostnamectl set-hostname iscsi" . ($i+1) . "\"");
+	&execution($cmd . "\"systemctl stop firewalld.service; systemctl disable firewalld.service\"");
 	&execution($cmd . "\"sed -i -e 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config\"");
 	&execution($cmd . "\"yes no | ssh-keygen -t rsa -f /root/.ssh/id_rsa -N \\\"\\\"\"");
 	&execution($cmd . "\"umount /media/cdrom\"");
@@ -40,19 +44,14 @@ for my $i (0..1) {
 	#&execution($cmd . "\"nmcli c m ens192 ipv4.method manual ipv4.addresses $iscsi_ip1[$i] connection.autoconnect yes\"");
 	&execution($cmd . "\"nmcli c m ens224 ipv4.method manual ipv4.addresses $iscsi_ip2[$i] connection.autoconnect yes\"");
 	&execution($cmd . "\"nmcli c m ens256 ipv4.method manual ipv4.addresses $iscsi_ip3[$i] connection.autoconnect yes\"");
-	&execution($cmd . "\"yes | parted /dev/sdb mklabel msdos mkpart primary 1MiB 1025MiB mkpart primary 1025MiB 100%\"");
+
+	&execution($cmd . "\"yes | parted /dev/sdb --script 'mklabel msdos mkpart primary 0% 1025MiB mkpart primary 1025MiB 100%'\"");
 	&execution($cmd . "\"rpm -ivh /root/expresscls*.rpm\"");
 	&execution($cmd . "\"clplcnsc -i ECX4.x-lin1.key\"");
 	&execution($cmd . "\"clplcnsc -i ECX4.x-Rep-lin" . ( $i + 1) . ".key\"");
 
-	#reboot
-
-	# Disconnecting CDROM Drive
-	#my $cmd = ".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i] \"perl VMID=`vim-cmd vmsvc/getallvms | grep \\\" $vmname \\\" | awk '{print \\\$1}'`; vim-cmd vmsvc/device.connection \$VMID $devid true\"";
+	&execution($cmd . "reboot");
 }
-
-#.\plink.exe -no-antispoof -l root -pw NEC123nec! 172.31.255.3 "VMNAME=iSCSI1;DEVID=3000;VMID=`vim-cmd vmsvc/getallvms | grep \" ${VMNAME} \" | awk '{print $1}'`; vim-cmd vmsvc/device.connection $VMID $DEVID false"  
-
 #-------------------------------------------------------------------------------
 sub connectDVD {
 	for my $i (0..1) {

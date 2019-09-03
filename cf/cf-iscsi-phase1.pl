@@ -4,32 +4,40 @@ use warnings;
 
 # Parameters
 #-------------------------------------------------------------------------------
-my @esxi_ip	= ('172.31.255.2', '172.31.255.3');		# ESXi IP address
-my @esxi_pw	= ('NEC123nec!', 'NEC123nec!');			# ESXi root password
-# my @iscsi_ip1	= ('172.31.255.11', '172.31.255.12');		# iSCSI IP address
-# my @iscsi_ip2	= ('172.31.253.11', '172.31.253.12');		# iSCSI IP address
-# my @iscsi_ip3	= ('172.31.254.11', '172.31.254.12');		# iSCSI IP address
-# my @iscsi_vname	= ('iSCSI1', 'iSCSI2');				# iSCSI VM Name
-# my @iscsi_pw	= ('NEC123nec!', 'NEC123nec!');			# iSCSI root password
-# my @dsname	= ('iSCSI1');
-######
-######
-######
-my $DATASTORE_SIZE = "500G";
-######
-######
-######
-#-------------------------------------------------------------------------------
+my @esxi_ip	= ('172.31.255.2', '172.31.255.3');	# ESXi IP address
+my @esxi_pw	= ('NEC123nec!', 'NEC123nec!');		# ESXi root password
 
-# Globals
+# The size of iSCSI Target Disk which UC VMs to be stored.
+my $iscsi_size	= "20G";
+
+# Global variable
+#-------------------------------------------------------------------------------
 my @lines	= ();
 
 # Main
 #-------------------------------------------------------------------------------
-
 for my $i (0..1) {
-	my $cmd = ".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip1[$i] ";
-	&execution($cmd . "-m ESXi-scripts\cf-iscsi-" . ($i + 1) .".sh");
+	# Specifying Datastore size
+	my @buf = ();
+	for my $i (0..1) {
+		my $file = "ESXi-scripts/cf-iscsi-" . ($i+1) . ".sh";
+		open(IN, $file) or die "Couldn't open file $file, $!";
+		@buf = <IN>;
+		close(IN);
+		foreach(@buf){
+			s/VM_DISK_SIZE2=.*$/VM_DISK_SIZE2=${DATASTORE_SIZE}/;
+		}
+		open(OUT, "> ${file}") or die "Couldn't open file $file, $!";
+		print OUT @buf;
+		close(OUT);
+	}
+
+	# Creating VM
+	my $cmd = ".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i] ";
+	if (&execution($cmd . "-m ESXi-scripts\cf-iscsi-" . ($i + 1) .".sh")) {
+		&Log("[E] #### FAILED TO CREATE VM     ####\n");
+		&Log("[E] #### CHECK THE CONFIGURATION ####\n");
+	}
 }
 #-------------------------------------------------------------------------------
 sub execution {
