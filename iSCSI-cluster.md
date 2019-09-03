@@ -104,51 +104,6 @@ On the client PC, run *cf-iscsi-phase3.pl* in the subfolder *cf*.
 After the completion of *cf-iscsi-phase3.p*, both iscsi1 and iscsi2 are rebooted.
 Open ECX WebUI (http://172.31.255.11:29003) and wait for the cluster to start *failover-iscsi*.
 
-### Configuring iSCSI Target
-On iscsi1, create block backstore and configure it as backstore for the iSCSI Target.
-- Login to the console of iscsi1.
-
-- Start (iSCSI) target configuration tool
-
-		# targetcli
-
-- Unset automatic save of the configuration for safe.
-
-		> set global auto_save_on_exit=false
-
-- Create fileio backstore (*idisk*) which have required size on mount point of the mirror disk
-
-		> cd /backstores/block
-		> create name=idisk1 dev=/dev/NMP1
-		> # create name=idisk2 dev=/dev/NMP2
-
-- Creating IQN
-
-		> cd /iscsi
-		> create iqn.1996-10.com.ecx
-
-- Assigning LUN to IQN
-
-		> cd /iscsi/iqn.1996-10.com.ec/tpg1/luns
-		> create /backstores/block/idisk1
-		> # create /backstores/block/idisk2
-
-- Allow machine (IQN of iSCSI Initiator) to scan the iSCSI target.
-
-		> cd /iscsi/iqn.1996-10.com.ecx/tpg1/acls
-		> create iqn.1998-01.com.vmware:1
-		> create iqn.1998-01.com.vmware:2
-
-- Save config and exit.
-
-		> cd /
-		> saveconfig
-		> exit
-
-- Copy the saved target configuration to the other node.
-
-		# scp /etc/target/saveconfig.json iscsi2:/etc/target/
-
 ## Revision history
 
 2016.11.29 Miyamoto Kazuyuki	1st issue  
