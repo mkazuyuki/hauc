@@ -29,8 +29,9 @@ for my $i (0..1) {
 
 	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] expresscls-4.1.1-1.x86_64.rpm $iscsi_ip:/root/");
 	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] ECX4.x-lin1.key $iscsi_ip:/root/");
-	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] ECX4.x-Rep-lin1.key iscsi_$ip:/root/");
+	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] ECX4.x-Rep-lin1.key $iscsi_ip:/root/");
 	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] ECX4.x-Rep-lin2.key $iscsi_ip:/root/");
+	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] template/iSCSI/saveconfig.json $iscsi_ip:/etc/target/");
 
 	my $cmd = ".\\plink.exe -no-antispoof -l root -pw $iscsi_pw[$i] $iscsi_ip ";
 	&execution($cmd . "\"mkdir /media/cdrom; mount /dev/cdrom /media/cdrom\"");
