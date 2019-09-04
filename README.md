@@ -77,31 +77,23 @@ Start ssh service and configure it to start automatically.
 Configure vSwitch, Physical NICs, Port groups, VMkernel NIC for iSCSI Initiator
 - Open cmd.exe, change current working directory to *cf* and run the below commands.
 
-		.\plink.exe -no-antispoof -l root -pw NEC123nec! 172.31.255.2 -m ESXi-scripts\cf-esxi-1.sh
-		.\plink.exe -no-antispoof -l root -pw NEC123nec! 172.31.255.3 -m ESXi-scripts\cf-esxi-2.sh
+  Run *cf-esxi-phase1.pl* in subfolder *cf*.
 
 ### Deploying iSCSI VMs on each ESXi
 - Open vSphere Host Client
-- Deploy VMs for [iSCSI Cluster](iSCSI-cluster.md) on both ESXi and boot them.
+- Deploy VMs for [iSCSI Cluster](iSCSI-cluster.md) on both ESXi.
 
 ### Setting up ESXi - iSCSI Initiator
 - Open cmd.exe, change current working directory to *cf* and run the below commands.
 
-		.\plink.exe -no-antispoof -l root -pw NEC123nec! 172.31.255.2 -m ESXi-scripts\cf-esxi-11.sh
-		.\plink.exe -no-antispoof -l root -pw NEC123nec! 172.31.255.3 -m ESXi-scripts\cf-esxi-12.sh
+  Run *cf-esxi-phase2.pl* in subfolder *cf*.
 
 ### Deploying UC VMs on iSCSI datastore
 - Deploy UC VMs (to be protected by ECX) on *esxi1* or *esxi2*.
   These VMs should be deployed on the iSCSI datastore.
 
 ### Deploying vMA VMs on each ESXi
-- Deploy [vMA Cluster](vMA-cluster.md) on both ESXi and boot them.
-
-### Configuring vMA Cluster
-
-On the client
-
-- Run *cf.pl* in cf folder. 
+- Deploy [vMA Cluster](vMA-cluster.md) on both ESXi.
 
 ----
 

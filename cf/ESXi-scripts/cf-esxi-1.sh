@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# IP Address / Netmask / IQN for ESXi Software iSCSI Adapter
+# IP Address / Netmask for ESXi Software iSCSI Adapter
 IPADDR=172.31.254.2
 NETMASK=255.255.255.0
 
