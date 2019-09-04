@@ -45,7 +45,7 @@ This guide provides how to create Management VM Cluster on EXPRESSCLUSTER for Li
 
   Open ESXi Host Client, open vMA VMs console and login to them, then run the below command to set IP address so that Windows client can access to the VMs.
 
-  - on vMA11 console:
+  - on vMA1 console:
 
 		nmcli c m ens160 ipv4.method manual ipv4.addresses 172.31.255.6/24 connection.autoconnect yes
 
@@ -80,7 +80,7 @@ This guide provides how to create Management VM Cluster on EXPRESSCLUSTER for Li
 
 ### Configuring vMA Cluster
 
-On the client PC, run *cf-vma-phase3.pl* in the subfolder *cf*.
+  Run *cf-vma-phase3.pl* in the subfolder *cf*.
 
 After the completion of *cf-vma-phase3.pl*, both vma1 and vma2 start controlling UC VMs.
 Open ECX WebUI (http://172.31.255.6:29003) and wait for the cluster to start.
