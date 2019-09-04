@@ -75,18 +75,15 @@ Start ssh service and configure it to start automatically.
     - [TSM-SSH] >  [Actions] > [Polilcy] > [Start and stop with host]
 
 Configure vSwitch, Physical NICs, Port groups, VMkernel NIC for iSCSI Initiator
-- Open cmd.exe, change current working directory to *cf* and run the below commands.
-
-  Run *cf-esxi-phase1.pl* in subfolder *cf*.
+- Run *cf-esxi-phase1.pl* in subfolder *cf*.
 
 ### Deploying iSCSI VMs on each ESXi
 - Open vSphere Host Client
 - Deploy VMs for [iSCSI Cluster](iSCSI-cluster.md) on both ESXi.
 
 ### Setting up ESXi - iSCSI Initiator
-- Open cmd.exe, change current working directory to *cf* and run the below commands.
-
-  Run *cf-esxi-phase2.pl* in subfolder *cf*.
+- Run *cf-esxi-phase2.pl* in subfolder *cf*.
+  After running the command, iSCSI datastore can be accessible from both ESXi,
 
 ### Deploying UC VMs on iSCSI datastore
 - Deploy UC VMs (to be protected by ECX) on *esxi1* or *esxi2*.
