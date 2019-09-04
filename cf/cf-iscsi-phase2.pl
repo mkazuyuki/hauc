@@ -50,6 +50,7 @@ for my $i (0..1) {
 	&execution($cmd . "\"rpm -ivh /root/expresscls*.rpm\"");
 	&execution($cmd . "\"clplcnsc -i ECX4.x-lin1.key\"");
 	&execution($cmd . "\"clplcnsc -i ECX4.x-Rep-lin" . ( $i + 1) . ".key\"");
+	&execution($cmd . "\"rm expresscls\*.rpm ECX4.x-\*.key\"");
 
 	&execution($cmd . "reboot");
 }

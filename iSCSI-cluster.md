@@ -1,12 +1,9 @@
 # Howto setup iSCSI Target Cluster on EXPRESSCLUSTER for Linux with block device backstore
 
-----
-
 This guide provides how to create iSCSI Target cluster (with block device backstore) on EXPRESSCLUSTER for Linux.
 
-----
 ## Versions
-- vSphere Hypervisor 6.7 (vSphere ESXi 6.7)
+- VMware vSphere Hypervisor 6.7U2 (VMware ESXi 6.7U2)
 - CentOS 7.6 x86_64
 - EXPRESSCLUSTER X for Linux 4.1.1-1
 
@@ -39,7 +36,7 @@ This guide provides how to create iSCSI Target cluster (with block device backst
 
 ## Overall Setup Procedure
 - Creating VMs (*iscsi1* and *iscsi2*) one on each ESXi
-- Setting up ECX then iSCSI Target on them.
+- Install CentOS then ECX on them so that controls iSCSI Target.
 
 ## Procedure
 
@@ -101,7 +98,7 @@ This guide provides how to create iSCSI Target cluster (with block device backst
 
 On the client PC, run *cf-iscsi-phase3.pl* in the subfolder *cf*.
 
-After the completion of *cf-iscsi-phase3.p*, both iscsi1 and iscsi2 are rebooted.
+After the completion of *cf-iscsi-phase3.pl*, both iscsi1 and iscsi2 are rebooted.
 Open ECX WebUI (http://172.31.255.11:29003) and wait for the cluster to start *failover-iscsi*.
 
 ## Revision history
