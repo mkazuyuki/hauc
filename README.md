@@ -77,20 +77,17 @@ Start ssh service and configure it to start automatically.
 Configure vSwitch, Physical NICs, Port groups, VMkernel NIC for iSCSI Initiator
 - Run *cf-esxi-phase1.pl* in subfolder *cf*.
 
-### Deploying iSCSI VMs on each ESXi
-- Open vSphere Host Client
-- Deploy VMs for [iSCSI Cluster](iSCSI-cluster.md) on both ESXi.
+### Deploy [iSCSI Cluster](iSCSI-cluster.md) on both ESXi
 
 ### Setting up ESXi - iSCSI Initiator
 - Run *cf-esxi-phase2.pl* in subfolder *cf*.
-  After running the command, iSCSI datastore can be accessible from both ESXi,
+  After running the command, the iSCSI datastore which the iSCSI Cluster provides can be accessible from both ESXi,
 
 ### Deploying UC VMs on iSCSI datastore
 - Deploy UC VMs (to be protected by ECX) on *esxi1* or *esxi2*.
   These VMs should be deployed on the iSCSI datastore.
 
-### Deploying vMA VMs on each ESXi
-- Deploy [vMA Cluster](vMA-cluster.md) on both ESXi.
+### Deploying [vMA Cluster](vMA-cluster.md) on both ESXi
 
 ----
 
@@ -106,7 +103,7 @@ Configure vSwitch, Physical NICs, Port groups, VMkernel NIC for iSCSI Initiator
 - When intentionally stop the cluster service, "suspend" the *genw-remote-node* before it. *genw-remote-node* in the cluster periodically executes "starting cluster service" for another VM.
 
 ### Deleting / Adding UC VM on vMA Cluster
-- re-run the *cf.pl*
+- re-run the *cf-vma-phase3.pl*
 
 
 ## Where to go for more information
