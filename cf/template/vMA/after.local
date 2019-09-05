@@ -1,0 +1,60 @@
+#! /bin/sh
+
+#
+# When the ESXi gets surprise power off,
+# - invalid VMs were left in the ESXi inventory.
+# - iSCSI Datastore was disappeared as the ESXi storage.
+#
+# This script processes belows when vMA starts, 
+# - clean up such a invalid VMs from the ESXi inventory.
+# - mount iSCSI datastore on the ESXi
+#
+# Put this file as /etc/init.d/after.local
+# Then issute
+# chmod 755 /etc/init.d/after.local
+#
+
+HOME=/root
+logger -t expresscls "**** entr after.local ****"
+
+####
+# IP address of VMkernel port on the host ESXi.
+vmk=%%VMK%%
+
+####
+# Datastore name for iSCSI shared disk which the host ESXi access.
+DatastoreName=%%DATASTORE%%
+
+# Unregistering "invalid VMs" and "existing UC VMs" from ESXi inventory
+ssh -i ~/.ssh/id_rsa $vmk "
+for a in \$(vim-cmd vmsvc/getallvms 2>&1 | grep invalid | awk '{print \$4}' | cut -d \\' -f2); do
+	logger -t expresscls \"unregister invalid VM ID[\$a]\"
+	vim-cmd vmsvc/unregister \$a 2>&1
+done
+
+for a in \$(vim-cmd vmsvc/getallvms 2>&1 | grep '\[$DatastoreName\]' | awk '{print \$1}'); do
+	logger -t expresscls \"stop and unregister VM ID[\$a]\"
+	vim-cmd vmsvc/power.off \$a 2>&1
+	vim-cmd vmsvc/unregister \$a 2>&1
+done
+"
+
+# Mounting iSCSI Datastore if it does not exist
+while [ 1 ];do
+        echo "esxcli --server $vmk storage filesystem list | cut -d' ' -f3 | grep $DatastoreName"
+        esxcli --server $vmk storage filesystem list | cut -d' ' -f3 | grep $DatastoreName
+        if [ $? -eq 0 ];then
+                # Datastore exist
+                logger -t expresscls "datastore [$DatastoreName] found."
+                break
+        else
+                # Datastore not exist
+                logger -t expresscls "datastore [$DatastoreName] not found. mounting it."
+                vicfg-volume --server $vmk --persistent-mount $DatastoreName
+                if [ $? -ne 0 ]; then
+                        logger -t expresscls "mounting  [$DatastoreName] failed."
+                fi
+        fi
+        sleep 10
+done
+logger -t expresscls "**** exit after.local ****"
