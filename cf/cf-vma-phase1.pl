@@ -15,10 +15,10 @@ my @lines	= ();
 #-------------------------------------------------------------------------------
 for my $i (0..1) {
 	my $cmd = ".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i] ";
-	if (&execution($cmd . "-m ESXi-scripts\cf-vma-" . ($i + 1) .".sh")) {
-		&Log("[E] #### FAILED TO CREATE VM     ####\n");
-		&Log("[E] #### CHECK THE CONFIGURATION ####\n");
+	if (&execution($cmd . "-m ESXi-scripts/cf-vma-" . ($i + 1) .".sh")) {
+		&Log("[E] Failed to create vMA" . ($i+1) . "\n");
 	}
+	&Log("[I] vMA$i created\n");
 }
 #-------------------------------------------------------------------------------
 sub execution {
