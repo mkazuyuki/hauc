@@ -14,7 +14,7 @@ my @lines	= ();
 # Main
 #-------------------------------------------------------------------------------
 for my $i (0..1) {
-	&execute(".\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i] -m ESXi-scripts\cf-esxi-" . ($i+1) . ".sh");
+	&execute(".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i] -m ESXi-scripts/cf-esxi-" . ($i+1) . ".sh");
 }
 #-------------------------------------------------------------------------------
 sub execution {
