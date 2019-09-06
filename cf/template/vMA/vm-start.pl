@@ -291,14 +291,13 @@ sub execution {
 	&Log("[D] \texecuting [$cmd]\n");
 	open(my $h, "$cmd 2>&1 |") or die "[E] execution [$cmd] failed [$!]";
 	@lines = <$h>;
-	close($h); 
-	my $ret = $?;
-	&Log(sprintf("[D] \tresult ![%d] ?[%d] >> 8 = [%d]\n", $!, $?, $? >> 8));
 	foreach (@lines) {
 		chomp;
-		&Log("[D] \t: $_\n");
+		&Log("[D] | $_\n");
 	}
-	return $ret;
+	close($h); 
+	&Log(sprintf("[D] \tresult ![%d] ?[%d] >> 8 = [%d]\n", $!, $?, $? >> 8));
+	return $?;
 }
 #-------------------------------------------------------------------------------
 sub Log{

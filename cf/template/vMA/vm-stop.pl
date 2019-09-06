@@ -59,44 +59,38 @@ if ($? == 0) {
 #-------------------------------------------------------------------------------
 &Log("[I] [$vmname][$vmx]\n");
 
-if (&PreChk()) {
+if (&IsUnRegistered) {
 	exit 0;
 }
-if (&PowerOff()) {
-	exit 1;
-}
-if (&WaitPowerOff()) {
-	exit 1;
+
+if (! &IsPoweredOff) {
+	&PowerOff;
+	&WaitPowerOff;
 }
 exit &UnRegisterVm();
 
 #-------------------------------------------------------------------------------
 # Functions
 #-------------------------------------------------------------------------------
-sub PreChk {
+sub IsUnRegistered {
 	$vmid = "";
 	&execution("ssh $vmk vim-cmd vmsvc/getallvms");
 	my @tmp = @lines;
 	foreach (@tmp) {
 		if (/(\d+).*\s$vmname\s/) {
 			$vmid = $1;
-			&Log("[I][PreChk] [$vmname] in inventory.\n");
+			&Log("[I][IsUnRegistered] [$vmname] in inventory.\n");
 		}
 		elsif (/^Skipping invalid VM \'(\d+)\'$/) {
-			&Log("[D][PreChk] unregistering invalid VM($1)\n");
+			&Log("[D][IsUnRegistered] unregistering invalid VM($1)\n");
 			&execution("ssh $vmk vim-cmd vmsvc/unregister $1");
 		}
 	}
 	if ($vmid eq "") {
-		&Log("[I][PreChk] [$vmname] not in inventory\n");
+		&Log("[I][IsUnRegistered] [$vmname] not in inventory\n");
 		return 1;
-	} elsif (&IsPoweredOff()) {
-		&Log("[I][PreChk] [$vmname] already powered off.\n");
-		return 0;
-	} else {
-		&Log("[I][PreChk] [$vmname] not powered off.\n");
-		return 0;
 	}
+	return 0;
 }
 #-------------------------------------------------------------------------------
 # power.getstate returns "Powered off" if the VM is invalid VM.
@@ -181,7 +175,7 @@ sub UnRegisterVm{
 #-------------------------------------------------------------------------------
 sub StorageReady{
 	my $device = "";
-	&execution("esxcli -s $vmk -u root storage vmfs extent list");
+	&execution("ssh $vmk esxcli storage vmfs extent list");
 	foreach (@lines) {
 		if(/^$datastore\s+(.+?\s+){2}(.+?)\s.*/){
 			$device = $2;
@@ -240,17 +234,16 @@ sub ResolveVmStuck{
 #-------------------------------------------------------------------------------
 sub execution {
         my $cmd = shift;
-        &Log("[D] \texecuting [$cmd]\n");
+        &Log("[D] executing [$cmd]\n");
         open(my $h, "$cmd 2>&1 |") or die "[E] execution [$cmd] failed [$!]";
         @lines = <$h>;
-        close($h);
-	my $ret = $?;
-        &Log(sprintf("[D] \tresult ![%d] ?[%d] >> 8 = [%d]\n", $!, $?, $? >> 8));
-        foreach (@lines) {
-               chomp;
-               &Log("[D] \t: $_\n");
-        }
-        return $ret;
+	foreach (@lines) {
+		chomp;
+		&Log("[D] | $_\n");
+	}
+	close($h);
+	&Log(sprintf("[D] result ![%d] ?[%d] >> 8 = [%d]\n", $!, $?, $? >> 8));
+	return $?;
 }
 #-------------------------------------------------------------------------------
 sub Log{

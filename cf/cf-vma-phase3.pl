@@ -576,7 +576,7 @@ sub Save {
 
 		# Put vMA ssh public key on iSCSI, and make /root/.ssh/authorized_keys
 		&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] .\\id_rsa_vma_$i.pub $iscsi_ip[$i]:/tmp");
-		$cmd = ".\\plink.exe -no-antispoof -l root -pw $iscsi_pw[$i] $iscsi_ip[$i]";
+		my $cmd = ".\\plink.exe -no-antispoof -l root -pw $iscsi_pw[$i] $iscsi_ip[$i]";
 		&execution("$cmd \"a=`cat /tmp/id_rsa_vma_$i.pub`; grep \\\"\$a\\\" ~/.ssh/authorized_keys\"");
 		if ($?) {
 			# create entry for vMA in authorized_keys in iSCSI when authorized_keys not exists or it does not have the entry for vMA node.
@@ -798,6 +798,7 @@ sub Save {
 	&execution(".\\plink.exe -no-antispoof -l root -pw $vma_pw[0] $vma_ip[0] \"clpcl --suspend\"");
 	&execution(".\\plink.exe -no-antispoof -l root -pw $vma_pw[0] $vma_ip[0] \"clpcfctrl --push -w -x /tmp/conf\"");
 	&execution(".\\plink.exe -no-antispoof -l root -pw $vma_pw[0] $vma_ip[0] \"clpcl --resume\"");
+	&execution(".\\plink.exe -no-antispoof -l root -pw $vma_pw[0] $vma_ip[0] \"clpcl -s -a\"");
 
 	return 0;
 }
