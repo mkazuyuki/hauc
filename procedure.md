@@ -36,10 +36,10 @@ Configure vSwitch, Physical NICs, Port groups, VMkernel NIC for iSCSI Initiator
 
 ### Creating VMs for iSCSI Cluster and vMA Cluster
 
-The disk size of the iSCSI Target which will be an ESXi Datastore for storing UC VMs can be specified at the line of **my $iscsi_size	= "20G";** in *cf-esxi-phase3.pl* in the subfolder *cf*.  
-  e.x.
+The disk size of the iSCSI Target which will be an ESXi Datastore for storing UC VMs can be specified at the line of **my $iscsi_size = "20G";** in *cf-esxi-phase3.pl* in the subfolder *cf*.  
+e.x.
 
-		my $iscsi_size	= "1024G";
+	my $iscsi_size	= "1024G";
 
 - Run *cf-esxi-phase3.pl* in subfolder *cf*, then VMs of iSCSI1, iSCSI2, vMA1, vMA2 are created.
 
@@ -70,12 +70,12 @@ The disk size of the iSCSI Target which will be an ESXi Datastore for storing UC
 - Confirm accessibility to the following six IP addresses by using putty.
   **Do not omit this process**. The procedure hereafter assumes that SSH Hostkey entries of these IP addresses are made on Windows registry by this process.
 
-  - 172.31.255.2 ESXi#1
-  - 172.32.255.3 ESXi#2
-  - 172.31.255.6 vMA#1
-  - 172.31.255.7 vMA#2
-  - 172.31.255.11 iSCSI#1
-  - 172.31.255.12 iSCSI#2
+  - 172.31.255.2 (ESXi#1)
+  - 172.32.255.3 (ESXi#2)
+  - 172.31.255.6 (vMA#1)
+  - 172.31.255.7 (vMA#2)
+  - 172.31.255.11 (iSCSI#1)
+  - 172.31.255.12 (iSCSI#2)
 
 ### Setting up iSCSI Cluster
 
@@ -98,8 +98,9 @@ Run *cf-esxi-phase2.pl* in subfolder *cf*.
 After running the command, confirm the iSCSI datastore which the iSCSI Cluster provides can be accessible from both ESXi,
 
 ### Deploying UC VMs on iSCSI datastore
-- Deploy UC VMs (to be protected by ECX) on *esxi1* or *esxi2*.
-  These VMs should be deployed on the iSCSI datastore.
+
+Deploy UC VMs (to be protected by ECX) on *esxi1* or *esxi2*.
+These VMs should be deployed on the iSCSI datastore.
 
 ### Setting up vMA Cluster
 
