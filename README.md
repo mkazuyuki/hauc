@@ -78,24 +78,22 @@ Start ssh service and configure it to start automatically.
 Configure vSwitch, Physical NICs, Port groups, VMkernel NIC for iSCSI Initiator
 - Run *cf-esxi-phase1.pl* in subfolder *cf*.
 
-### Deploy [iSCSI Cluster](iSCSI-cluster.md) on both ESXi
+### Creating VMs for iSCSI Cluster and vMA Cluster
 
-- Create VMs (iSCSI1 on ESXi#1, iSCSI2 on ESXi#2).
-
-  The disk size of the iSCSI Target which will be an ESXi Datastore can be specified at the line of **my $iscsi_size	= "20G";** in *cf-iscsi-phase1.pl* in the subfolder *cf*.  
+The disk size of the iSCSI Target which will be an ESXi Datastore for storing UC VMs can be specified at the line of **my $iscsi_size	= "20G";** in *cf-esxi-phase3.pl* in the subfolder *cf*.  
   e.x.
 
 		my $iscsi_size	= "1024G";
 
-  Run *cf-iscsi-phase1.pl* in subfolder *cf*.
+- Run *cf-esxi-phase3.pl* in subfolder *cf*, then VMs of iSCSI1, iSCSI2, vMA1, vMA2 are created.
 
-- Boot VMs and install CentOS to them.
+- Boot all the VMs and install CentOS.
 
-  What needed is to select sda as *INSTALLATION DESTINATION* and setting *ROOT PASSWORD*.
+  What needed during the installation is to select *sda* as *INSTALLATION DESTINATION* and setting *ROOT PASSWORD*.
 
-- Configure the first network of VMs
+- Configure the first network of the VMs.
 
-  Open ESXi Host Client, open iSCSI VMs console and login to them, then run the below command to set IP address so that Windows client can access to the VMs.
+  Open two ESXi Host Client (https://172.31.255.2 and https://172.31.255.3), open the console of iSCSI and vMA VMs and login to them as root user, then run the below command to set IP address so that Windows client can access to the VMs.
 
   - on iSCSI1 console:
 
@@ -105,60 +103,6 @@ Configure vSwitch, Physical NICs, Port groups, VMkernel NIC for iSCSI Initiator
 
 		nmcli c m ens192 ipv4.method manual ipv4.addresses 172.31.255.12/24 connection.autoconnect yes
 
-- Configure VMs
-
-  Run *cf-iscsi-phase2.pl* in the subfolder *cf*.
-
-  When you get questioned like below, push "y" then enter key.
-
-		2019/09/02 09:26:44 [D] | WARNING - POTENTIAL SECURITY BREACH!
-		2019/09/02 09:26:44 [D] | The server's host key does not match the one PuTTY has
-		2019/09/02 09:26:44 [D] | cached in the registry. This means that either the
-		2019/09/02 09:26:44 [D] | server administrator has changed the host key, or you
-		2019/09/02 09:26:44 [D] | have actually connected to another computer pretending
-		2019/09/02 09:26:44 [D] | to be the server.
-		2019/09/02 09:26:44 [D] | The new ssh-ed25519 key fingerprint is:
-		2019/09/02 09:26:44 [D] | ssh-ed25519 255 08:5c:13:b2:6a:24:a2:49:ea:d4:dd:a0:b7:be:8f:85
-		2019/09/02 09:26:44 [D] | If you were expecting this change and trust the new key,
-		2019/09/02 09:26:44 [D] | enter "y" to update PuTTY's cache and continue connecting.
-		2019/09/02 09:26:44 [D] | If you want to carry on connecting but without updating
-		2019/09/02 09:26:44 [D] | the cache, enter "n".
-		2019/09/02 09:26:44 [D] | If you want to abandon the connection completely, press
-		2019/09/02 09:26:44 [D] | Return to cancel. Pressing Return is the ONLY guaranteed
-		2019/09/02 09:26:44 [D] | safe choice.
-
-  After the completion of *cf-iscsi-phase2.pl*, both VMs are rebooted.
-  Wait the completion of the reboot.
-
-- Configur iSCSI Target on the cluster
-
-On the client PC, run *cf-iscsi-phase3.pl* in the subfolder *cf*.
-
-After the completion of *cf-iscsi-phase3.pl*, both iscsi1 and iscsi2 are rebooted.
-Open ECX WebUI (http://172.31.255.11:29003) and wait for the cluster to start the failover group "*failover-iscsi*".
-
-### Setting up ESXi - iSCSI Initiator
-- Run *cf-esxi-phase2.pl* in subfolder *cf*.
-  After running the command, the iSCSI datastore which the iSCSI Cluster provides can be accessible from both ESXi,
-
-### Deploying UC VMs on iSCSI datastore
-- Deploy UC VMs (to be protected by ECX) on *esxi1* or *esxi2*.
-  These VMs should be deployed on the iSCSI datastore.
-
-### Deploying [vMA Cluster](vMA-cluster.md) on both ESXi
-
-- Create VMs (vMA1 on ESXi#1, vMA2 on ESXi#2).
-
-  Run *cf-vma-phase1.pl* in subfolder *cf*.
-
-- Boot VMs and install CentOS to them.
-
-  What needed is to select sda as *INSTALLATION DESTINATION* and setting *ROOT PASSWORD*.
-
-- Configure the first network of VMs
-
-  Open ESXi Host Client, open vMA VMs console and login to them, then run the below command to set IP address so that Windows client can access to the VMs.
-
   - on vMA1 console:
 
 		nmcli c m ens160 ipv4.method manual ipv4.addresses 172.31.255.6/24 connection.autoconnect yes
@@ -167,11 +111,12 @@ Open ECX WebUI (http://172.31.255.11:29003) and wait for the cluster to start th
 
 		nmcli c m ens160 ipv4.method manual ipv4.addresses 172.31.255.7/24 connection.autoconnect yes
 
-- Configure VMs
+### Setting up iSCSI Cluster
 
-  Run *cf-vma-phase2.pl* in the subfolder *cf*.
+Run *cf-iscsi-phase2.pl* in the subfolder *cf*.
+This configures iSCSI VMs to fill prerequisite condition for creating iSCSI Cluster.
 
-  When you get questioned like below, push "y" then enter key.
+When you get questioned like below, push "y" then enter key.
 
 		2019/09/02 09:26:44 [D] | WARNING - POTENTIAL SECURITY BREACH!
 		2019/09/02 09:26:44 [D] | The server's host key does not match the one PuTTY has
@@ -189,10 +134,52 @@ Open ECX WebUI (http://172.31.255.11:29003) and wait for the cluster to start th
 		2019/09/02 09:26:44 [D] | Return to cancel. Pressing Return is the ONLY guaranteed
 		2019/09/02 09:26:44 [D] | safe choice.
 
-  After the completion of *cf-vma-phase2.pl*, both VMs are rebooted.
-  Wait the completion of the reboot.
+After the completion of *cf-iscsi-phase2.pl*, both VMs are rebooted.
+Wait the completion of the reboot.
 
-- Configur vMA Cluster
+- Create iSCSI Cluster
+
+  Run *cf-iscsi-phase3.pl* in the subfolder *cf*.
+
+After the completion of *cf-iscsi-phase3.pl*, both iscsi1 and iscsi2 are rebooted.
+Open ECX WebUI (http://172.31.255.11:29003) and wait for the cluster to start the failover group "*failover-iscsi*".
+
+### Setting up ESXi - iSCSI Initiator
+
+Run *cf-esxi-phase2.pl* in subfolder *cf*.
+After running the command, the iSCSI datastore which the iSCSI Cluster provides can be accessible from both ESXi,
+
+### Deploying UC VMs on iSCSI datastore
+- Deploy UC VMs (to be protected by ECX) on *esxi1* or *esxi2*.
+  These VMs should be deployed on the iSCSI datastore.
+
+### Setting up vMA Cluster
+
+Run *cf-vma-phase2.pl* in the subfolder *cf*.
+This configures vMA VMs to fill prerequisite condition for creating vMA Cluster.
+
+When you get questioned like below, push "y" then enter key.
+
+		2019/09/02 09:26:44 [D] | WARNING - POTENTIAL SECURITY BREACH!
+		2019/09/02 09:26:44 [D] | The server's host key does not match the one PuTTY has
+		2019/09/02 09:26:44 [D] | cached in the registry. This means that either the
+		2019/09/02 09:26:44 [D] | server administrator has changed the host key, or you
+		2019/09/02 09:26:44 [D] | have actually connected to another computer pretending
+		2019/09/02 09:26:44 [D] | to be the server.
+		2019/09/02 09:26:44 [D] | The new ssh-ed25519 key fingerprint is:
+		2019/09/02 09:26:44 [D] | ssh-ed25519 255 08:5c:13:b2:6a:24:a2:49:ea:d4:dd:a0:b7:be:8f:85
+		2019/09/02 09:26:44 [D] | If you were expecting this change and trust the new key,
+		2019/09/02 09:26:44 [D] | enter "y" to update PuTTY's cache and continue connecting.
+		2019/09/02 09:26:44 [D] | If you want to carry on connecting but without updating
+		2019/09/02 09:26:44 [D] | the cache, enter "n".
+		2019/09/02 09:26:44 [D] | If you want to abandon the connection completely, press
+		2019/09/02 09:26:44 [D] | Return to cancel. Pressing Return is the ONLY guaranteed
+		2019/09/02 09:26:44 [D] | safe choice.
+
+After the completion of *cf-vma-phase2.pl*, both VMs are rebooted.
+Wait the completion of the reboot.
+
+- Create vMA Cluster
 
   Run *cf-vma-phase3.pl* in the subfolder *cf*.
 

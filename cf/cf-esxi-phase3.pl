@@ -32,12 +32,20 @@ for my $i (0..1) {
 		close(OUT);
 	}
 
-	# Creating VM
 	my $cmd = ".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i] ";
+
+	# Creating iSCSI VM
 	if (&execution($cmd . "-m ESXi-scripts/cf-iscsi-" . ($i + 1) .".sh")) {
-		&Log("[E] #### FAILED TO CREATE VM     ####\n");
-		&Log("[E] #### CHECK THE CONFIGURATION ####\n");
+		&Log("[E] Failed to create iSCSI" . ($i+1) . "\n");
 	}
+	&Log("[I] iSCSI". ($i+1) . " created\n");
+
+	# Creating vMA VM
+	if (&execution($cmd . "-m ESXi-scripts/cf-vma-" . ($i + 1) .".sh")) {
+		&Log("[E] Failed to create vMA" . ($i+1) . "\n");
+	}
+	&Log("[I] vMA" . ($i+1) . " created\n");
+
 }
 #-------------------------------------------------------------------------------
 sub execution {
@@ -54,9 +62,9 @@ sub execution {
 	}
 	close($h);
 	if ($?) {
-		&Log(sprintf("[E]	result ![%d] ?[%d] >> 8 = [%d]\n", $!, $?, $? >> 8));
+		&Log(sprintf("[E] result ![%d] ?[%d] >> 8 = [%d]\n", $!, $?, $? >> 8));
 	} else {
-		&Log(sprintf("[D]	result ![%d] ?[%d] >> 8 = [%d]\n", $!, $?, $? >> 8));
+		&Log(sprintf("[D] result ![%d] ?[%d] >> 8 = [%d]\n", $!, $?, $? >> 8));
 	}
 	return $?;
 }
