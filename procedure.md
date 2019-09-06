@@ -67,28 +67,20 @@ The disk size of the iSCSI Target which will be an ESXi Datastore for storing UC
 
 		nmcli c m ens160 ipv4.method manual ipv4.addresses 172.31.255.7/24 connection.autoconnect yes
 
+- Confirm accessibility to the following six IP addresses by using putty.
+  **Do not omit this process**. The procedure hereafter assumes that SSH Hostkey entries of these IP addresses are made on Windows registry by this process.
+
+  - 172.31.255.2 ESXi#1
+  - 172.32.255.3 ESXi#2
+  - 172.31.255.6 vMA#1
+  - 172.31.255.7 vMA#2
+  - 172.31.255.11 iSCSI#1
+  - 172.31.255.12 iSCSI#2
+
 ### Setting up iSCSI Cluster
 
 Run *cf-iscsi-phase2.pl* in the subfolder *cf*.
 This configures iSCSI VMs to fill prerequisite condition for creating iSCSI Cluster.
-
-When you get questioned like below, push "y" then enter key.
-
-	2019/09/02 09:26:44 [D] | WARNING - POTENTIAL SECURITY BREACH!
-	2019/09/02 09:26:44 [D] | The server's host key does not match the one PuTTY has
-	2019/09/02 09:26:44 [D] | cached in the registry. This means that either the
-	2019/09/02 09:26:44 [D] | server administrator has changed the host key, or you
-	2019/09/02 09:26:44 [D] | have actually connected to another computer pretending
-	2019/09/02 09:26:44 [D] | to be the server.
-	2019/09/02 09:26:44 [D] | The new ssh-ed25519 key fingerprint is:
-	2019/09/02 09:26:44 [D] | ssh-ed25519 255 08:5c:13:b2:6a:24:a2:49:ea:d4:dd:a0:b7:be:8f:85
-	2019/09/02 09:26:44 [D] | If you were expecting this change and trust the new key,
-	2019/09/02 09:26:44 [D] | enter "y" to update PuTTY's cache and continue connecting.
-	2019/09/02 09:26:44 [D] | If you want to carry on connecting but without updating
-	2019/09/02 09:26:44 [D] | the cache, enter "n".
-	2019/09/02 09:26:44 [D] | If you want to abandon the connection completely, press
-	2019/09/02 09:26:44 [D] | Return to cancel. Pressing Return is the ONLY guaranteed
-	2019/09/02 09:26:44 [D] | safe choice.
 
 After the completion of *cf-iscsi-phase2.pl*, both VMs are rebooted.
 Wait the completion of the reboot.
@@ -113,24 +105,6 @@ After running the command, confirm the iSCSI datastore which the iSCSI Cluster p
 
 Run *cf-vma-phase2.pl* in the subfolder *cf*.
 This configures vMA VMs to fill prerequisite condition for creating vMA Cluster.
-
-When you get questioned like below, push "y" then enter key.
-
-	2019/09/02 09:26:44 [D] | WARNING - POTENTIAL SECURITY BREACH!
-	2019/09/02 09:26:44 [D] | The server's host key does not match the one PuTTY has
-	2019/09/02 09:26:44 [D] | cached in the registry. This means that either the
-	2019/09/02 09:26:44 [D] | server administrator has changed the host key, or you
-	2019/09/02 09:26:44 [D] | have actually connected to another computer pretending
-	2019/09/02 09:26:44 [D] | to be the server.
-	2019/09/02 09:26:44 [D] | The new ssh-ed25519 key fingerprint is:
-	2019/09/02 09:26:44 [D] | ssh-ed25519 255 08:5c:13:b2:6a:24:a2:49:ea:d4:dd:a0:b7:be:8f:85
-	2019/09/02 09:26:44 [D] | If you were expecting this change and trust the new key,
-	2019/09/02 09:26:44 [D] | enter "y" to update PuTTY's cache and continue connecting.
-	2019/09/02 09:26:44 [D] | If you want to carry on connecting but without updating
-	2019/09/02 09:26:44 [D] | the cache, enter "n".
-	2019/09/02 09:26:44 [D] | If you want to abandon the connection completely, press
-	2019/09/02 09:26:44 [D] | Return to cancel. Pressing Return is the ONLY guaranteed
-	2019/09/02 09:26:44 [D] | safe choice.
 
 After the completion of *cf-vma-phase2.pl*, both VMs are rebooted.
 Wait the completion of the reboot.
