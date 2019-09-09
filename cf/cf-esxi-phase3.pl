@@ -6,9 +6,7 @@ use warnings;
 #-------------------------------------------------------------------------------
 my @esxi_ip	= ('172.31.255.2', '172.31.255.3');	# ESXi IP address
 my @esxi_pw	= ('NEC123nec!', 'NEC123nec!');		# ESXi root password
-
-# The size of iSCSI Target Disk which UC VMs to be stored.
-my $iscsi_size	= "20G";
+my $iscsi_size	= "500G";				# iSCSI Target Disk size which UC VMs to be stored.
 
 # Global variable
 #-------------------------------------------------------------------------------
@@ -25,7 +23,7 @@ for my $i (0..1) {
 		@buf = <IN>;
 		close(IN);
 		foreach(@buf){
-			s/VM_DISK_SIZE2=.*$/VM_DISK_SIZE2=${DATASTORE_SIZE}/;
+			s/VM_DISK_SIZE2=.*$/VM_DISK_SIZE2=${iscsi_size}/;
 		}
 		open(OUT, "> ${file}") or die "Couldn't open file $file, $!";
 		print OUT @buf;
