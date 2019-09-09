@@ -7,6 +7,9 @@ use warnings;
 my @esxi_ip	= ('172.31.255.2', '172.31.255.3');	# ESXi IP address
 my @esxi_pw	= ('NEC123nec!', 'NEC123nec!');		# ESXi root password
 
+# The size of iSCSI Target Disk which UC VMs to be stored.
+my $iscsi_size	= "20G";
+
 # Global variable
 #-------------------------------------------------------------------------------
 my @lines	= ();
