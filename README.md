@@ -14,7 +14,7 @@ The general procedure to deploy HAUC on ESXi boxes (Primary and Standby) consist
 6. Deploy *vMA Cluster* which managing UC VMs.
 
 ## Versions
-- vSphere ESXi 6.7
+- vSphere ESXi 6.7 U2
 - Strawberry Perl 5.30.0.1 (64bit)   (http://strawberryperl.com/)
 - EXPRESSCLUSTER X 4.1 for Linux (4.1.1-1)
 
