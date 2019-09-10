@@ -16,14 +16,15 @@ use warnings;
 
 # Parameters
 #-------------------------------------------------------------------------------
-my @esxi_ip	= ('172.31.255.2', '172.31.255.3');		# ESXi IP address
-my @esxi_pw	= ('NEC123nec!', 'NEC123nec!');			# ESXi root password
-my @vma_ip	= ('172.31.255.6', '172.31.255.7');		# vMA IP address
-my @vma_pw	= ('NEC123nec!', 'NEC123nec!');			# vMA root password
-my @iscsi_ip	= ('172.31.255.11', '172.31.255.12');		# iSCSI IP address
-my @iscsi_pw	= ('NEC123nec!', 'NEC123nec!');			# iSCSI root password
-my $dsname	= "iSCSI";					# iSCSI Datastore
-my $vsw		= "uc_vm_vswitch";				# vSwitch for UCVM
+our @esxi_ip;
+our @esxi_pw;
+our @vma_ip;
+our @vma_pw;
+our @iscsi_ip;
+our @iscsi_pw;
+our $dsname;
+our $vsw;
+require "./hauc.conf" or die "file not found hauc.pl";
 #-------------------------------------------------------------------------------
 
 # Global variables

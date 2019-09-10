@@ -4,8 +4,11 @@ use warnings;
 
 # Parameters
 #-------------------------------------------------------------------------------
-my @esxi_ip	= ('172.31.255.2', '172.31.255.3');	# ESXi IP address
-my @esxi_pw	= ('NEC123nec!', 'NEC123nec!');		# ESXi root password
+our @esxi_ip;
+our @esxi_pw;
+our @esxi_isa_ip;
+our @esxi_isa_nm;
+require "./hauc.conf";
 
 # Global variable
 #-------------------------------------------------------------------------------
@@ -14,8 +17,19 @@ my @lines	= ();
 # Main
 #-------------------------------------------------------------------------------
 for my $i (0..1) {
-	&execute(".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i] -m ESXi-scripts/cf-esxi-" . ($i+1) . ".sh");
+	open(IN,  "ESXi-scripts/cf-esxi-" . ($i+1) . ".sh");
+	open(OUT, "> ESXi-scripts/cf-esxi-" . ($i+1) . ".txt");
+	while (<IN>) {
+		s/^IPADDR=.*/IPADDR=${esxi_isa_ip[$i]}/;
+		s/^NETMASK=.*/NETMASK=${esxi_isa_nm[$i]}/;
+		print OUT;
+	}
+	close (OUT);
+	close (IN);
+	system("move ESXi-scripts\\cf-esxi-" . ($i+1) . ".txt ESXi-scripts\\cf-esxi-" . ($i+1) . ".sh");
+	&execution(".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i] -m ESXi-scripts/cf-esxi-" . ($i+1) . ".sh");
 }
+exit;
 #-------------------------------------------------------------------------------
 sub execution {
 	my $cmd = shift;

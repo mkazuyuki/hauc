@@ -4,9 +4,11 @@ use warnings;
 
 # Parameters
 #-------------------------------------------------------------------------------
-my @esxi_ip	= ('172.31.255.2', '172.31.255.3');	# ESXi IP address
-my @esxi_pw	= ('NEC123nec!', 'NEC123nec!');		# ESXi root password
-my $iscsi_size	= "500G";				# iSCSI Target Disk size which UC VMs to be stored.
+our @esxi_ip;		# ESXi IP address
+our @esxi_pw;		# ESXi root password
+our @esxi_iqn;
+our $iscsi_addr;	# IP Addresss:Port for iSCSI Target
+require "./hauc.conf";
 
 # Global variable
 #-------------------------------------------------------------------------------
@@ -15,35 +17,18 @@ my @lines	= ();
 # Main
 #-------------------------------------------------------------------------------
 for my $i (0..1) {
-	# Specifying Datastore size
-	my @buf = ();
-	for my $i (0..1) {
-		my $file = "ESXi-scripts/cf-iscsi-" . ($i+1) . ".sh";
-		open(IN, $file) or die "Couldn't open file $file, $!";
-		@buf = <IN>;
-		close(IN);
-		foreach(@buf){
-			s/VM_DISK_SIZE2=.*$/VM_DISK_SIZE2=${iscsi_size}/;
-		}
-		open(OUT, "> ${file}") or die "Couldn't open file $file, $!";
-		print OUT @buf;
-		close(OUT);
+	open(IN,  "ESXi-scripts/cf-esxi-1" . ($i+1) . ".sh");
+	open(OUT, "> ESXi-scripts/cf-esxi-1" . ($i+1) . ".txt");
+	while (<IN>) {
+		s/^ADDR=.*/ADDR='${iscsi_addr}'/;
+		s/^IQN=.*/IQN='${esxi_iqn[$i]}'/;
+		print OUT;
 	}
+	close (OUT);
+	close (IN);
+	system("move ESXi-scripts\\cf-esxi-1" . ($i+1) . ".txt ESXi-scripts\\cf-esxi-1" . ($i+1) . ".sh");
 
-	my $cmd = ".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i] ";
-
-	# Creating iSCSI VM
-	if (&execution($cmd . "-m ESXi-scripts/cf-iscsi-" . ($i + 1) .".sh")) {
-		&Log("[E] Failed to create iSCSI" . ($i+1) . "\n");
-	}
-	&Log("[I] iSCSI". ($i+1) . " created\n");
-
-	# Creating vMA VM
-	if (&execution($cmd . "-m ESXi-scripts/cf-vma-" . ($i + 1) .".sh")) {
-		&Log("[E] Failed to create vMA" . ($i+1) . "\n");
-	}
-	&Log("[I] vMA" . ($i+1) . " created\n");
-
+	#&execution(".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i] -m ESXi-scripts/cf-esxi-1" . ($i+1) . ".sh");
 }
 #-------------------------------------------------------------------------------
 sub execution {
@@ -60,9 +45,9 @@ sub execution {
 	}
 	close($h);
 	if ($?) {
-		&Log(sprintf("[E] result ![%d] ?[%d] >> 8 = [%d]\n", $!, $?, $? >> 8));
+		&Log(sprintf("[E]	result ![%d] ?[%d] >> 8 = [%d]\n", $!, $?, $? >> 8));
 	} else {
-		&Log(sprintf("[D] result ![%d] ?[%d] >> 8 = [%d]\n", $!, $?, $? >> 8));
+		&Log(sprintf("[D]	result ![%d] ?[%d] >> 8 = [%d]\n", $!, $?, $? >> 8));
 	}
 	return $?;
 }

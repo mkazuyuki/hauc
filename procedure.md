@@ -36,12 +36,12 @@ Configure vSwitch, Physical NICs, Port groups, VMkernel NIC for iSCSI Initiator
 
 ### Creating VMs for iSCSI Cluster and vMA Cluster
 
-The disk size of the iSCSI Target which will be an ESXi Datastore for storing UC VMs can be specified at the line of **my $iscsi_size = "20G";** in *cf-esxi-phase3.pl* in the subfolder *cf*.  
-e.x.
+The disk size of the iSCSI Target which will be an ESXi Datastore for storing UC VMs can be specified at the line of **our $iscsi_size = "500G";** in *hauc.conf* in the subfolder *cf*.  
+e.x. Specify as following when making a vHDD of 1024GB size
 
-	my $iscsi_size	= "1024G";
+	our $iscsi_size	= "1024G";
 
-- Run *cf-esxi-phase3.pl* in subfolder *cf*, then VMs of iSCSI1, iSCSI2, vMA1, vMA2 are created.
+- Run *cf-esxi-phase2-create-vm.pl* in subfolder *cf*, then VMs of iSCSI1, iSCSI2, vMA1, vMA2 are created. This will take a long time for making vmdk eager zeroed thick.
 
 - Boot all the VMs and install CentOS.
 
@@ -79,22 +79,22 @@ e.x.
 
 ### Setting up iSCSI Cluster
 
-Run *cf-iscsi-phase2.pl* in the subfolder *cf*.
+Run *cf-iscsi-phase1.pl* in the subfolder *cf*.
 This configures iSCSI VMs to fill prerequisite condition for creating iSCSI Cluster.
 
-After the completion of *cf-iscsi-phase2.pl*, both VMs are rebooted.
+After the completion of *cf-iscsi-phase1.pl*, both VMs are rebooted.
 Wait the completion of the reboot.
 
 - Create iSCSI Cluster
 
-  Run *cf-iscsi-phase3.pl* in the subfolder *cf*.
+  Run *cf-iscsi-phase2.pl* in the subfolder *cf*.
 
-After the completion of *cf-iscsi-phase3.pl*, both iscsi1 and iscsi2 are rebooted.
-Open ECX WebUI (http://172.31.255.11:29003) and wait for the cluster to start the failover group "*failover-iscsi*".
+After the completion of *cf-iscsi-phase2.pl*, both iscsi1 and iscsi2 are rebooted.
+Open ECX WebUI (http://172.31.255.11:29003) and wait for the cluster to start the failover group "*failover-iscsi*" and synchronizing process of the mirror disk resource.
 
 ### Setting up ESXi - iSCSI Initiator
 
-Run *cf-esxi-phase2.pl* in subfolder *cf*.
+Run *cf-esxi-phase3.pl* in subfolder *cf*.
 After running the command, confirm the iSCSI datastore which the iSCSI Cluster provides can be accessible from both ESXi,
 
 ### Deploying UC VMs on iSCSI datastore

@@ -4,87 +4,102 @@ use warnings;
 
 # Parameters
 #-------------------------------------------------------------------------------
-my @esxi_ip	= ('172.31.255.2', '172.31.255.3');		# ESXi IP address
-my @esxi_pw	= ('NEC123nec!', 'NEC123nec!');			# ESXi root password
-my @iscsi_ip1	= ('172.31.255.11/24', '172.31.255.12/24');	# iSCSI IP address
-my @iscsi_ip2	= ('172.31.253.11/24', '172.31.253.12/24');	# iSCSI IP address
-my @iscsi_ip3	= ('172.31.254.11/24', '172.31.254.12/24');	# iSCSI IP address
-my @iscsi_vname	= ('iSCSI1', 'iSCSI2');				# iSCSI VM Name
-my @iscsi_pw	= ('NEC123nec!', 'NEC123nec!');			# iSCSI root password
-my @dsname	= ('iSCSI1');
+our @esxi_ip;
+our @esxi_pw;
+our @iscsi_ip1;
+our @iscsi_ip2;
+our @iscsi_ip3;
+our @iscsi_vname;
+our @iscsi_pw;
+our @dsname;
+our $iscsi_fip;
+require "./hauc.conf";
+
+#-------------------------------------------------------------------------------
+my $target	= "clpconf_iSCSI-Cluster/clp.conf";	#
 #-------------------------------------------------------------------------------
 
 # Globals
-my $devid	= 3000;	# CDROM Device ID of the VM. It can be obtained by "vim-cmd vmsvc/device.getdevices $VMID".
 my @lines	= ();
 
 # Main
 #-------------------------------------------------------------------------------
-# Connecting DVD Drive to the VMs
-&connectDVD;
 
 for my $i (0..1) {
-	my $iscsi_ip = $iscsi_ip1[$i];
-	$iscsi_ip =~ s/\/.*//;
-
-	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] expresscls-4.1.1-1.x86_64.rpm $iscsi_ip:/root/");
-	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] ECX4.x-lin1.key $iscsi_ip:/root/");
-	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] ECX4.x-Rep-lin1.key $iscsi_ip:/root/");
-	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] ECX4.x-Rep-lin2.key $iscsi_ip:/root/");
-	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] template/iSCSI/saveconfig.json $iscsi_ip:/etc/target/");
-
-	my $cmd = ".\\plink.exe -no-antispoof -l root -pw $iscsi_pw[$i] $iscsi_ip ";
-	&execution($cmd . "\"mkdir /media/cdrom; mount /dev/cdrom /media/cdrom\"");
-	&execution($cmd . "\"yum --disablerepo=* --enablerepo=c7-media install -y targetcli targetd perl\"");
-	&execution($cmd . "\"hostnamectl set-hostname iscsi" . ($i+1) . "\"");
-	&execution($cmd . "\"systemctl stop firewalld.service; systemctl disable firewalld.service\"");
-	&execution($cmd . "\"sed -i -e 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config\"");
-	&execution($cmd . "\"yes no | ssh-keygen -t rsa -f /root/.ssh/id_rsa -N \\\"\\\"\"");
-	&execution($cmd . "\"umount /media/cdrom\"");
-
-	#&execution($cmd . "\"nmcli c m ens192 ipv4.method manual ipv4.addresses $iscsi_ip1[$i] connection.autoconnect yes\"");
-	&execution($cmd . "\"nmcli c m ens224 ipv4.method manual ipv4.addresses $iscsi_ip2[$i] connection.autoconnect yes\"");
-	&execution($cmd . "\"nmcli c m ens256 ipv4.method manual ipv4.addresses $iscsi_ip3[$i] connection.autoconnect yes\"");
-
-	&execution($cmd . "\"yes | parted /dev/sdb --script 'mklabel msdos mkpart primary 0% 1025MiB mkpart primary 1025MiB 100%'\"");
-	&execution($cmd . "\"rpm -ivh /root/expresscls*.rpm\"");
-	&execution($cmd . "\"clplcnsc -i ECX4.x-lin1.key\"");
-	&execution($cmd . "\"clplcnsc -i ECX4.x-Rep-lin" . ( $i + 1) . ".key\"");
-	&execution($cmd . "\"rm expresscls\*.rpm ECX4.x-\*.key\"");
-
-	&execution($cmd . "reboot");
+	$iscsi_ip1[$i] =~ s/\/\d*$//;
+	$iscsi_ip2[$i] =~ s/\/\d*$//;
+	$iscsi_ip3[$i] =~ s/\/\d*$//;
 }
-#-------------------------------------------------------------------------------
-sub connectDVD {
-	for my $i (0..1) {
-		my $cmd0 = ".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i] ";
-		my $cmd = $cmd0 . "\"VMID=`vim-cmd vmsvc/getallvms | grep \\\" $iscsi_vname[$i] \\\" | awk '{print \$1}'`; vim-cmd vmsvc/device.getdevices \$VMID\"";
-		&execution($cmd);
-		my $j;
-		my $k;
-		for ($j = 0; $j < $#lines; $j++) {
-			if ($lines[$j] =~ /      \(vim.vm.device.VirtualCdrom\) \{/){
-				last;
-			}
-		}
-		for ($k = $j; $k < $#lines; $k++) {
-			# print "|| $lines[$k]\n";
-			if ($lines[$k] =~ /^            connected = true,/){
-				&Log("[D] DVD Drive is in connected status.\n");
-				last;
-			}
-			elsif ($lines[$k] =~ /^            connected = false,/){
-				&Log("[I] DVD Drive is in disconnected status. Connecting DVD Drive.\n");
-				$cmd = $cmd0 . "\"VMID=`vim-cmd vmsvc/getallvms | grep \\\" $iscsi_vname[$i] \\\" | awk '{print \\\$1}'`; vim-cmd vmsvc/device.connection \$VMID $devid true\"";
-				&execution($cmd);
-				last;
-			}
-			elsif ($lines[$k] =~ /^      \},/) {
-				last;
-			}
-		}
-	}
+
+# Creating clp.conf
+#---------------------------------------
+my $file = "template/iSCSI/clp.conf";
+open(IN, $file) or die "";
+@lines = <IN>;
+close(IN);
+foreach (@lines) {
+	s/%%IP11%%/$iscsi_ip1[0]/;
+	s/%%IP12%%/$iscsi_ip2[0]/;
+	s/%%IP13%%/$iscsi_ip3[0]/;
+	s/%%IP21%%/$iscsi_ip1[1]/;
+	s/%%IP22%%/$iscsi_ip2[1]/;
+	s/%%IP23%%/$iscsi_ip3[1]/;
+	s/%%FIP%%/$iscsi_fip/;
 }
+open(OUT, "> $target");
+print OUT @lines;
+close(OUT);
+
+# Creating genw-remote-node
+#---------------------------------------
+$file = "template/iSCSI/genw-remote-node.pl";
+open(IN, $file) or die "";
+@lines = <IN>;
+close(IN);
+foreach (@lines) {
+	s/%%VMDN1%%/$iscsi_vname[0]/;
+	s/%%VMDN2%%/$iscsi_vname[1]/;
+	s/%%VMIP1%%/$iscsi_ip1[0]/;
+	s/%%VMIP2%%/$iscsi_ip1[1]/;
+	s/%%VMK1%%/$esxi_ip[0]/;
+	s/%%VMK2%%/$esxi_ip[1]/;
+}
+open(OUT, "> clpconf_iSCSI-Cluster/scripts/monitor.s/genw-remote-node/genw.sh");
+print OUT @lines;
+close(OUT);
+
+# Copy files to the iSCSI VM#1
+#---------------------------------------
+if (&execution(".\\pscp.exe -l root -pw $iscsi_pw[0] -r clpconf_iSCSI-Cluster $iscsi_ip1[0]:/root/")) {
+	exit 1;
+}
+
+# Check clp.conf
+#---------------------------------------
+my $cmd = ".\\plink.exe -no-antispoof -l root -pw $iscsi_pw[0] $iscsi_ip1[0] ";
+if (&execution($cmd . "clpcfctrl --compcheck -w -x ./clpconf_iSCSI-Cluster/")) {
+	&Log("[E] #### CONFIGURATION IS INVALID ####\n");
+	&Log("[E] #### CHECK YOUR PARAMETERS    ####\n");
+	exit 1;
+}
+
+# Apply clp.conf
+#---------------------------------------
+#&execution($cmd . "clpcl --suspend");
+
+if (&execution($cmd . "clpcfctrl --push -w -x ./clpconf_iSCSI-Cluster/")) {
+	exit 1;
+}
+#&execution($cmd . "clpcl --resume");
+
+# Reboot both VMs
+#---------------------------------------
+for my $i (0..1) {
+	&execution(".\\plink.exe -no-antispoof -l root -pw $iscsi_pw[$i] $iscsi_ip1[$i] reboot");
+}
+
+exit;
+
 #-------------------------------------------------------------------------------
 sub execution {
 	my $cmd = shift;
