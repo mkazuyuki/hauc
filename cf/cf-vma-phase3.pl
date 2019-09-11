@@ -20,7 +20,7 @@ our @esxi_ip;
 our @esxi_pw;
 our @vma_ip;
 our @vma_pw;
-our @iscsi_ip;
+our @iscsi_ip1;
 our @iscsi_pw;
 our $dsname;
 our $vsw;
@@ -29,6 +29,11 @@ require "./hauc.conf" or die "file not found hauc.pl";
 
 # Global variables
 #-------------------------------------------------------------------------------
+my @iscsi_ip	= ();
+push (@iscsi_ip, @iscsi_ip1);
+foreach (@iscsi_ip) {
+	s/\/\d*//;
+}
 my @wwn 	= ('iqn.1998-01.com.vmware:1', 'iqn.1998-01.com.vmware:2');	# Pre-defined iSCSI WWN to be set to ESXi
 my @vmhba	= ('', '');							# iSCSI Software Adapter
 my @vma_hn	= ('', '');							# vMA hostname
@@ -37,7 +42,7 @@ my @vma_dn	= ('', '');							# vMA Display Name
 my @vmx = ();		# Array of Hash of VMs for an ESXi
 my @menu_vMA;
 my $ret = "";
-my @outs = ();
+my @outs = (); 
 
 my $CFG_DIR	= "conf/";
 my $CFG_FILE	= $CFG_DIR . "clp.conf";

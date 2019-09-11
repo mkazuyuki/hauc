@@ -2,19 +2,26 @@
 
 ### Preparing 64bit Windows PC
 - Download [**hauc-master.zip**](https://github.com/mkazuyuki/hauc/archive/master.zip) and extract.
+	- Edit cf/hauc.conf so that match to your environment.
+
 - Download [**ECX**](https://www.nec.com/en/global/prod/expresscluster/en/trial/zip/ecx41l_x64.zip)
 	-  Extract it and copy *expresscls-4.1.1-1.x86_64.rpm* in it to the subfolder *cf*.
+
 - Put the (trial) license files of ECX to the subfolder *cf*.
 	- ECX4.x-lin1.key
 	- ECX4.x-Rep-lin1.key
 	- ECX4.x-Rep-lin2.key
+
 - Download
 	[putty](https://the.earth.li/~sgtatham/putty/latest/w64/putty.exe),
 	[plink](https://the.earth.li/~sgtatham/putty/latest/w64/plink.exe),
 	[pscp](https://the.earth.li/~sgtatham/putty/latest/w64/pscp.exe)
   to the subfolder *cf*.
+
 - Download and install [Strawberry Perl](http://strawberryperl.com/).
+
 - Configure the Windows PC to have IP address such as 172.31.255.100/24 so that becomes IP reachable to **172.31.255.0/24** network where the ESXi hosts exists.
+
 - Download CentOS 7.6 (CentOS-7-x86_64-DVD-1810.iso) and put it on /vmfs/volumes/datastore1/iso/ of ESXi#1 and ESXi#2. (The directory "iso" needs to be created under /vmfs/volumes/datastore1/.)
 
 ### Setting up ESXi - Network

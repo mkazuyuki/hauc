@@ -7,12 +7,13 @@ use warnings;
 our @esxi_ip;		# ESXi IP address
 our @esxi_pw;		# ESXi root password
 our @esxi_iqn;
-our $iscsi_addr;	# IP Addresss:Port for iSCSI Target
+our $iscsi_fip;
 require "./hauc.conf";
 
 # Global variable
 #-------------------------------------------------------------------------------
 my @lines	= ();
+my $iscsi_addr	= $iscsi_fip . ":3260";	# IP Addresss:Port for iSCSI Target
 
 # Main
 #-------------------------------------------------------------------------------
