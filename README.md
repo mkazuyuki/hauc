@@ -1,10 +1,23 @@
 # HAUC setup howto
 
-This guide provides how to set up HAUC (Highly Available Unified Communications). The guide assumes its readers to have Linux system administration knowledge and skills with experience in installation and configuration of Storages, and Networks.
+This guide introduces HAUC and its set up. The guide assumes its readers to have Linux system administration knowledge and skills with experience in installation and configuration of Storages, and Networks.
 
 ## Overview
 
-The general procedure to deploy HAUC on ESXi boxes (Primary and Standby) consists of the following major steps:
+**HAUC** is the name for **H**ighly **A**vailable **U**nified **C**ommunication solution by EXPRESSCLUSTER.
+It provides the high-availability and protection for several virtual machines where UC products are running on vSphere ESXi.
+It is made of 2 boxes of IA servers, vSphere ESXi, UC products running on Linux or Windows VM (SV9500, UCE and others), CentOS and EXPRESSCUSTER X for Linux.
+
+
+Architecture
+![H A U C Architecture](HAUC-Architecture.png)
+
+2 boxes of green line stand for 2 of IA servers. ESXi is installed on both servers.  
+The *iSCSI Cluster* in the bottom half provides the iSCSI storage for both ESXi and becomes a Datastore for storing the configuration and disk-image files for UC VMs on it.
+The iSCSI storage is made by 2 VMs where *iSCSI Target service* runs on CentOS and EXPRESSCLUSTER (data-mirroring configuration) protects it.  
+The *vMA Cluster* in the upper half provides the protection for UC VMs by controlling and monitoring them. When EXPRESSCLUSTER in the vMA Cluster detects an error on the active system (left side), it issues failover of UC VMs (SV95 and UCE).
+ 
+The general procedure to deploy HAUC consists of the following major steps:
 
 1. Perform system planning to determine requirements and specify specific configuration settings.
 2. Set up Primary and Standby ESXi.
@@ -13,10 +26,12 @@ The general procedure to deploy HAUC on ESXi boxes (Primary and Standby) consist
 5. Deploy UC VMs.
 6. Deploy *vMA Cluster* which managing UC VMs.
 
-## Versions
+## Products and versions to be prepared
 - vSphere ESXi 6.7 U2
-- Strawberry Perl 5.30.0.1 (64bit)   (http://strawberryperl.com/)
 - EXPRESSCLUSTER X 4.1 for Linux (4.1.1-1)
+- CentOS 7.6 x86_64
+- Strawberry Perl 5.30.0.1 (64bit)   (http://strawberryperl.com/)
+- putty, plink, pscsp
 
 ## System Requirements and Planning
 
@@ -26,8 +41,8 @@ The general procedure to deploy HAUC on ESXi boxes (Primary and Standby) consist
   |:--		|:--
   | CPU Cores	| (Cores for VMkernel) + (Cores for UC VMs) +   (4 Cores for iSCSI VM) + (2 Cores for vMA VM)
   | Memory	| (2GB for VMkernel) + (required amount for UC   VMs) + (8GB for iSCSI VM) + (4GB for vMA VM)
-  | LAN Port	| 4 LAN ports (iSCSI, ECX data-mirroring,   Management, UC)
-  | Storage	| (60GB for ESXi system) + (required amount   for UC VMs) + (6GB for iSCSI VM) + (6GB for vMA VM)
+  | LAN Port	| 4 LAN ports (iSCSI, ECX data-mirroring, Management, UC)
+  | Storage	| (60GB for ESXi system) + (required amount for UC VMs) + (6GB for iSCSI VM) + (6GB for vMA VM)
 
 * Network configuration
   ![Network configuraiton](HAUC-NW-Configuration.png)
