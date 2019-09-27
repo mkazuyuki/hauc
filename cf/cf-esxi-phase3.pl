@@ -29,7 +29,7 @@ for my $i (0..1) {
 	close (IN);
 	system("move ESXi-scripts\\cf-esxi-1" . ($i+1) . ".txt ESXi-scripts\\cf-esxi-1" . ($i+1) . ".sh");
 
-	#&execution(".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i] -m ESXi-scripts/cf-esxi-1" . ($i+1) . ".sh");
+	&execution(".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i] -m ESXi-scripts/cf-esxi-1" . ($i+1) . ".sh");
 }
 #-------------------------------------------------------------------------------
 sub execution {
