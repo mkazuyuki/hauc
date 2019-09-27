@@ -9,9 +9,13 @@ ADDR='172.31.254.10:3260'
 # Enabling iSCSI Initiator
 esxcli iscsi software set --enabled=true
 VMHBA=`esxcli iscsi adapter list | grep 'iSCSI Software Adapter' | sed -r 's/\s.*iSCSI Software Adapter$//'`
+echo [D] [$?] = VMHBA
 esxcli iscsi adapter set -n ${IQN} -A ${VMHBA}
+echo [D] [$?] esxcli iscsi adapter set -n ${IQN} -A ${VMHBA}
 esxcli iscsi adapter discovery sendtarget add --address=${ADDR} --adapter=${VMHBA}
+echo [D] [$?] esxcli iscsi adapter discovery sendtarget add --address=${ADDR} --adapter=${VMHBA}
 esxcli storage core adapter rescan --all
+echo [D] [$?] esxcli storage core adapter rescan --all
 
 # Create then format the partition
 i=1

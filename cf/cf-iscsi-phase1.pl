@@ -28,12 +28,6 @@ for my $i (0..1) {
 	my $iscsi_ip = $iscsi_ip1[$i];
 	$iscsi_ip =~ s/\/.*//;
 
-	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] expresscls-4.1.1-1.x86_64.rpm $iscsi_ip:/root/");
-	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] ECX4.x-lin1.key $iscsi_ip:/root/");
-	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] ECX4.x-Rep-lin1.key $iscsi_ip:/root/");
-	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] ECX4.x-Rep-lin2.key $iscsi_ip:/root/");
-	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] template/iSCSI/saveconfig.json $iscsi_ip:/etc/target/");
-
 	my $cmd = ".\\plink.exe -no-antispoof -l root -pw $iscsi_pw[$i] $iscsi_ip ";
 	&execution($cmd . "\"mkdir /media/cdrom; mount /dev/cdrom /media/cdrom\"");
 	&execution($cmd . "\"yum --disablerepo=* --enablerepo=c7-media install -y targetcli targetd perl\"");
@@ -46,8 +40,14 @@ for my $i (0..1) {
 	#&execution($cmd . "\"nmcli c m ens192 ipv4.method manual ipv4.addresses $iscsi_ip1[$i] connection.autoconnect yes\"");
 	&execution($cmd . "\"nmcli c m ens224 ipv4.method manual ipv4.addresses $iscsi_ip2[$i] connection.autoconnect yes\"");
 	&execution($cmd . "\"nmcli c m ens256 ipv4.method manual ipv4.addresses $iscsi_ip3[$i] connection.autoconnect yes\"");
-
 	&execution($cmd . "\"yes | parted /dev/sdb --script 'mklabel msdos mkpart primary 0% 1025MiB mkpart primary 1025MiB 100%'\"");
+
+	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] template/iSCSI/saveconfig.json $iscsi_ip:/etc/target/");
+	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] expresscls-4.1.1-1.x86_64.rpm $iscsi_ip:/root/");
+	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] ECX4.x-lin1.key $iscsi_ip:/root/");
+	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] ECX4.x-Rep-lin1.key $iscsi_ip:/root/");
+	&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] ECX4.x-Rep-lin2.key $iscsi_ip:/root/");
+
 	&execution($cmd . "\"rpm -ivh /root/expresscls*.rpm\"");
 	&execution($cmd . "\"clplcnsc -i ECX4.x-lin1.key\"");
 	&execution($cmd . "\"clplcnsc -i ECX4.x-Rep-lin" . ( $i + 1) . ".key\"");
