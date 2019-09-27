@@ -14,6 +14,13 @@ VM_DISK_SIZE=6g
 VM_DISK_PATH=$DATASTORE_PATH/$VM_NAME/$VM_NAME.vmdk
 VM_VMX_FILE=$DATASTORE_PATH/$VM_NAME/$VM_NAME.vmx
 
+# (0) Clean up existing VM
+vid=`vimd-cmd vmsvc/getallvms | grep ${VM_NAME} | awk '{print $1}'`
+if [ ${vid} ]; then
+	vim-cmd vmsvc/unregister $vid
+fi
+rm -rf $DATASTORE_PATH/$VM_NAME
+
 # (1) Create dummy VM
 VM_ID=`vim-cmd vmsvc/createdummyvm $VM_NAME $DATASTORE_PATH`
 
