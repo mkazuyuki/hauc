@@ -5,12 +5,12 @@ This guide introduces HAUC and its set up. The guide assumes its readers to have
 ## Overview
 
 **HAUC** is the name for **H**ighly **A**vailable **U**nified **C**ommunication solution by EXPRESSCLUSTER.
-It provides the high-availability and protection for several virtual machines where UC products are running on vSphere ESXi.
-It is made of 2 boxes of IA servers, vSphere ESXi, UC products running on Linux or Windows VM (SV9500, UCE and others), CentOS and EXPRESSCUSTER X for Linux.
+It provides the high-availability and protection for virtual machines where UC products are running on.
+It is made of 2 IA server boxes, vSphere ESXi, UC products running on Linux or Windows VM (SV9500, UCE and others), CentOS and EXPRESSCUSTER X for Linux.
 
 
-Architecture
-![H A U C Architecture](HAUC-Architecture.png)
+* Architecture
+	![HAUC Architecture](HAUC-Architecture.png)
 
 2 boxes of green line stand for 2 of IA servers. ESXi is installed on both servers.  
 The *iSCSI Cluster* in the bottom half provides the iSCSI storage for both ESXi and becomes a Datastore for storing the configuration and disk-image files for UC VMs on it.
@@ -26,7 +26,8 @@ The general procedure to deploy HAUC consists of the following major steps:
 5. Deploy UC VMs.
 6. Deploy *vMA Cluster* which managing UC VMs.
 
-## Products and versions to be prepared
+## Software Requirements
+
 - vSphere ESXi 6.7 U2
 - EXPRESSCLUSTER X 4.1 for Linux (4.1.1-1)
 - CentOS 7.6 x86_64
@@ -35,7 +36,7 @@ The general procedure to deploy HAUC consists of the following major steps:
 
 ## System Requirements and Planning
 
-* Requirement for 2 Physical ESXi servers
+* Requirement for 2 Physical servers
 
   | Portion	| Description 
   |:--		|:--
