@@ -16,7 +16,8 @@ use warnings;
 our @esxi_ip;
 our @esxi_pw;
 our $iscsi_size;
-require "./hauc.conf" or die "file not found hauc.pl";
+our @iscsi_ds;
+require "./hauc.conf" or die "file not found hauc.conf";
 
 # Global variable
 #-------------------------------------------------------------------------------
@@ -33,7 +34,8 @@ for my $i (0..1) {
 		@buf = <IN>;
 		close(IN);
 		foreach(@buf){
-			s/VM_DISK_SIZE2=.*$/VM_DISK_SIZE2=${iscsi_size}/;
+			s/^VM_DISK_SIZE2=.*$/VM_DISK_SIZE2=${iscsi_size}/;
+			s/^DATASTORE_PATH=.*/DATASTORE_PATH=\/vmfs\/volumes\/${iscsi_ds[$i]}/;
 		}
 		open(OUT, "> ${file}") or die "Couldn't open file $file, $!";
 		print OUT @buf;

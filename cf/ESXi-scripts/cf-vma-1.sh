@@ -16,6 +16,7 @@ VM_VMX_FILE=$DATASTORE_PATH/$VM_NAME/$VM_NAME.vmx
 
 # (1) Create dummy VM
 VM_ID=`vim-cmd vmsvc/createdummyvm $VM_NAME $DATASTORE_PATH`
+echo [D] VM ID = [${VM_ID}]
 
 # (2) Edit vmx file
 sed -i -e '/^guestOS /d' $VM_VMX_FILE
@@ -34,7 +35,7 @@ ide0:0.fileName = "$ISO_FILE"
 __EOF__
 
 # (3) Extend disk size
-vmkfstools -X $VM_DISK_SIZE $VM_DISK_PATH 
+vmkfstools -X $VM_DISK_SIZE $VM_DISK_PATH
 
 # (4) Reload VM information
 vim-cmd vmsvc/reload $VM_ID

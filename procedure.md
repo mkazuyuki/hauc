@@ -38,6 +38,16 @@ Start ssh service and configure it to start automatically.
     - [TSM-SSH] >  [Actions] > [Start]
     - [TSM-SSH] >  [Actions] > [Polilcy] > [Start and stop with host]
 
+Confirm accessibility to the following six IP addresses from Windows PC by using putty.
+  **Do not omit this process**. The procedure hereafter assumes that SSH Hostkey entries of these IP addresses are made on Windows registry by this process.
+
+  - 172.31.255.2 (ESXi#1)
+  - 172.32.255.3 (ESXi#2)
+  - 172.31.255.6 (vMA#1)
+  - 172.31.255.7 (vMA#2)
+  - 172.31.255.11 (iSCSI#1)
+  - 172.31.255.12 (iSCSI#2)
+
 Configure vSwitch, Physical NICs, Port groups, VMkernel NIC for iSCSI Initiator
 - Run *cf-esxi-phase1.pl* in subfolder *cf*.
 
@@ -48,7 +58,7 @@ e.x. Specify as following when making a vHDD of 1024GB size
 
 	our $iscsi_size	= "1024G";
 
-- Run *cf-esxi-phase2-create-vm.pl* in subfolder *cf*, then VMs of iSCSI1, iSCSI2, vMA1, vMA2 are created. This will take a long time for making vmdk eager zeroed thick.
+- Run *cf-esxi-phase2-create-vm.pl* in subfolder *cf*, then VMs of iSCSI1, iSCSI2, vMA1, vMA2 are created. This takes a long time for making vmdk eager zeroed thick.
 
 - Boot all the VMs and install CentOS.
 
@@ -73,16 +83,6 @@ e.x. Specify as following when making a vHDD of 1024GB size
   - on vMA2 console:
 
 		nmcli c m ens160 ipv4.method manual ipv4.addresses 172.31.255.7/24 connection.autoconnect yes
-
-- Confirm accessibility to the following six IP addresses by using putty.
-  **Do not omit this process**. The procedure hereafter assumes that SSH Hostkey entries of these IP addresses are made on Windows registry by this process.
-
-  - 172.31.255.2 (ESXi#1)
-  - 172.32.255.3 (ESXi#2)
-  - 172.31.255.6 (vMA#1)
-  - 172.31.255.7 (vMA#2)
-  - 172.31.255.11 (iSCSI#1)
-  - 172.31.255.12 (iSCSI#2)
 
 ### Setting up iSCSI Cluster
 
