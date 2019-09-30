@@ -112,7 +112,7 @@ These VMs should be deployed on the iSCSI datastore.
 ### Setting up vMA Cluster
 
 Run *cf-vma-phase2.pl* in the subfolder *cf*.
-This configures vMA VMs to fill prerequisite condition for creating vMA Cluster.
+This configures vMA VMs to fill prerequisite condition for creating vMA Cluster and installing ECX (and its license).
 
 After the completion of *cf-vma-phase2.pl*, both VMs are rebooted.
 Wait the completion of the reboot.

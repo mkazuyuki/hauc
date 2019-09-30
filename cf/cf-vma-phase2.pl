@@ -10,6 +10,8 @@ our @vma_ip;	# vMA IP address and Net Mask
 our @vma_vname;	# vMA VM Name
 our @vma_pw;	# vMA root password
 require "./hauc.conf";
+my $ec_mod	= "expresscls-4.1.1-1.x86_64.rpm";	# ECX installation package file
+my $ec_lic	= "ECX4.x-lin1.key";			# ECX (Trial) lecense file
 #-------------------------------------------------------------------------------
 
 # Globals
@@ -22,21 +24,21 @@ my @lines	= ();
 &connectDVD;
 
 for my $i (0..1) {
-	&execution(".\\pscp.exe -l root -pw $vma_pw[$i] expresscls-4.1.1-1.x86_64.rpm $vma_ip[$i]:/root/");
-	&execution(".\\pscp.exe -l root -pw $vma_pw[$i] ECX4.x-lin1.key $vma_ip[$i]:/root/");
+	&execution(".\\pscp.exe -l root -pw $vma_pw[$i] $ec_mod $vma_ip[$i]:/root/");
+	&execution(".\\pscp.exe -l root -pw $vma_pw[$i] $ec_lic $vma_ip[$i]:/root/");
 
 	my $cmd = ".\\plink.exe -no-antispoof -l root -pw $vma_pw[$i] $vma_ip[$i] ";
 	&execution($cmd . "\"mkdir /media/cdrom; mount /dev/cdrom /media/cdrom\"");
-	&execution($cmd . "\"yum --disablerepo=* --enablerepo=c7-media install -y targetcli targetd perl\"");
+	&execution($cmd . "\"yum --disablerepo=* --enablerepo=c7-media install -y perl\"");
 	&execution($cmd . "\"hostnamectl set-hostname vma" . ($i+1) . "\"");
 	&execution($cmd . "\"systemctl stop firewalld.service; systemctl disable firewalld.service\"");
 	&execution($cmd . "\"sed -i -e 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config\"");
 	&execution($cmd . "\"yes no | ssh-keygen -t rsa -f /root/.ssh/id_rsa -N \\\"\\\"\"");
 	&execution($cmd . "\"umount /media/cdrom\"");
 
-	&execution($cmd . "\"rpm -ivh /root/expresscls*.rpm\"");
-	&execution($cmd . "\"clplcnsc -i ECX4.x-lin1.key\"");
-	&execution($cmd . "\"rm expresscls\*.rpm ECX4.x-\*.key\"");
+	&execution($cmd . "\"rpm -ivh /root/$ec_mod\"");
+	&execution($cmd . "\"clplcnsc -i $ec_lic \"");
+	&execution($cmd . "\"rm $ec_mod $ec_lic\"");
 
 	&execution($cmd . "reboot");
 }
