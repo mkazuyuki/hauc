@@ -12,3 +12,8 @@ VMHBA=`esxcli iscsi adapter list | grep 'iSCSI Software Adapter' | sed -r 's/\s.
 esxcli iscsi adapter set -n ${IQN} -A ${VMHBA}
 esxcli iscsi adapter discovery sendtarget add --address=${ADDR} --adapter=${VMHBA}
 esxcli storage core adapter rescan --all
+
+# Disable ATS Heartbeat
+esxcli system settings advanced list -o /VMFS3/UseATSForHBonVMFS5
+esxcli system settings advanced set -i 0 -o /VMFS3/UseATSForHBOnVMFS5
+esxcli system settings advanced list -o /VMFS3/UseATSForHBonVMFS5

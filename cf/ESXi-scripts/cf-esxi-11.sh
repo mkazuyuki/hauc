@@ -25,3 +25,8 @@ for DEVICE in `esxcli storage core device list | grep "Display Name: LIO-ORG" | 
     /sbin/vmkfstools -C vmfs5 -b 1m -S iSCSI${i}  /vmfs/devices/disks/${DEVICE}:1
     i=$(($i + 1))
 done
+
+# Disable ATS Heartbeat
+esxcli system settings advanced list -o /VMFS3/UseATSForHBonVMFS5
+esxcli system settings advanced set -i 0 -o /VMFS3/UseATSForHBOnVMFS5
+esxcli system settings advanced list -o /VMFS3/UseATSForHBonVMFS5

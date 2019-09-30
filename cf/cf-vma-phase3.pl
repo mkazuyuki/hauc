@@ -18,6 +18,7 @@ use warnings;
 #-------------------------------------------------------------------------------
 our @esxi_ip;
 our @esxi_pw;
+our @esxi_iqn;
 our @vma_ip;
 our @vma_pw;
 our @iscsi_ip1;
@@ -34,7 +35,7 @@ push (@iscsi_ip, @iscsi_ip1);
 foreach (@iscsi_ip) {
 	s/\/\d*//;
 }
-my @wwn 	= ('iqn.1998-01.com.vmware:1', 'iqn.1998-01.com.vmware:2');	# Pre-defined iSCSI WWN to be set to ESXi
+
 my @vmhba	= ('', '');							# iSCSI Software Adapter
 my @vma_hn	= ('', '');							# vMA hostname
 my @vma_dn	= ('', '');							# vMA Display Name
@@ -396,11 +397,9 @@ sub getvMADisplayName{
 	}
 }
 
-sub setIQN {
+sub getVmhba {
 	for (my $i = 0; $i < 2; $i++) {
 		my $cmd = ".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i]";
-
-		# Getting vmhba
 		&execution("$cmd \"esxcli iscsi adapter list\"");
 		foreach ( @outs ) {
 			if ( /^vmhba[\S]+/ ) {
@@ -410,29 +409,6 @@ sub setIQN {
 		&Log("[I] ----------\n");
 		&Log("[I] iSCSI Sofware Adapter HBA#" . ($i +1) . " = [" . $vmhba[$i] . "]\n");
 		&Log("[I] ----------\n");
-
-		# Checking WWN before setting it
-		&execution ("$cmd esxcli iscsi adapter get -A $vmhba[$i]");
-		foreach ( @outs ) {
-			if ( /^   Name: (.+)/ ) {
-				&Log("[I] ----------\n");
-				&Log("[I] Before setting WWN#" . ($i +1) . " = [$1]\n");
-				&Log("[I] ----------\n");
-			}
-		}
-
-		# Setting WWN
-		&execution ("$cmd esxcli iscsi adapter set -A $vmhba[$i] -n $wwn[$i]");
-
-		# Checking WWN after setting it
-		&execution ("$cmd esxcli iscsi adapter get -A $vmhba[$i]");
-		foreach ( @outs ) {
-			if ( /^   Name: (.+)/ ) {
-				&Log("[I] ----------\n");
-				&Log("[I] After setting  WWN#" . ($i +1) . " = [$1]\n");
-				&Log("[I] ----------\n");
-			}
-		}
 	}
 }
 
@@ -441,7 +417,8 @@ sub setIQN {
 # Setup before.local and after.local on vMA hosts
 #
 sub putInitScripts {
-	my @locals = ("before.local", "after.local");
+	# my @locals = ("before.local", "after.local");
+	my @locals = ("before.local");
 	for (my $n = 0; $n < 2; $n++) {
 		foreach my $file (@locals) {
 			open(IN, $TMPL_DIR . $file) or die;
@@ -455,21 +432,11 @@ sub putInitScripts {
 			}
 			close(OUT);
 			close(IN);
-			&execution(".\\pscp.exe -l root -pw $vma_pw[$n] $file $vma_ip[$n]:/tmp");
+			&execution(".\\pscp.exe -l root -pw $vma_pw[$n] $file $vma_ip[$n]:/etc/init.d");
+			&execution(".\\plink.exe -no-antispoof -l root -pw $vma_pw[$n] $vma_ip[$n] chmod 755 /etc/init.d/$file");
+			&execution(".\\plink.exe -no-antispoof -l root -pw $vma_pw[$n] $vma_ip[$n] chown root:root /etc/init.d/$file");
 			unlink ( "$file" ) or die;
 		}
-
-		my $file = "vma-init-files.sh";
-		open(IN, "$SCRIPT_DIR/$file") or die;
-		open(OUT,">  $file") or die;
-		while (<IN>) {
-			if (/%%VMAPW%%/)	{ s/$&/$vma_pw[$n]/;}
-			print OUT;
-		}
-		close(OUT);
-		close(IN);
-		&execution(".\\plink.exe -no-antispoof -l root -pw $vma_pw[$n] $vma_ip[$n] -m $file");
-		unlink ( "$file" ) or die;
 	}
 }
 
@@ -540,9 +507,6 @@ sub Save {
 	# Setup before.local and after.local on vMA hosts
 	&putInitScripts;
 
-	# Setup iSCSI Initiator IQN
-	&setIQN;
-
 	# Setup Authentication
 
 	# Setup SSH Hostkey of ESXi and iSCSI on vMA VMs
@@ -604,9 +568,6 @@ sub Save {
 			&execution($cmd . "\"cat /tmp/id_rsa_iscsi_$j.pub >> /etc/ssh/keys-root/authorized_keys\"");
 			&execution($cmd . "rm /tmp/id_rsa_vma_$j.pub /tmp/id_rsa_iscsi_$j.pub");
 		}
-		# Disable ATS Heartbeat
-		&execution ($cmd . "esxcli system settings advanced set -i 0 -o /VMFS3/UseATSForHBOnVMFS5");
-		&execution ($cmd . "esxcli system settings advanced list -o /VMFS3/UseATSForHBonVMFS5");
 	}
 
 	#
@@ -650,6 +611,9 @@ sub Save {
 	#
 	# Creating start.sh stop.sh genw.sh
 	#
+
+	# Get @vmhba
+	&getVmhba;
 
 	# Specify Datastore name for .vmx
 	for my $i (0 .. $#vmx) {
