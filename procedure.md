@@ -60,6 +60,8 @@ e.x. Specify as following when making a vHDD of 1024GB size
 
 - Run *cf-esxi-phase2-create-vm.pl* in subfolder *cf*, then VMs of iSCSI1, iSCSI2, vMA1, vMA2 are created. This takes a long time for making vmdk eager zeroed thick.
 
+**If you import already created OVA (exported VM image) files of iSCSI VMs, delete iSCSI1 and 2 at the both vSphere Host Client, and ignore the procedures for iSCSI VMs till the section [Setting up ESXi - iSCSI Initiator] **
+
 - Boot all the VMs and install CentOS.
 
   What needed during the installation is to select *sda* as *INSTALLATION DESTINATION* and setting *ROOT PASSWORD*.
@@ -86,18 +88,16 @@ e.x. Specify as following when making a vHDD of 1024GB size
 
 ### Setting up iSCSI Cluster
 
-Run *cf-iscsi-phase1.pl* in the subfolder *cf*.
-This configures iSCSI VMs to fill prerequisite condition for creating iSCSI Cluster.
+At the command prompt of Windows PC,
 
-After the completion of *cf-iscsi-phase1.pl*, both VMs are rebooted.
-Wait the completion of the reboot.
+- Run *cf-iscsi-phase1.pl* in the subfolder *cf* for configuring iSCSI VMs to fill pre-conditions of creating iSCSI Cluster.
+  On the *cf-iscsi-phase1.pl* completion, both VMs are rebooted. Wait the completion of the reboot.
 
-- Create iSCSI Cluster
+- Run *cf-iscsi-phase2.pl* in the subfolder *cf* to create iSCSI Cluster.
+  On the *cf-iscsi-phase2.pl* completion, both iscsi1 and iscsi2 are rebooted.
 
-  Run *cf-iscsi-phase2.pl* in the subfolder *cf*.
-
-After the completion of *cf-iscsi-phase2.pl*, both iscsi1 and iscsi2 are rebooted.
-Open ECX WebUI (http://172.31.255.11:29003) and wait for the cluster to start the failover group "*failover-iscsi*" and synchronizing process of the mirror disk resource.
+- Open ECX WebUI (http://172.31.255.11:29003) and wait the cluster starting,
+  the failover group "*failover-iscsi*" activating and completion of the mirror disk resource synchronizing.
 
 ### Setting up ESXi - iSCSI Initiator
 
