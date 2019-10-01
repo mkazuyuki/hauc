@@ -60,7 +60,7 @@ e.x. Specify as following when making a vHDD of 1024GB size
 
 - Run *cf-esxi-phase2-create-vm.pl* in subfolder *cf*, then VMs of iSCSI1, iSCSI2, vMA1, vMA2 are created. This takes a long time for making vmdk eager zeroed thick.
 
-**If you import already created OVA (exported VM image) files of iSCSI VMs, delete iSCSI1 and 2 at the both vSphere Host Client, and ignore the procedures for iSCSI VMs till the section [Setting up ESXi - iSCSI Initiator] **
+**If you import already created OVA (exported VM image) files of iSCSI VMs, before that, delete iSCSI1 and 2 at the both vSphere Host Client. And ignore the procedures regarding iSCSI VMs till the section "Setting up ESXi - iSCSI Initiator".**
 
 - Boot all the VMs and install CentOS.
 
