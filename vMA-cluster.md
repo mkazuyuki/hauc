@@ -13,7 +13,7 @@ This guide provides how to create Management VM Cluster on EXPRESSCLUSTER for Li
 
 |Virtual HW	|Number, Amount	|
 |:--		|:---		|
-| vCPU		| 2 CPU		| 
+| vCPU		| 2 CPU		|
 | Memory	| 4 GB		|
 | vNIC		| 1 port	|
 | vHDD		| 6 GB		|

@@ -43,7 +43,7 @@ The general procedure to deploy HAUC consists of the following major steps:
   | CPU Cores	| (Cores for VMkernel) + (Cores for UC VMs) +   (4 Cores for iSCSI VM) + (2 Cores for vMA VM)
   | Memory	| (2GB for VMkernel) + (required amount for UC   VMs) + (8GB for iSCSI VM) + (4GB for vMA VM)
   | LAN Port	| 4 LAN ports (iSCSI, ECX data-mirroring, Management, UC)
-  | Storage	| (60GB for ESXi system) + (required amount for UC VMs) + (6GB for iSCSI VM) + (6GB for vMA VM)
+  | Storage	| (60GB for ESXi system) + (required amount for UC VMs) + (9GB for iSCSI VM) + (6GB for vMA VM)
 
 * Network configuration
   ![Network configuraiton](HAUC-NW-Configuration.png)
