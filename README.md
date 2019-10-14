@@ -30,6 +30,7 @@ The general procedure to deploy HAUC consists of the following major steps:
 
 - vSphere ESXi 6.7 U2
 - EXPRESSCLUSTER X 4.1 for Linux (4.1.1-1)
+	- EXPRESSCLUSTER X Replicator 4.1 for Linux (4.1.1-1)
 - CentOS 7.6 x86_64
 - Strawberry Perl 5.30.0.1 (64bit)   (http://strawberryperl.com/)
 - putty, plink, pscsp
@@ -40,9 +41,9 @@ The general procedure to deploy HAUC consists of the following major steps:
 
   | Portion	| Description 
   |:--		|:--
-  | CPU Cores	| (Cores for VMkernel) + (Cores for UC VMs) +   (4 Cores for iSCSI VM) + (2 Cores for vMA VM)
-  | Memory	| (2GB for VMkernel) + (required amount for UC   VMs) + (8GB for iSCSI VM) + (4GB for vMA VM)
-  | LAN Port	| 4 LAN ports (iSCSI, ECX data-mirroring, Management, UC)
+  | CPU Cores	| (Cores for VMkernel) + (Cores for UC VMs) + (4 Cores for iSCSI VM) + (2 Cores for vMA VM)
+  | Memory	| (2GB for VMkernel) + (required amount for UC VMs) + (8GB for iSCSI VM) + (4GB for vMA VM)
+  | LAN Port	| LAN ports x4 (GBE required, 10GBE recommended)
   | Storage	| (60GB for ESXi system) + (required amount for UC VMs) + (9GB for iSCSI VM) + (6GB for vMA VM)
 
 * Network configuration
