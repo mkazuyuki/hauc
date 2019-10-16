@@ -38,16 +38,6 @@ Start ssh service and configure it to start automatically.
     - [TSM-SSH] >  [Actions] > [Start]
     - [TSM-SSH] >  [Actions] > [Polilcy] > [Start and stop with host]
 
-Confirm accessibility to the following six IP addresses from Windows PC by using putty.
-  **Do not omit this process**. The procedure hereafter assumes that SSH Hostkey entries of these IP addresses are made on Windows registry by this process.
-
-  - 172.31.255.2 (ESXi#1)
-  - 172.32.255.3 (ESXi#2)
-  - 172.31.255.6 (vMA#1)
-  - 172.31.255.7 (vMA#2)
-  - 172.31.255.11 (iSCSI#1)
-  - 172.31.255.12 (iSCSI#2)
-
 Configure vSwitch, Physical NICs, Port groups, VMkernel NIC for iSCSI Initiator
 - Run *cf-esxi-phase1.pl* in subfolder *cf*.
 
@@ -68,7 +58,7 @@ e.x. Specify as following when making a vHDD of 1024GB size
 
 - Configure the first network of the VMs.
 
-  Open two ESXi Host Client (https://172.31.255.2 and https://172.31.255.3), open the console of iSCSI and vMA VMs and login to them as root user, then run the below command to set IP address so that Windows client can access to the VMs.
+  Open two ESXi Host Client ( https://172.31.255.2 and https://172.31.255.3 ), open the console of iSCSI and vMA VMs and login to them as root user, then run the below command to set IP address so that Windows client can access to the VMs.
 
   - on iSCSI1 console:
 
@@ -85,6 +75,16 @@ e.x. Specify as following when making a vHDD of 1024GB size
   - on vMA2 console:
 
 		nmcli c m ens160 ipv4.method manual ipv4.addresses 172.31.255.7/24 connection.autoconnect yes
+
+Confirm accessibility to the following six IP addresses from Windows PC by using putty.
+**Do not omit this process**. The procedure hereafter assumes that SSH Hostkey entries of these IP addresses are made on Windows registry by this process.
+
+  - 172.31.255.2 (ESXi#1)
+  - 172.32.255.3 (ESXi#2)
+  - 172.31.255.6 (vMA1)
+  - 172.31.255.7 (vMA2)
+  - 172.31.255.11 (iSCSI1)
+  - 172.31.255.12 (iSCSI2)
 
 ### Setting up iSCSI Cluster
 
