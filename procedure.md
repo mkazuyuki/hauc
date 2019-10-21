@@ -41,6 +41,18 @@ Start ssh service and configure it to start automatically.
 Configure vSwitch, Physical NICs, Port groups, VMkernel NIC for iSCSI Initiator
 - Run *cf-esxi-phase1.pl* in subfolder *cf*.
 
+### Setting up ESXi - Datastore
+
+If storage (HDD) dedicated for UC VMs is prepared on each ESXi, set up the storage as **datastore2**.
+
+- On vSphere Host Client for ESXi#1 and ESXi#2,
+	- [Storage] in [Navigator] pane > [Datastores] tab > [New datastore] 
+	- Select [Create new VMFS datastore] > [Next] > input [datastore2] as [name] > Select the storege device for UC VMs.
+
+- Edit the lines of @iscsi_ds in *hauc.conf* in subfolder *cf* as
+
+	  our @iscsi_ds	= ('datastore2', 'datastore2');
+
 ### Creating VMs for iSCSI Cluster and vMA Cluster
 
 The disk size of the iSCSI Target which will be an ESXi Datastore for storing UC VMs can be specified at the line of **our $iscsi_size = "500G";** in *hauc.conf* in the subfolder *cf*.  
@@ -48,7 +60,9 @@ e.x. Specify as following when making a vHDD of 1024GB size
 
 	our $iscsi_size	= "1024G";
 
-- Run *cf-esxi-phase2-create-vm.pl* in subfolder *cf*, then VMs of iSCSI1, iSCSI2, vMA1, vMA2 are created. This takes a long time for making vmdk eager zeroed thick.
+- Run *cf-esxi-phase2-create-vm.pl* in subfolder *cf*, then VMs of iSCSI1, iSCSI2, vMA1, vMA2 are created. This takes a long time for making vmdk eager zeroed thick.  
+**NOTE** : If you run *cf-esxi-phase2-create-vm.pl* once again, before that, please delete VM folders (iscsi{1|2} and vma{1|2}) on the datastore.
+ 
 
 **If you import already created OVA (exported VM image) files of iSCSI VMs, before that, delete iSCSI1 and 2 at the both vSphere Host Client. And ignore the procedures regarding iSCSI VMs till the section "Setting up ESXi - iSCSI Initiator".**
 
