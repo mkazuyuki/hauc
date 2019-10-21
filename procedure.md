@@ -71,7 +71,7 @@ $iscsi_size
 
 - Run *cf-esxi-phase2-create-vm.pl* in subfolder *cf*, then VMs of iSCSI1, iSCSI2, vMA1, vMA2 are created. This takes a long time for making vmdk eager zeroed thick.
 
-**NOTE** : If you run *cf-esxi-phase2-create-vm.pl* once again, before that, please delete VM folders (iscsi{1|2} and vma{1|2}) on the datastore.
+**NOTE** : If you run *cf-esxi-phase2-create-vm.pl* once again, before that, please delete the VM (iscsi1, iscsi2, vma1, vma2) at vSphere Host Client and confirm the ESXi datastore does not have the VM folders.
 
 <!--
 **NOTE** : **If you import OVA (exported VM file) of iSCSI VMs, before that, delete iSCSI1 and iSCSI2 at the both vSphere Host Client. And ignore the procedures regarding iSCSI VMs till the section "Setting up ESXi - iSCSI Initiator".**
