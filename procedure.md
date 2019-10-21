@@ -60,11 +60,22 @@ e.x. Specify as following when making a vHDD of 1024GB size
 
 	our $iscsi_size	= "1024G";
 
-- Run *cf-esxi-phase2-create-vm.pl* in subfolder *cf*, then VMs of iSCSI1, iSCSI2, vMA1, vMA2 are created. This takes a long time for making vmdk eager zeroed thick.  
-**NOTE** : If you run *cf-esxi-phase2-create-vm.pl* once again, before that, please delete VM folders (iscsi{1|2} and vma{1|2}) on the datastore.
- 
+The size itself may be calculated from *Advertised HDD size in GB* as following.
 
-**If you import already created OVA (exported VM image) files of iSCSI VMs, before that, delete iSCSI1 and 2 at the both vSphere Host Client. And ignore the procedures regarding iSCSI VMs till the section "Setting up ESXi - iSCSI Initiator".**
+$iscsi_size  
+= ROUNDDOWN( { ( { (Advertised HDD size in GB) * 0.9313 GiB/GB * Safety Margin} * { (1 - 5% of VMFS overhead) * Safety Margin } ) -( .vswp + logs etc. + sda of vMA VM in GB ) - ( .vswp + log etc. + sda of iSCSI VM in GB ) } * Safety Margin )
+
+= ROUNDDOWN({({(Advertised HDD size in GB) * 0.9313 * 0.99} * {(1-0.05) * 0.99}) - (2+0.2+6) - (2+0.2+9)} * 0.99)
+
+= ROUNDDOWN(((Advertised HDD size in GB) * 0.858457485765 - 14.751 ), 0)
+
+- Run *cf-esxi-phase2-create-vm.pl* in subfolder *cf*, then VMs of iSCSI1, iSCSI2, vMA1, vMA2 are created. This takes a long time for making vmdk eager zeroed thick.
+
+**NOTE** : If you run *cf-esxi-phase2-create-vm.pl* once again, before that, please delete VM folders (iscsi{1|2} and vma{1|2}) on the datastore.
+
+<!--
+**NOTE** : **If you import OVA (exported VM file) of iSCSI VMs, before that, delete iSCSI1 and iSCSI2 at the both vSphere Host Client. And ignore the procedures regarding iSCSI VMs till the section "Setting up ESXi - iSCSI Initiator".**
+-->
 
 - Boot all the VMs and install CentOS.
 
