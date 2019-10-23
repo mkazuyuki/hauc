@@ -77,7 +77,7 @@ for my $i (0..1) {
 					last;
 				}
 			}
-			if ($found) {
+			if (!$found) {
 				&Log("[E] *******************************************************\n");
 				&Log("[E] On ESXi#" . ($i+1) . ", Portgroup [$pg] was not found in vSwitch [$vs].\n");
 				&Log("[E] Check your configuration.\n");
