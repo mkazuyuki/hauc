@@ -21,10 +21,10 @@ The general procedure to deploy HAUC consists of the following major steps:
 
 1. Perform system planning to determine requirements and specify specific configuration settings.
 2. Set up Primary and Standby ESXi.
-3. Deploy *iSCSI Target Cluster*.
+3. Deploy *iSCSI Target Cluster* and *vMA Cluster*.
 4. Connect ESXi hosts to the iSCSI Target.
 5. Deploy UC VMs.
-6. Deploy *vMA Cluster* which managing UC VMs.
+6. Configure *vMA Cluster* to manage the UC VMs. 
 
 ## Software Requirements
 
