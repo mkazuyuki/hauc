@@ -1001,6 +1001,11 @@ sub Log{
 	$mon += 1;
 	my $date = sprintf "%d/%02d/%02d %02d:%02d:%02d", $year, $mon, $mday, $hour, $min, $sec;
 	print "$date $_[0]";
+
+	open(LOG, ">> cf-vma-phase3.log");
+	print LOG "$date $_[0]";
+	close(LOG);
+
 	return 0;
 }
 
@@ -1008,8 +1013,4 @@ sub Log{
 # Refference
 #
 # http://www.atmarkit.co.jp/bbs/phpBB/viewtopic.php?topic=46935&forum=10
-#
-# http://pubs.vmware.com/Release_Notes/en/vcli/65/vsphere-65-vcli-release-notes.html
-#	What's New in vSphere CLI 6.5
-#	The ActivePerl installation is removed from the Windows installer. ActivePerl or Strawberry Perl version 5.14 or later must be installed separately before installing vCLI on a Windows system.
 #

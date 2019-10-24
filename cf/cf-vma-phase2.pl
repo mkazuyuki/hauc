@@ -101,5 +101,10 @@ sub Log{
 	$mon += 1;
 	my $date = sprintf "%d/%02d/%02d %02d:%02d:%02d", $year, $mon, $mday, $hour, $min, $sec;
 	print "$date $_[0]";
+
+	open(LOG, ">> cf-vma-phase2.log");
+	print LOG "$date $_[0]";
+	close(LOG);
+
 	return 0;
 }
