@@ -18,6 +18,12 @@ esxcli storage core adapter rescan --all
 echo [D] [$?] esxcli storage core adapter rescan --all
 
 # Create then format the partition
+echo [I] *************************************************
+echo [I] It can take several minutes to zero out the VMDK.
+echo [I] Do not exit the script.
+echo [I] Please wait.
+echo [I] *************************************************
+
 i=1
 for DEVICE in `esxcli storage core device list | grep "Display Name: LIO-ORG" | sed -r 's/^.*\((.*)\)/\1/' | xargs`; do
     END_SECTOR=$(eval expr $(partedUtil getptbl /vmfs/devices/disks/${DEVICE} | tail -1 | awk '{print $1 " \\* " $2 " \\* " $3}') - 1)
