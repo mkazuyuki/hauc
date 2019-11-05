@@ -38,6 +38,12 @@ Start ssh service and configure it to start automatically.
     - [TSM-SSH] >  [Actions] > [Start]
     - [TSM-SSH] >  [Actions] > [Polilcy] > [Start and stop with host]
 
+Setup NTP servers
+- On vSphere Host Client for both ESXi,
+  - [Manage] in [Navigator] pane > [System] tab
+  - [Time and date] > [Edit settings]
+  - Select [Use Network Time Protocol (enable NTP client)] > Select [Start and stop with host] as [NTP service startup policy] > input IP address of NTP server for the configuring environment as [NTP servers]
+
 Configure vSwitch, Physical NICs, Port groups, VMkernel NIC for iSCSI Initiator
 - Run *cf-esxi-phase1.pl* in subfolder *cf*.
 
