@@ -45,7 +45,7 @@ for my $i (0..1) {
 		close(OUT);
 	}
 
-	my $cmd = ".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i] ";
+	my $cmd = ".\\plink.exe -no-antispoof -l root -pw \"$esxi_pw[$i]\" $esxi_ip[$i] ";
 
 	# Creating iSCSI VM
 	if (&execution($cmd . "-m ESXi-scripts/cf-iscsi-" . ($i + 1) .".sh")) {
@@ -64,7 +64,7 @@ for my $i (0..1) {
 my @vms = (	[ $iscsi_vname[0], $vma_vname[0] ],
 		[ $iscsi_vname[1], $vma_vname[1] ] );
 for my $i (0..1) {
-	my $cmd = ".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i] ";
+	my $cmd = ".\\plink.exe -no-antispoof -l root -pw \"$esxi_pw[$i]\" $esxi_ip[$i] ";
 	&execution("$cmd vim-cmd vmsvc/getallvms");
 	foreach my $n ( @{$vms[$i]} ) {
 		my $found = 0;

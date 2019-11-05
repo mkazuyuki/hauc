@@ -34,7 +34,7 @@ $uplink{"uc_vm_vswitch"} = "vmnic3";
 #-------------------------------------------------------------------------------
 
 for my $i (0..1) {
-	my $cmd = ".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i] ";
+	my $cmd = ".\\plink.exe -no-antispoof -l root -pw \"$esxi_pw[$i]\" $esxi_ip[$i] ";
 	&execution("$cmd esxcfg-vswitch -L vmnic1 Mirror_vswitch");
 	&execution("$cmd esxcfg-vswitch -L vmnic2 iSCSI_vswitch");
 	&execution("$cmd esxcfg-vswitch -L vmnic3 uc_vm_vswitch");
@@ -48,7 +48,7 @@ for my $i (0..1) {
 
 # Validation
 for my $i (0..1) {
-	my $cmd = ".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i] ";
+	my $cmd = ".\\plink.exe -no-antispoof -l root -pw \"$esxi_pw[$i]\" $esxi_ip[$i] ";
 	&execution("$cmd esxcfg-vswitch -l");
 	foreach my $vs (@vswitch) {
 		foreach my $pg (@{$portgroup{$vs}}) {

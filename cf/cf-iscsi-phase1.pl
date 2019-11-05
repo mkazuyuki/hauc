@@ -58,7 +58,7 @@ for my $i (0..1) {
 #-------------------------------------------------------------------------------
 sub connectDVD {
 	for my $i (0..1) {
-		my $cmd0 = ".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i] ";
+		my $cmd0 = ".\\plink.exe -no-antispoof -l root -pw \"$esxi_pw[$i]\" $esxi_ip[$i] ";
 		my $cmd = $cmd0 . "\"VMID=`vim-cmd vmsvc/getallvms | grep \\\" $iscsi_vname[$i] \\\" | awk '{print \$1}'`; vim-cmd vmsvc/device.getdevices \$VMID\"";
 		&execution($cmd);
 		my $j;
