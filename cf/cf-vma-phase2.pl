@@ -24,10 +24,10 @@ my @lines	= ();
 &connectDVD;
 
 for my $i (0..1) {
-	&execution(".\\pscp.exe -l root -pw $vma_pw[$i] $ec_mod $vma_ip[$i]:/root/");
-	&execution(".\\pscp.exe -l root -pw $vma_pw[$i] $ec_lic $vma_ip[$i]:/root/");
+	&execution(".\\pscp.exe -l root -pw \"$vma_pw[$i]\" $ec_mod $vma_ip[$i]:/root/");
+	&execution(".\\pscp.exe -l root -pw \"$vma_pw[$i]\" $ec_lic $vma_ip[$i]:/root/");
 
-	my $cmd = ".\\plink.exe -no-antispoof -l root -pw $vma_pw[$i] $vma_ip[$i] ";
+	my $cmd = ".\\plink.exe -no-antispoof -l root -pw \"$vma_pw[$i]\" $vma_ip[$i] ";
 	&execution($cmd . "\"mkdir /media/cdrom; mount /dev/cdrom /media/cdrom\"");
 	&execution($cmd . "\"yum --disablerepo=* --enablerepo=c7-media install -y perl\"");
 	&execution($cmd . "\"hostnamectl set-hostname vma" . ($i+1) . "\"");
@@ -45,7 +45,7 @@ for my $i (0..1) {
 #-------------------------------------------------------------------------------
 sub connectDVD {
 	for my $i (0..1) {
-		my $cmd0 = ".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i] ";
+		my $cmd0 = ".\\plink.exe -no-antispoof -l root -pw \"$esxi_pw[$i]\" $esxi_ip[$i] ";
 		my $cmd = $cmd0 . "\"VMID=`vim-cmd vmsvc/getallvms | grep \\\" $vma_vname[$i] \\\" | awk '{print \$1}'`; vim-cmd vmsvc/device.getdevices \$VMID\"";
 		&execution($cmd);
 		my $j;

@@ -70,13 +70,13 @@ close(OUT);
 
 # Copy files to the iSCSI VM#1
 #---------------------------------------
-if (&execution(".\\pscp.exe -l root -pw $iscsi_pw[0] -r clpconf_iSCSI-Cluster $iscsi_ip1[0]:/root/")) {
+if (&execution(".\\pscp.exe -l root -pw \"$iscsi_pw[0]\" -r clpconf_iSCSI-Cluster $iscsi_ip1[0]:/root/")) {
 	exit 1;
 }
 
 # Check clp.conf
 #---------------------------------------
-my $cmd = ".\\plink.exe -no-antispoof -l root -pw $iscsi_pw[0] $iscsi_ip1[0] ";
+my $cmd = ".\\plink.exe -no-antispoof -l root -pw \"$iscsi_pw[0]\" $iscsi_ip1[0] ";
 if (&execution($cmd . "clpcfctrl --compcheck -w -x ./clpconf_iSCSI-Cluster/")) {
 	&Log("[E] #### CONFIGURATION IS INVALID ####\n");
 	&Log("[E] #### CHECK YOUR PARAMETERS    ####\n");
@@ -95,7 +95,7 @@ if (&execution($cmd . "clpcfctrl --push -w -x ./clpconf_iSCSI-Cluster/")) {
 # Reboot both VMs
 #---------------------------------------
 for my $i (0..1) {
-	&execution(".\\plink.exe -no-antispoof -l root -pw $iscsi_pw[$i] $iscsi_ip1[$i] reboot");
+	&execution(".\\plink.exe -no-antispoof -l root -pw \"$iscsi_pw[$i]\" $iscsi_ip1[$i] reboot");
 }
 
 exit;

@@ -348,7 +348,7 @@ sub getvMAHostname {
 		&Log("[I] Getting hostname of vMA\n");
 		&Log("[D] -----------\n");
 		for my $i (0 .. 1) {
-			if (&execution(".\\plink.exe -no-antispoof -l root -pw $vma_pw[$i] $vma_ip[$i] hostname")) {
+			if (&execution(".\\plink.exe -no-antispoof -l root -pw \"$vma_pw[$i]\" $vma_ip[$i] hostname")) {
 				&Log("[E] failed to access vMA#" . ($i+1) .". Check IP or password.\n");
 				return -1;
 			} else {
@@ -368,7 +368,7 @@ sub getvMAHostname {
 sub getvMADisplayName{
 	for (my $i = 0; $i < 2; $i++) {
 		my $found = 0;
-		my $cmd = ".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i]";
+		my $cmd = ".\\plink.exe -no-antispoof -l root -pw \"$esxi_pw[$i]\" $esxi_ip[$i]";
 
 		&Log("[D] ----------\n");
 		&Log("[D] Getting VM <ID> and <Display Name>\n");
@@ -399,7 +399,7 @@ sub getvMADisplayName{
 
 sub getVmhba {
 	for (my $i = 0; $i < 2; $i++) {
-		my $cmd = ".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i]";
+		my $cmd = ".\\plink.exe -no-antispoof -l root -pw \"$esxi_pw[$i]\" $esxi_ip[$i]";
 		&execution("$cmd \"esxcli iscsi adapter list\"");
 		foreach ( @outs ) {
 			if ( /^vmhba[\S]+/ ) {
@@ -432,9 +432,9 @@ sub putInitScripts {
 			}
 			close(OUT);
 			close(IN);
-			&execution(".\\pscp.exe -l root -pw $vma_pw[$n] $file $vma_ip[$n]:/etc/init.d");
-			&execution(".\\plink.exe -no-antispoof -l root -pw $vma_pw[$n] $vma_ip[$n] chmod 755 /etc/init.d/$file");
-			&execution(".\\plink.exe -no-antispoof -l root -pw $vma_pw[$n] $vma_ip[$n] chown root:root /etc/init.d/$file");
+			&execution(".\\pscp.exe -l root -pw \"$vma_pw[$n]\" $file $vma_ip[$n]:/etc/init.d");
+			&execution(".\\plink.exe -no-antispoof -l root -pw \"$vma_pw[$n]\" $vma_ip[$n] chmod 755 /etc/init.d/$file");
+			&execution(".\\plink.exe -no-antispoof -l root -pw \"$vma_pw[$n]\" $vma_ip[$n] chown root:root /etc/init.d/$file");
 			unlink ( "$file" ) or die;
 		}
 	}
@@ -443,11 +443,11 @@ sub putInitScripts {
 sub Save {
 	&Log("[I] Check ESXi, iSCSI nodes connectable\n");
 	for (my $i = 0; $i < 2; $i++) {
-		if (&execution(".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i] hostname")) {
+		if (&execution(".\\plink.exe -no-antispoof -l root -pw \"$esxi_pw[$i]\" $esxi_ip[$i] hostname")) {
 			&Log("[E] failed to access ESXi#" . ($i+1) .". Check IP or password.\n");
 			return -1;
 		}
-		if (&execution(".\\plink.exe -no-antispoof -l root -pw $iscsi_pw[$i] $iscsi_ip[$i] hostname")) {
+		if (&execution(".\\plink.exe -no-antispoof -l root -pw \"$iscsi_pw[$i]\" $iscsi_ip[$i] hostname")) {
 			&Log("[E] failed to access iscsi#" . ($i+1) .". Check IP or password.\n");
 			return -1;
 		}
@@ -462,7 +462,7 @@ sub Save {
 	# 
 	for my $i (0 .. 1) {
 		my $found = 0;
-		my $cmd = ".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i]";
+		my $cmd = ".\\plink.exe -no-antispoof -l root -pw \"$esxi_pw[$i]\" $esxi_ip[$i]";
 		&Log("[D] ----------\n");
 		&Log("[D] Configuring ESXi : auto start iSCSI and vMA VMs\n");
 		&Log("[D] Configuring ESXi : suppressing shell warning on ESX Host Client\n");
@@ -513,7 +513,7 @@ sub Save {
 	for my $i (0 .. 1) {
 
 		# Setup SSH Hostkey of iSCSI on vMA VMs
-		my $cmd = ".\\plink.exe -no-antispoof -l root -pw $vma_pw[$i] $vma_ip[$i]";
+		my $cmd = ".\\plink.exe -no-antispoof -l root -pw \"$vma_pw[$i]\" $vma_ip[$i]";
 		&execution("$cmd ssh-keygen -R $iscsi_ip[$i]");
 		&execution("$cmd \"ssh-keyscan -t rsa $iscsi_ip[$i] >> ~/.ssh/known_hosts\"");
 
@@ -524,7 +524,7 @@ sub Save {
 		}
 
 		# Setup SSH Hostkey of ESXi on iSCSI VMs
-		$cmd = ".\\plink.exe -no-antispoof -l root -pw $iscsi_pw[$i] $iscsi_ip[$i]";
+		$cmd = ".\\plink.exe -no-antispoof -l root -pw \"$iscsi_pw[$i]\" $iscsi_ip[$i]";
 		for my $j (0..1) {
 			&execution("$cmd ssh-keygen -R $esxi_ip[$j]");
 			&execution("$cmd \"ssh-keyscan $esxi_ip[$j] >> ~/.ssh/known_hosts\"");
@@ -535,18 +535,18 @@ sub Save {
 	for my $i (0..1) {
 
 		# Get vMA, iSCSI ssh public key
-		&execution(".\\pscp.exe -l root -pw $vma_pw[$i] $vma_ip[$i]:/root/.ssh/id_rsa.pub .\\id_rsa_vma_$i.pub");
-		&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] $iscsi_ip[$i]:/root/.ssh/id_rsa.pub .\\id_rsa_iscsi_$i.pub");
+		&execution(".\\pscp.exe -l root -pw \"$vma_pw[$i]\" $vma_ip[$i]:/root/.ssh/id_rsa.pub .\\id_rsa_vma_$i.pub");
+		&execution(".\\pscp.exe -l root -pw \"$iscsi_pw[$i]\" $iscsi_ip[$i]:/root/.ssh/id_rsa.pub .\\id_rsa_iscsi_$i.pub");
 
 		# Put vMA, iSCSI ssh public key on ESXi
 		for my $j (0..1) {
-			&execution(".\\pscp.exe -l root -pw $esxi_pw[$j] .\\id_rsa_vma_$i.pub   $esxi_ip[$j]:/tmp");
-			&execution(".\\pscp.exe -l root -pw $esxi_pw[$j] .\\id_rsa_iscsi_$i.pub $esxi_ip[$j]:/tmp");
+			&execution(".\\pscp.exe -l root -pw \"$esxi_pw[$j]\" .\\id_rsa_vma_$i.pub   $esxi_ip[$j]:/tmp");
+			&execution(".\\pscp.exe -l root -pw \"$esxi_pw[$j]\" .\\id_rsa_iscsi_$i.pub $esxi_ip[$j]:/tmp");
 		}
 
 		# Put vMA ssh public key on iSCSI, and make /root/.ssh/authorized_keys
-		&execution(".\\pscp.exe -l root -pw $iscsi_pw[$i] .\\id_rsa_vma_$i.pub $iscsi_ip[$i]:/tmp");
-		my $cmd = ".\\plink.exe -no-antispoof -l root -pw $iscsi_pw[$i] $iscsi_ip[$i]";
+		&execution(".\\pscp.exe -l root -pw \"$iscsi_pw[$i]\" .\\id_rsa_vma_$i.pub $iscsi_ip[$i]:/tmp");
+		my $cmd = ".\\plink.exe -no-antispoof -l root -pw \"$iscsi_pw[$i]\" $iscsi_ip[$i]";
 		&execution("$cmd \"a=`cat /tmp/id_rsa_vma_$i.pub`; grep \\\"\$a\\\" ~/.ssh/authorized_keys\"");
 		if ($?) {
 			# create entry for vMA in authorized_keys in iSCSI when authorized_keys not exists or it does not have the entry for vMA node.
@@ -559,7 +559,7 @@ sub Save {
 
 	# Setup ESXi
 	for my $i (0..1) {
-		my $cmd = ".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i] ";
+		my $cmd = ".\\plink.exe -no-antispoof -l root -pw \"$esxi_pw[$i]\" $esxi_ip[$i] ";
 		# Make /etc/ssh/keys-root/authorized_keys on ESXi
 		for my $j (0..1) {
 			&execution($cmd . "sed -i -e '/root\@vma"   . ($j+1) . "\$/d' /etc/ssh/keys-root/authorized_keys");
@@ -764,11 +764,11 @@ sub Save {
 	print "[I] ----------\n";
 	print "[I] Applying the configuration to vMA cluster\n";
 	print "[I] ----------\n";
-	&execution(".\\pscp.exe -l root -pw $vma_pw[0] -r .\\conf $vma_ip[0]:/tmp");
-	&execution(".\\plink.exe -no-antispoof -l root -pw $vma_pw[0] $vma_ip[0] \"clpcl --suspend\"");
-	&execution(".\\plink.exe -no-antispoof -l root -pw $vma_pw[0] $vma_ip[0] \"clpcfctrl --push -w -x /tmp/conf\"");
-	&execution(".\\plink.exe -no-antispoof -l root -pw $vma_pw[0] $vma_ip[0] \"clpcl --resume\"");
-	&execution(".\\plink.exe -no-antispoof -l root -pw $vma_pw[0] $vma_ip[0] \"clpcl -s -a\"");
+	&execution(".\\pscp.exe -l root -pw \"$vma_pw[0]\" -r .\\conf $vma_ip[0]:/tmp");
+	&execution(".\\plink.exe -no-antispoof -l root -pw \"$vma_pw[0]\" $vma_ip[0] \"clpcl --suspend\"");
+	&execution(".\\plink.exe -no-antispoof -l root -pw \"$vma_pw[0]\" $vma_ip[0] \"clpcfctrl --push -w -x /tmp/conf\"");
+	&execution(".\\plink.exe -no-antispoof -l root -pw \"$vma_pw[0]\" $vma_ip[0] \"clpcl --resume\"");
+	&execution(".\\plink.exe -no-antispoof -l root -pw \"$vma_pw[0]\" $vma_ip[0] \"clpcl -s -a\"");
 
 	return 0;
 }
@@ -785,7 +785,7 @@ sub setESXiIP {
 
 sub setESXiPwd{
 	my $i = $_[0] - 1;
-	print "[" . $esxi_pw[$i] . "] > ";
+	print "[" . \"$esxi_pw[$i]\" . "] > ";
 	$ret = <STDIN>;
 	chomp $ret;
 	if ($ret ne "") {
@@ -865,7 +865,7 @@ sub addVM {
 	my $k = 0;
 
 	for $i (0 .. 1) {
-		&execution (".\\plink.exe -no-antispoof -l root -pw $esxi_pw[$i] $esxi_ip[$i] vim-cmd vmsvc/getallvms");
+		&execution (".\\plink.exe -no-antispoof -l root -pw \"$esxi_pw[$i]\" $esxi_ip[$i] vim-cmd vmsvc/getallvms");
 		#shift @outs;	# disposing head of the list (prompt from plink)
 		#shift @outs;	# disposing head of the list (message from plink)
 		shift @outs;	# disposing head of the list (header of output from vim-cmd)
