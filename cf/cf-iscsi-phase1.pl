@@ -53,6 +53,10 @@ for my $i (0..1) {
 	&execution($cmd . "\"clplcnsc -i ECX4.x-Rep-lin" . ( $i + 1) . ".key\"");
 	&execution($cmd . "\"rm expresscls\*.rpm ECX4.x-\*.key\"");
 
+	&Log("[I] **************************************************\n");
+	&Log("[I] FATAL ERROR on rebooting the VM will be displayed.\n");
+	&Log("[I] It can be ignored.\n");
+	&Log("[I] **************************************************\n");
 	&execution($cmd . "reboot");
 }
 #-------------------------------------------------------------------------------

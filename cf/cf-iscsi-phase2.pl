@@ -94,6 +94,10 @@ if (&execution($cmd . "clpcfctrl --push -w -x ./clpconf_iSCSI-Cluster/")) {
 
 # Reboot both VMs
 #---------------------------------------
+&Log("[I] **************************************************\n");
+&Log("[I] FATAL ERROR on rebooting the VM will be displayed.\n");
+&Log("[I] It can be ignored.\n");
+&Log("[I] **************************************************\n");
 for my $i (0..1) {
 	&execution(".\\plink.exe -no-antispoof -l root -pw \"$iscsi_pw[$i]\" $iscsi_ip1[$i] reboot");
 }
