@@ -59,6 +59,12 @@ for my $i (0..1) {
 	&Log("[I] **************************************************\n");
 	&execution($cmd . "reboot");
 }
+&Log("[I] ******************************************\n");
+&Log("[I] The phase, packages installation for iSCSI-Cluster, was completed.\n");
+&Log("[I] Push return key\n");
+&Log("[I] ******************************************\n");
+my $tmp = <STDIN>;
+
 #-------------------------------------------------------------------------------
 sub connectDVD {
 	for my $i (0..1) {

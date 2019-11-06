@@ -101,6 +101,13 @@ if (&execution($cmd . "clpcfctrl --push -w -x ./clpconf_iSCSI-Cluster/")) {
 for my $i (0..1) {
 	&execution(".\\plink.exe -no-antispoof -l root -pw \"$iscsi_pw[$i]\" $iscsi_ip1[$i] reboot");
 }
+&Log("[I] ******************************************\n");
+&Log("[I] The phase, configuration for iSCSI-Cluster, was completed.\n");
+&Log("[I] NOTE: Initial Mirror Recovery will be started after the reboot of the iSCSI VMs.\n");
+&Log("[I] NOTE: It may take a long time for large size storage.\n");
+&Log("[I] Push return key\n");
+&Log("[I] ******************************************\n");
+my $tmp = <STDIN>;
 
 exit;
 
