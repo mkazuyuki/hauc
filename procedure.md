@@ -111,7 +111,7 @@ Confirm accessibility to the following six IP addresses from Windows PC by using
 **Do not omit this process**. The procedure hereafter assumes that SSH Hostkey entries of these IP addresses are made on Windows registry by this process.
 
   - 172.31.255.2 (ESXi#1)
-  - 172.32.255.3 (ESXi#2)
+  - 172.31.255.3 (ESXi#2)
   - 172.31.255.6 (vMA1)
   - 172.31.255.7 (vMA2)
   - 172.31.255.11 (iSCSI1)
