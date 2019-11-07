@@ -85,7 +85,7 @@ $iscsi_size
 
 - Boot all the VMs and install CentOS.
 
-  What needed during the installation is to select *sda* as *INSTALLATION DESTINATION* and setting *ROOT PASSWORD*.
+  All you need to do during the installation is select *sda* as *INSTALL DESTINATION* and set *ROOT PASSWORD*. No need to worry about other things like *TIME ZONE* or *TIME OF DAY*.
 
 - Configure the first network of the VMs.
 
