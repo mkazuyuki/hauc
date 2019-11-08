@@ -133,12 +133,11 @@ At the command prompt of Windows PC,
 ### Setting up ESXi - iSCSI Initiator
 
 Run *cf-esxi-phase3.pl* in subfolder *cf*.
-After running the command, confirm the iSCSI datastore which the iSCSI Cluster provides can be accessible from both ESXi,
+After running the script, confirm that the newly created *iSCSI1* datastore can be seen by browsing Storage in both of the ESXi hosts.
 
 ### Deploying UC VMs on iSCSI datastore
 
-Deploy UC VMs (to be protected by ECX) on *esxi1* or *esxi2*.
-These VMs should be deployed on the iSCSI datastore.
+Deploy the UCE VMs (for which failover proection must be provided by ECX) on your choice of *esxi1* or *esxi2*. These VMs must be deployed on the *iSCSI1* datastore.
 
 ### Setting up vMA Cluster
 
