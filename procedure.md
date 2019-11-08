@@ -137,7 +137,7 @@ After running the script, confirm that the newly created *iSCSI1* datastore can 
 
 ### Deploying UC VMs on iSCSI datastore
 
-Deploy the UCE VMs (for which failover proection must be provided by ECX) on your choice of *esxi1* or *esxi2*. These VMs must be deployed on the *iSCSI1* datastore.
+Deploy the UCE VMs (for which failover protection must be provided by ECX) on your choice of *esxi1* or *esxi2*. These VMs must be deployed on the *iSCSI1* datastore.
 
 ### Setting up vMA Cluster
 
