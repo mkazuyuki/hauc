@@ -128,7 +128,10 @@ At the command prompt of Windows PC,
   On the *cf-iscsi-phase2.pl* completion, both iscsi1 and iscsi2 are rebooted.
 
 - Open ECX WebUI (http://172.31.255.11:29003) and wait the cluster starting,
-  the failover group "*failover-iscsi*" activating and completion of the mirror disk resource synchronizing.
+  the failover group "*failover-iscsi*" activating, and completion of the mirror disk resource synchronizing.
+  While synchronizing the mirror disk, the following error message is displayed. Please ignore it.
+  
+  		Detected an error in monitoring mdw1. (65 : Both local and remote mirror disks are abnormal.(md1))
 
 ### Setting up ESXi - iSCSI Initiator
 
