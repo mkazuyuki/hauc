@@ -73,7 +73,7 @@ exit $ret;
 sub PowerOnVM {
 	#&Log("[I] Starting [$VMIP][$VMDN]\n");
 	&execution("ssh -i ~/.ssh/id_rsa ${VMK} \"
-		vmid=\\\$(vim-cmd vmsvc/getallvms 2>&1 | grep '${VMDN}' | awk '{print \\\$1}')
+		vmid=\\\$(vim-cmd vmsvc/getallvms 2>&1 | grep ' ${VMDN} ' | awk '{print \\\$1}')
 		logger -t expresscls \"start VM ID[\\\${vmid}]\" '[${VMDN}]'
 		vim-cmd vmsvc/power.on \\\${vmid} 2>&1\"");
 
