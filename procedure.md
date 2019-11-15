@@ -38,6 +38,12 @@ Start ssh service and configure it to start automatically.
     - [TSM-SSH] >  [Actions] > [Start]
     - [TSM-SSH] >  [Actions] > [Polilcy] > [Start and stop with host]
 
+Install the licenses
+- Obtain the license keys for both ESXi.
+- On vSphere Host Client for both ESXi,
+	-  [Manage] in {Navigator] pane > [Licensing] tab > [Actions] > [Assign license]
+	-  enter the license key > [Check license] > [Assign license]
+
 Setup NTP servers
 - On vSphere Host Client for both ESXi,
   - [Manage] in [Navigator] pane > [System] tab
