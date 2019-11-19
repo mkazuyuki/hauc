@@ -536,7 +536,25 @@ sub Save {
 
 		# Get vMA, iSCSI ssh public key
 		&execution(".\\pscp.exe -l root -pw \"$vma_pw[$i]\" $vma_ip[$i]:/root/.ssh/id_rsa.pub .\\id_rsa_vma_$i.pub");
+		if ($?) {
+			&Log("[E] *****************************************\n");
+			&Log("[E] Could not get id_rsa.pub from $vma_ip[$i]\n");
+			&Log("[E] Gave up to configure\n");
+			&Log("[E] Make sure that the ssh key exists.\n");
+			&Log("[E] Retry this script after the fix.\n");
+			&Log("[E] *****************************************\n");
+			exit 1;
+		}
 		&execution(".\\pscp.exe -l root -pw \"$iscsi_pw[$i]\" $iscsi_ip[$i]:/root/.ssh/id_rsa.pub .\\id_rsa_iscsi_$i.pub");
+		if ($?) {
+			&Log("[E] *****************************************\n");
+			&Log("[E] Could not get id_rsa.pub from $iscsi_ip[$i]\n");
+			&Log("[E] Gave up to configure\n");
+			&Log("[E] Make sure that the ssh key exists.\n");
+			&Log("[E] Retry this script after the fix.\n");
+			&Log("[E] *****************************************\n");
+			exit 1;
+		}
 
 		# Put vMA, iSCSI ssh public key on ESXi
 		for my $j (0..1) {
@@ -785,7 +803,7 @@ sub setESXiIP {
 
 sub setESXiPwd{
 	my $i = $_[0] - 1;
-	print "[" . \"$esxi_pw[$i]\" . "] > ";
+	print "[" . $esxi_pw[$i] . "] > ";
 	$ret = <STDIN>;
 	chomp $ret;
 	if ($ret ne "") {
