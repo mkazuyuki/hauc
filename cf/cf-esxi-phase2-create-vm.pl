@@ -9,13 +9,10 @@ use warnings;
 
 # Parameters
 #-------------------------------------------------------------------------------
-#my @esxi_ip	= ('172.31.255.2', '172.31.255.3');	# ESXi IP address
-#my @esxi_pw	= ('NEC123nec!', 'NEC123nec!');		# ESXi root password
-#my $iscsi_size	= "500G";				# iSCSI Target Disk size which UC VMs to be stored.
-
 our @esxi_ip;
 our @esxi_pw;
-our $iscsi_size;
+our $advertised_hdd_size;
+our $safety_margin;
 our @iscsi_ds;
 our @iscsi_vname;	# iSCSI VM Name
 our @vma_vname;	# vMA VM Name
@@ -25,6 +22,15 @@ require "./hauc.conf" or die "file not found hauc.conf";
 # Global variable
 #-------------------------------------------------------------------------------
 my @lines	= ();
+
+# Calculating device size of iSCSI Datastore
+# 	$iscsi_size
+# 	= int( { ( { (Advertised HDD size in GB) * 0.9313 GiB/GB * Safety Margin} * { (1 - 5% of VMFS overhead) * Safety Margin } ) - ( .vswp + logs etc. + sda of vMA VM in GB ) - ( .vswp + log etc. + sda of iSCSI VM in GB ) } * Safety Margin)
+# 	= int({({(Advertised HDD size in GB) * 0.9313 * 0.99} * {0.95 * 0.99}) - (2+0.2+6) - (2+0.2+9)} * 0.99)
+$safety_margin =~ s/\%//;
+$safety_margin = 1 - ($safety_margin/100);
+my $iscsi_size = int ((($advertised_hdd_size * 0.9313 * $safety_margin) * (0.95 * $safety_margin) - (2+0.2+6) - (2+0.2+9)) * $safety_margin);
+$iscsi_size = $iscsi_size . "G";
 
 # Main
 #-------------------------------------------------------------------------------
