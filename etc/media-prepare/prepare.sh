@@ -10,18 +10,16 @@ rm master
 
 # EC
 curl -O https://www.nec.com/en/global/prod/expresscluster/en/trial/zip/ecx41l_x64.zip
-unzip ecx41l_x64.zip
-cp ecx41l_x64/Linux/4.1/en/server/expresscls-4.1.1-1.x86_64.rpm hauc-master/cf/
+unzip -j ecx41l_x64.zip "*.rpm"
+rm ecx41l_x64.zip
+mv expresscls-4.1.1-1.x86_64.rpm hauc-master/cf/
 
 ##
 ## Preparing trial license files is needed
 ##
-cp ECX4.x-lin1.key     hauc-master/cf/
-cp ECX4.x-Rep-lin1.key hauc-master/cf/
-cp ECX4.x-Rep-lin2.key hauc-master/cf/
-
-rm -rf ecx41l_x64
-rm ecx41l_x64.zip
+mv ECX4.x-lin1.key     hauc-master/cf/
+mv ECX4.x-Rep-lin1.key hauc-master/cf/
+mv ECX4.x-Rep-lin2.key hauc-master/cf/
 
 # PUTTY
 cd hauc-master/cf
