@@ -25,7 +25,7 @@ my %portgroup = (
 );
 
 my %uplink;
-$uplink{"vSwitch"} = "vmnic0";
+$uplink{"vSwitch0"} = "vmnic0";
 $uplink{"Mirror_vswitch"} = "vmnic1";
 $uplink{"iSCSI_vswitch"} = "vmnic2";
 $uplink{"uc_vm_vswitch"} = "vmnic3";
@@ -35,6 +35,9 @@ $uplink{"uc_vm_vswitch"} = "vmnic3";
 
 for my $i (0..1) {
 	my $cmd = ".\\plink.exe -no-antispoof -l root -pw \"$esxi_pw[$i]\" $esxi_ip[$i] ";
+	&execution("$cmd esxcfg-vswitch -a Mirror_vswitch");
+	&execution("$cmd esxcfg-vswitch -a iSCSI_vswitch");
+	&execution("$cmd esxcfg-vswitch -a uc_vm_vswitch");
 	&execution("$cmd esxcfg-vswitch -L vmnic1 Mirror_vswitch");
 	&execution("$cmd esxcfg-vswitch -L vmnic2 iSCSI_vswitch");
 	&execution("$cmd esxcfg-vswitch -L vmnic3 uc_vm_vswitch");
