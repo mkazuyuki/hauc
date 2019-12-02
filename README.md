@@ -28,7 +28,7 @@ The general procedure to deploy HAUC consists of the following major steps:
 
 ## Software Requirements
 
-- vSphere ESXi 6.7 U2
+- vSphere ESXi 6.0 or later (6.7 U2 was verified)
 - EXPRESSCLUSTER X 4.1 for Linux (4.1.1-1)
 	- EXPRESSCLUSTER X Replicator 4.1 for Linux (4.1.1-1)
 - CentOS 7.6 x86_64
