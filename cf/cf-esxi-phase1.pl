@@ -15,7 +15,7 @@ require "./hauc.conf";
 my @lines	= ();
 
 # vSwitch
-my @vswitch = ("vSwitch", "Mirror_vswitch", "iSCSI_vswitch", "uc_vm_vswitch");
+my @vswitch = ("vSwitch0", "Mirror_vswitch", "iSCSI_vswitch", "uc_vm_vswitch");
 
 my %portgroup = (
 	'vSwitch' => [ 'VM Network', 'Management Networ'],
