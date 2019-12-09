@@ -40,8 +40,21 @@ for my $i (0..1) {
 	&execution($cmd . "\"clplcnsc -i $ec_lic \"");
 	&execution($cmd . "\"rm $ec_mod $ec_lic\"");
 
+	# Reboot VM
+	#---------------------------------------
+	&Log("[I] **************************************************\n");
+	&Log("[I] FATAL ERROR on rebooting the VM will be displayed.\n");
+	&Log("[I] It can be ignored.\n");
+	&Log("[I] **************************************************\n");
 	&execution($cmd . "reboot");
 }
+&Log("[I] ******************************************\n");
+&Log("[I] The phase, packages installation for vMA-Cluster, was completed.\n");
+&Log("[I] Push return key\n");
+&Log("[I] ******************************************\n");
+my $tmp = <STDIN>;
+exit;
+
 #-------------------------------------------------------------------------------
 sub connectDVD {
 	for my $i (0..1) {

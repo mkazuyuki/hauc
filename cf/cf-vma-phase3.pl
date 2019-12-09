@@ -59,9 +59,13 @@ my @lines = <IN>;
 close(IN);
 
 while ( 1 ) {
-	if ( ! &select ( &menu ) ) {exit}
+	if ( ! &select ( &menu ) ) {last}
 }
-
+&Log("[I] ******************************************\n");
+&Log("[I] The phase, configuration for vMA-Cluster, was completed.\n");
+&Log("[I] Push return key\n");
+&Log("[I] ******************************************\n");
+my $tmp = <STDIN>;
 exit;
 
 #
