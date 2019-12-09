@@ -67,19 +67,12 @@ If storage (HDD) dedicated for UC VMs is prepared on each ESXi, set up the stora
 
 ### Creating VMs for iSCSI Cluster and vMA Cluster
 
-The disk size of the iSCSI Target which will be an ESXi Datastore for storing UC VMs can be specified at the line of **our $iscsi_size = "500G";** in *hauc.conf* in the subfolder *cf*.  
-e.x. Specify as following when making a vHDD of 1024GB size
+Specify the size of volume or HDD which vMA and iSCSI VMs are stored as **our $advertised_hdd_size = "500G";** in *hauc.conf* in the subfolder *cf*.  
+e.x. Specify as following when the size of HDD is 1TB (1000GB).
 
-	our $iscsi_size	= "1024G";
+	our $advertised_hdd_size	= "1000G";
 
-The size itself may be calculated from *Advertised HDD size in GB* as following.
-
-$iscsi_size  
-= ROUNDDOWN( { ( { (Advertised HDD size in GB) * 0.9313 GiB/GB * Safety Margin} * { (1 - 5% of VMFS overhead) * Safety Margin } ) -( .vswp + logs etc. + sda of vMA VM in GB ) - ( .vswp + log etc. + sda of iSCSI VM in GB ) } * Safety Margin )
-
-= ROUNDDOWN({({(Advertised HDD size in GB) * 0.9313 * 0.99} * {(1-0.05) * 0.99}) - (2+0.2+6) - (2+0.2+9)} * 0.99)
-
-= ROUNDDOWN(((Advertised HDD size in GB) * 0.858457485765 - 14.751 ), 0)
+**Note** : The size should be not Gibibyte but Gigabyte. Do not forget to specify unit symbol "G". The actual size of *iSCSI1 Datastore* is calculated and determined by this value
 
 - Run *cf-esxi-phase2-create-vm.pl* in subfolder *cf*, then VMs of iSCSI1, iSCSI2, vMA1, vMA2 are created. This takes a long time for making vmdk eager zeroed thick.
 
