@@ -19,7 +19,7 @@ VM_DISK_PATH2=$DATASTORE_PATH/$VM_NAME/${VM_NAME}_1.vmdk
 VM_VMX_FILE=$DATASTORE_PATH/$VM_NAME/$VM_NAME.vmx
 
 # (0) Clean up existing VM
-vid=`vimd-cmd vmsvc/getallvms | grep ${VM_NAME} | awk '{print $1}'`
+vid=`vim-cmd vmsvc/getallvms | grep ${VM_NAME} | awk '{print $1}'`
 if [ ${vid} ]; then
 	vim-cmd vmsvc/unregister $vid
 fi
