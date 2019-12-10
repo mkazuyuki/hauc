@@ -15,8 +15,8 @@ It is made of 2 IA server boxes, vSphere ESXi, UC products running on Linux or W
 2 boxes of green line stand for 2 of IA servers. ESXi is installed on both servers.  
 The *iSCSI Cluster* in the bottom half provides the iSCSI storage for both ESXi and becomes a Datastore for storing the configuration and disk-image files for UC VMs on it.
 The iSCSI storage is made by 2 VMs where *iSCSI Target service* runs on CentOS and EXPRESSCLUSTER (data-mirroring configuration) protects it.  
-The *vMA Cluster* in the upper half provides the protection for UC VMs by controlling and monitoring them. When EXPRESSCLUSTER in the vMA Cluster detects an error on the active system (left side), it issues failover of UC VMs (SV95 and UCE).
- 
+The *vMA Cluster* in the upper half provides the protection for UC VMs by controlling and monitoring them. When EXPRESSCLUSTER in the vMA Cluster detects an error on the active system (left side), it issues failover of UC VMs (SV9500 and UCE).
+
 The general procedure to deploy HAUC consists of the following major steps:
 
 1. Perform system planning to determine requirements and specify specific configuration settings.
@@ -28,7 +28,7 @@ The general procedure to deploy HAUC consists of the following major steps:
 
 ## Software Requirements
 
-- vSphere ESXi 6.0 or later (6.7 U2 was verified)
+- vSphere ESXi 6.0 or later (6.7 U3 was verified)
 - EXPRESSCLUSTER X 4.1 for Linux (4.1.1-1)
 	- EXPRESSCLUSTER X Replicator 4.1 for Linux (4.1.1-1)
 - CentOS 7.6 x86_64
