@@ -52,6 +52,24 @@ Setup NTP servers
 
 Configure vSwitch, Physical NICs, Port groups, VMkernel NIC for iSCSI Initiator
 - Run *cf-esxi-phase1.pl* in subfolder *cf*.
+	- When you see the message like following, answer "y".
+
+	2019/12/10 23:44:49 [D] | WARNING - POTENTIAL SECURITY BREACH!
+	2019/12/10 23:44:49 [D] | The server's host key does not match the one PuTTY has
+	2019/12/10 23:44:49 [D] | cached in the registry. This means that either the
+	2019/12/10 23:44:49 [D] | server administrator has changed the host key, or you
+	2019/12/10 23:44:49 [D] | have actually connected to another computer pretending
+	2019/12/10 23:44:49 [D] | to be the server.
+	2019/12/10 23:44:49 [D] | The new rsa2 key fingerprint is:
+	2019/12/10 23:44:49 [D] | ssh-rsa 2048 2f:7a:f6:f7:85:d5:fc:f4:f0:c5:9b:a2:59:19:46:60
+	2019/12/10 23:44:49 [D] | If you were expecting this change and trust the new key,
+	2019/12/10 23:44:49 [D] | enter "y" to update PuTTY's cache and continue connecting.
+	2019/12/10 23:44:49 [D] | If you want to carry on connecting but without updating
+	2019/12/10 23:44:49 [D] | the cache, enter "n".
+	2019/12/10 23:44:49 [D] | If you want to abandon the connection completely, press
+	2019/12/10 23:44:49 [D] | Return to cancel. Pressing Return is the ONLY guaranteed
+	2019/12/10 23:44:49 [D] | safe choice.
+	2019/12/10 23:44:57 [D] | Update cached key? (y/n, Return cancels connection) Connection abandoned.
 
 ### Setting up ESXi - Datastore
 
