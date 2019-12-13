@@ -1,30 +1,34 @@
-## Procedure
+# Quick Start Guide
 
-### Preparing 64bit Windows PC
-- Download [**hauc-master.zip**](https://github.com/mkazuyuki/hauc/archive/master.zip) and extract.
-	- Edit cf/hauc.conf so that match to your environment.
+## Preparing 64bit Windows PC
 
-- Download [**ECX**](https://www.nec.com/en/global/prod/expresscluster/en/trial/zip/ecx41l_x64.zip)
-	-  Extract it and copy *expresscls-4.1.1-1.x86_64.rpm* in it to the subfolder *cf*.
+Download [**hauc-master.zip**](https://github.com/mkazuyuki/hauc/archive/master.zip) and extract.
 
-- Put the (trial) license files of ECX to the subfolder *cf*.
-	- ECX4.x-lin1.key
-	- ECX4.x-Rep-lin1.key
-	- ECX4.x-Rep-lin2.key
+- Edit cf/hauc.conf so that match to your environment.
 
-- Download
+Download [**ECX**](https://www.nec.com/en/global/prod/expresscluster/en/trial/zip/ecx41l_x64.zip)
+
+-  Extract it and copy *expresscls-4.1.1-1.x86_64.rpm* in it to the subfolder *cf*.
+
+Put the (trial) license files of ECX to the subfolder *cf*.
+
+  - ECX4.x-lin1.key
+  - ECX4.x-Rep-lin1.key
+  - ECX4.x-Rep-lin2.key
+
+Download
 	[putty](https://the.earth.li/~sgtatham/putty/latest/w64/putty.exe),
 	[plink](https://the.earth.li/~sgtatham/putty/latest/w64/plink.exe),
 	[pscp](https://the.earth.li/~sgtatham/putty/latest/w64/pscp.exe)
-  to the subfolder *cf*.
+to the subfolder *cf*.
 
-- Download and install [Strawberry Perl](http://strawberryperl.com/).
+Download and install [Strawberry Perl](http://strawberryperl.com/).
 
-- Configure the Windows PC to have IP address such as 172.31.255.100/24 so that becomes IP reachable to **172.31.255.0/24** network where the ESXi hosts exists.
+Configure the Windows PC to have IP address such as 172.31.255.100/24 so that becomes IP reachable to **172.31.255.0/24** network where the ESXi hosts exists.
 
-- Download CentOS 7.6 ([CentOS-7-x86_64-DVD-1810.iso](http://archive.kernel.org/centos-vault/7.6.1810/isos/x86_64/CentOS-7-x86_64-DVD-1810.iso)) and put it on /vmfs/volumes/datastore1/iso/ of ESXi#1 and ESXi#2. (The directory "iso" needs to be created under /vmfs/volumes/datastore1/.)
+Download CentOS 7.6 ([CentOS-7-x86_64-DVD-1810.iso](http://archive.kernel.org/centos-vault/7.6.1810/isos/x86_64/CentOS-7-x86_64-DVD-1810.iso)) and put it **/vmfs/volumes/datastore1/iso/** on ESXi#1 and ESXi#2. (The directory "iso" needs to be created under /vmfs/volumes/datastore1/.)
 
-### Setting up ESXi - Network
+## Setting up ESXi - Network
 
 Install vSphere ESXi then set up IP address as following.
 
@@ -51,62 +55,72 @@ Setup NTP servers
   - Select [Use Network Time Protocol (enable NTP client)] > Select [Start and stop with host] as [NTP service startup policy] > input IP address of NTP server for the configuring environment as [NTP servers]
 
 Configure vSwitch, Physical NICs, Port groups, VMkernel NIC for iSCSI Initiator
+
 - Run *cf-esxi-phase1.pl* in subfolder *cf*.
-	- When you see the message like following, answer "y".
 
-	2019/12/10 23:44:49 [D] | WARNING - POTENTIAL SECURITY BREACH!
-	2019/12/10 23:44:49 [D] | The server's host key does not match the one PuTTY has
-	2019/12/10 23:44:49 [D] | cached in the registry. This means that either the
-	2019/12/10 23:44:49 [D] | server administrator has changed the host key, or you
-	2019/12/10 23:44:49 [D] | have actually connected to another computer pretending
-	2019/12/10 23:44:49 [D] | to be the server.
-	2019/12/10 23:44:49 [D] | The new rsa2 key fingerprint is:
-	2019/12/10 23:44:49 [D] | ssh-rsa 2048 2f:7a:f6:f7:85:d5:fc:f4:f0:c5:9b:a2:59:19:46:60
-	2019/12/10 23:44:49 [D] | If you were expecting this change and trust the new key,
-	2019/12/10 23:44:49 [D] | enter "y" to update PuTTY's cache and continue connecting.
-	2019/12/10 23:44:49 [D] | If you want to carry on connecting but without updating
-	2019/12/10 23:44:49 [D] | the cache, enter "n".
-	2019/12/10 23:44:49 [D] | If you want to abandon the connection completely, press
-	2019/12/10 23:44:49 [D] | Return to cancel. Pressing Return is the ONLY guaranteed
-	2019/12/10 23:44:49 [D] | safe choice.
-	2019/12/10 23:44:57 [D] | Update cached key? (y/n, Return cancels connection) Connection abandoned.
+  - When you see the message like following, answer "y".
 
-### Setting up ESXi - Datastore
+        2019/12/10 23:44:49 [D] | WARNING - POTENTIAL SECURITY BREACH!
+        2019/12/10 23:44:49 [D] | The server's host key does not match the one PuTTY has
+        2019/12/10 23:44:49 [D] | cached in the registry. This means that either the
+        2019/12/10 23:44:49 [D] | server administrator has changed the host key, or you
+        2019/12/10 23:44:49 [D] | have actually connected to another computer pretending
+        2019/12/10 23:44:49 [D] | to be the server.
+        2019/12/10 23:44:49 [D] | The new rsa2 key fingerprint is:
+        2019/12/10 23:44:49 [D] | ssh-rsa 2048 2f:7a:f6:f7:85:d5:fc:f4:f0:c5:9b:a2:59:19:46:60
+        2019/12/10 23:44:49 [D] | If you were expecting this change and trust the new key,
+        2019/12/10 23:44:49 [D] | enter "y" to update PuTTY's cache and continue connecting.
+        2019/12/10 23:44:49 [D] | If you want to carry on connecting but without updating
+        2019/12/10 23:44:49 [D] | the cache, enter "n".
+        2019/12/10 23:44:49 [D] | If you want to abandon the connection completely, press
+        2019/12/10 23:44:49 [D] | Return to cancel. Pressing Return is the ONLY guaranteed
+        2019/12/10 23:44:49 [D] | safe choice.
+        2019/12/10 23:44:57 [D] | Update cached key? (y/n, Return cancels connection) Connection abandoned.
 
-If storage (HDD) dedicated for UC VMs is prepared on each ESXi, set up the storage as **datastore2**.
+## Setting up ESXi - Datastore
+
+If a storage (HDD) dedicated for UC VMs is prepared on each ESXi, set up the storage as **datastore2**.
 
 - On vSphere Host Client for ESXi#1 and ESXi#2,
-	- [Storage] in [Navigator] pane > [Datastores] tab > [New datastore] 
-	- Select [Create new VMFS datastore] > [Next] > input [datastore2] as [name] > Select the storege device for UC VMs.
-
+  - [Storage] in [Navigator] pane > [Datastores] tab > [New datastore] 
+    - Select [Create new VMFS datastore] > [Next] > input [datastore2] as [name] > Select the storege device for UC VMs.
 - Edit the lines of @iscsi_ds in *hauc.conf* in subfolder *cf* as
 
 	  our @iscsi_ds	= ('datastore2', 'datastore2');
 
-### Creating VMs for iSCSI Cluster and vMA Cluster
+## Creating VMs for iSCSI Cluster and vMA Cluster
 
-Specify the size of volume or HDD which vMA and iSCSI VMs are stored as **our $advertised_hdd_size = "500G";** in *hauc.conf* in the subfolder *cf*.  
+Specify the size of volume or HDD which vMA and iSCSI VMs are stored.
+
+- Edit *hauc.conf* in the subfolder *cf*   
 e.x. Specify as following when the size of HDD is 1TB (1000GB).
 
-	our $advertised_hdd_size	= "1000G";
+		our $advertised_hdd_size	= "1000G";
 
-**Note** : The size should be not Gibibyte but Gigabyte. Do not forget to specify unit symbol "G". The actual size of *iSCSI1 Datastore* is calculated and determined by this value
+  **NOTE**
+  - The size should be not Gibibyte but Gigabyte.
+  - Do not forget to specify unit symbol "G".
+  - The actual size of *iSCSI1 Datastore* is calculated and determined from this value.
 
-- Run *cf-esxi-phase2-create-vm.pl* in subfolder *cf*, then VMs of iSCSI1, iSCSI2, vMA1, vMA2 are created. This takes a long time for making vmdk eager zeroed thick.
+Create VMs of iSCSI1, iSCSI2, vMA1, vMA2.
 
-**NOTE** : If you run *cf-esxi-phase2-create-vm.pl* once again, before that, please delete the VM (iscsi1, iscsi2, vma1, vma2) at vSphere Host Client and confirm the ESXi datastore does not have the VM folders.
+- Run *cf-esxi-phase2-create-vm.pl* in subfolder *cf*, 
+
+  **NOTE**
+  - This takes a long time for making vmdk eager zeroed thick.
+  - If you run *cf-esxi-phase2-create-vm.pl* again, **delete** the VMs (iscsi1, iscsi2, vma1, vma2) before that by using vSphere Host Client, and confirm the ESXi datastore does not have the folders the VMs.
 
 <!--
 **NOTE** : **If you import OVA (exported VM file) of iSCSI VMs, before that, delete iSCSI1 and iSCSI2 at the both vSphere Host Client. And ignore the procedures regarding iSCSI VMs till the section "Setting up ESXi - iSCSI Initiator".**
 -->
 
-- Boot all the VMs and install CentOS.
+Boot all the VMs and install CentOS.
 
-  All you need to do during the installation is select *sda* as *INSTALLATION DESTINATION* and set *ROOT PASSWORD*. No need to worry about other things like *TIME ZONE* or *TIME OF DAY*.
+- All you need to do during the installation is select *sda* as *INSTALLATION DESTINATION* and set *ROOT PASSWORD*. No need to worry about other things like *TIME ZONE* or *TIME OF DAY*.
 
-- Configure the first network of the VMs.
+Configure the first network of the VMs.
 
-  Open two ESXi Host Client ( https://172.31.255.2 and https://172.31.255.3 ), open the console of iSCSI and vMA VMs and login to them as root user, then run the below command to set IP address so that Windows client can access to the VMs.
+- Open two ESXi Host Client ( https://172.31.255.2 and https://172.31.255.3 ), open the console of iSCSI and vMA VMs and login to them as root user, then run the below command to set IP address so that Windows client can access to the VMs.
 
   - on iSCSI1 console:
 
@@ -134,50 +148,65 @@ Confirm accessibility to the following six IP addresses from Windows PC by using
   - 172.31.255.11 (iSCSI1)
   - 172.31.255.12 (iSCSI2)
 
-### Setting up iSCSI Cluster
+## Setting up iSCSI Cluster
 
-At the command prompt of Windows PC,
+Configuring iSCSI VMs to fill pre-conditions of creating iSCSI Cluster.
 
-- Run *cf-iscsi-phase1.pl* in the subfolder *cf* for configuring iSCSI VMs to fill pre-conditions of creating iSCSI Cluster.
-  On the *cf-iscsi-phase1.pl* completion, both VMs are rebooted. Wait the completion of the reboot.
+- Run *cf-iscsi-phase1.pl* in the subfolder *cf*.  
+  On the completion, both VMs are rebooted. Wait the completion of the reboot.
 
-- Run *cf-iscsi-phase2.pl* in the subfolder *cf* to create iSCSI Cluster.
-  On the *cf-iscsi-phase2.pl* completion, both iscsi1 and iscsi2 are rebooted.
+Create iSCSI Cluster.
 
-- Open ECX WebUI (http://172.31.255.11:29003) and wait the cluster starting,
-  the failover group "*failover-iscsi*" activating, and completion of the mirror disk resource synchronizing.
-  While synchronizing the mirror disk, the following error message is displayed. Please ignore it.
-  
-  		Detected an error in monitoring mdw1. (65 : Both local and remote mirror disks are abnormal.(md1))
+- Run *cf-iscsi-phase2.pl* in the subfolder *cf*.  
+  On the completion, both VMs are rebooted.
 
-### Setting up ESXi - iSCSI Initiator
+- Open ECX WebUI (http://172.31.255.11:29003) and wait the cluster starts the failover group "*failover-iscsi*", and wait the completion of synchronizing the mirror disk resource.
 
-Run *cf-esxi-phase3.pl* in subfolder *cf*.
-After running the script, confirm that the newly created *iSCSI1* datastore can be seen by browsing Storage in both of the ESXi hosts.
+  **NOTE**
+  - While the synchronizing, the following error message is displayed and can be ignored.
 
-### Deploying UC VMs on iSCSI datastore
+	Detected an error in monitoring mdw1. (65 : Both local and remote mirror disks are abnormal.(md1))
+
+## Setting up ESXi - iSCSI Initiator
+
+- Run *cf-esxi-phase3.pl* in subfolder *cf*.
+
+After running the script, confirm that the newly created *iSCSI1* datastore can be accessed by browsing Storage in both of the ESXi hosts.
+
+## Deploying UC VMs on iSCSI datastore
+
+Issue *mirror break* so that prevent automatic mirror-recovery during the deployment.
+
+- On iSCSI Cluster WebUI (http://172.31.255.11:29003)  
+  [Mirror disks] tab > click [md1] > [Mirror break] icon under [iscsi2] > [Execute]
 
 Deploy the following UCE VMs (for which failover protection must be provided by ECX) on your choice of *esxi1* or *esxi2*. These VMs must be deployed on the *iSCSI1* datastore.
 
-- SV9500
-- UCE
-- MGSIP
-- GNAV
-- CMM
-- UM8700 (or UM4730)
-- VS32
+  - SV9500
+  - UCE
+  - MGSIP
+  - GNAV
+  - CMM
+  - UM8700 (or UM4730)
+  - VS32
 
-### Setting up vMA Cluster
+Issue *mirror recovery*.
 
-Run *cf-vma-phase2.pl* in the subfolder *cf*.
-This configures vMA VMs to fill prerequisite condition for creating vMA Cluster and installing ECX (and its license).
+- On iSCSI Cluster WebUI  
+ [Difference copy] icon under [iscsi1] > [Execute]
 
-After the completion of *cf-vma-phase2.pl*, both VMs are rebooted.
-Wait the completion of the reboot.
+## Setting up vMA Cluster
 
-- Create vMA Cluster
+Configures vMA VMs to fill prerequisite condition for creating vMA Cluster and installing ECX (and its license).
 
-  Run *cf-vma-phase3.pl* in the subfolder *cf*.
+- Run *cf-vma-phase2.pl* in the subfolder *cf*.
 
-After the completion of *cf-vma-phase3.pl*, both vma1 and vma2 start controlling UC VMs.
-Open ECX WebUI (http://172.31.255.6:29003) and wait for the cluster to start.
+  After the completion, both VMs are rebooted. Wait the completion of the reboot.
+
+Create vMA Cluster
+
+- Run *cf-vma-phase3.pl* in the subfolder *cf*.
+- Open ECX WebUI (http://172.31.255.6:29003) and wait for the cluster to start.
+
+After the completion, vMA Cluster start to controll UC VMs.
+
