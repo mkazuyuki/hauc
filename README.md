@@ -100,3 +100,4 @@ NEC Corporation assumes no responsibility for technical or editorial mistakes in
 - 2019.06.27 Miyamoto Kazuyuki	3rd issue
 
 -->
+2019.12.10 Miyamoto Kazuyuki <kazuyuki@nec.com>
