@@ -1,13 +1,12 @@
-# HAUC setup howto
+# HAUC HOWTO
 
-This guide introduces HAUC and its set up. The guide assumes its readers to have Linux system administration knowledge and skills with experience in installation and configuration of Storages, and Networks.
+This document introduces HAUC and its set up. Assuming the readers to have Linux system administration knowledge and skills with experience in installation and configuration of Storages and Networks.
 
 ## Overview
 
 **HAUC** is the name for **H**ighly **A**vailable **U**nified **C**ommunication solution by EXPRESSCLUSTER.
 It provides the high-availability and protection for virtual machines where UC products are running on.
-It is made of 2 IA server boxes, vSphere ESXi, UC products running on Linux or Windows VM (SV9500, UCE and others), CentOS and EXPRESSCUSTER X for Linux.
-
+It is made of 2 IA server boxes, vSphere ESXi, UC products running on Linux or Windows VM (SV9500, UCE and others), EXPRESSCUSTER X for Linux on CentOS.
 
 * Architecture
 	![HAUC Architecture](HAUC-Architecture.png)
@@ -51,13 +50,12 @@ The general procedure to deploy HAUC consists of the following major steps:
 
 * ESXi configuration
 
-  |							|   Primary ESXi			| Secondary ESXi	  	|
-  |:---							|:---  					|:---			  	|
-  | IP address for Management				|   172.31.255.2			| 172.31.255.3		  	|
-  | IP address for VMkernel(Software iSCSI Adapter)	|   172.31.254.2			| 172.31.254.3		  	|
-  | iSCSI Initiator WWN					|   iqn.1998-01.com.vmware:1		|  iqn.1998-01.com.vmware:2 	|
+  |							| Primary ESXi	| Secondary ESXi	|
+  |:---							|:---		|:---			|
+  | IP address for Management				| 172.31.255.2	| 172.31.255.3		|
+  | IP address for VMkernel(Software iSCSI Adapter)	| 172.31.254.2	| 172.31.254.3		|
 
-## [Procedure](procedure.md)
+## [Setup procedure](procedure.md)
 
 ## Common Maintenance Tasks
 
@@ -86,18 +84,10 @@ For general information about EXPRESSCLUSTER, please visit the product [web site
 - Reference Guide - The reference of commands that can be put in EXPRESSCLUSTER scripts and maintenance commands that can be executed from the server command prompt.
 
 <!--
-
-----
-
 ## Disclaimer
 
 NEC Corporation assumes no responsibility for technical or editorial mistakes in or omissions from this document. To obtain the benefits of the product, it is the customers responsibility to install and use the product in accordance with this document. The copyright for the contents of this document belongs to NEC Corporation.
-
-## Revision history
-
-- 2017.08.28 Miyamoto Kazuyuki	1st issue
-- 2018.10.22 Miyamoto Kazuyuki	2nd issue
-- 2019.06.27 Miyamoto Kazuyuki	3rd issue
-
 -->
-2019.12.10 Miyamoto Kazuyuki <kazuyuki@nec.com>
+
+----
+2019.12.13 Miyamoto Kazuyuki <kazuyuki@nec.com>

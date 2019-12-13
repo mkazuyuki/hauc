@@ -1,4 +1,6 @@
-# Quick Start Guide
+# HAUC Quick Start Guide
+
+This document descrives detailed procedure for setting up HAUC on vSphere ESXi.
 
 ## Preparing 64bit Windows PC
 
@@ -150,7 +152,7 @@ Confirm accessibility to the following six IP addresses from Windows PC by using
 
 ## Setting up iSCSI Cluster
 
-Configuring iSCSI VMs to fill pre-conditions of creating iSCSI Cluster.
+Configure iSCSI VMs to fill prerequisite conditions for creating iSCSI Cluster.
 
 - Run *cf-iscsi-phase1.pl* in the subfolder *cf*.  
   On the completion, both VMs are rebooted. Wait the completion of the reboot.
@@ -197,7 +199,7 @@ Issue *mirror recovery*.
 
 ## Setting up vMA Cluster
 
-Configures vMA VMs to fill prerequisite condition for creating vMA Cluster and installing ECX (and its license).
+Configure vMA VMs to fill prerequisite conditions for creating vMA Cluster.
 
 - Run *cf-vma-phase2.pl* in the subfolder *cf*.
 
@@ -206,7 +208,8 @@ Configures vMA VMs to fill prerequisite condition for creating vMA Cluster and i
 Create vMA Cluster
 
 - Run *cf-vma-phase3.pl* in the subfolder *cf*.
-- Open ECX WebUI (http://172.31.255.6:29003) and wait for the cluster to start.
 
-After the completion, vMA Cluster start to controll UC VMs.
+  After the completion, open vMA Cluster WebUI (http://172.31.255.6:29003) and wait for the cluster to be started.
 
+----
+2019.12.13 Miyamoto Kazuyuki <kazuyuki@nec.com>
