@@ -12,7 +12,7 @@ use warnings;
 our @esxi_ip;
 our @esxi_pw;
 our $advertised_hdd_size;
-our $safety_margin;
+our $managed_vmdk_size;
 our @iscsi_ds;
 our @iscsi_vname;	# iSCSI VM Name
 our @vma_vname;	# vMA VM Name
@@ -22,15 +22,19 @@ require "./hauc.conf" or die "file not found hauc.conf";
 # Global variable
 #-------------------------------------------------------------------------------
 my @lines	= ();
-
-# Calculating device size of iSCSI Datastore
-# 	$iscsi_size
-# 	= int( { ( { (Advertised HDD size in GB) * 0.9313 GiB/GB * Safety Margin} * { (1 - 5% of VMFS overhead) * Safety Margin } ) - ( .vswp + logs etc. + sda of vMA VM in GB ) - ( .vswp + log etc. + sda of iSCSI VM in GB ) } * Safety Margin)
-# 	= int({({(Advertised HDD size in GB) * 0.9313 * 0.99} * {0.95 * 0.99}) - (2+0.2+6) - (2+0.2+9)} * 0.99)
-$safety_margin =~ s/\%//;
-$safety_margin = 1 - ($safety_margin/100);
-my $iscsi_size = int ((($advertised_hdd_size * 0.9313 * $safety_margin) * (0.95 * $safety_margin) - (2+0.2+6) - (2+0.2+9)) * $safety_margin);
+my $iscsi_size = int (1.5868 * $managed_vmdk_size + 1.3353);
 $iscsi_size = $iscsi_size . "G";
+
+&Log("Advertised HDD Size       (specified)  = ${advertised_hdd_size}G\n");
+&Log("Managed VMs Total Size    (specified)  = ${managed_vmdk_size}G\n");
+&Log("Minimum Required HDD Size (calculated) = " . int($managed_vmdk_size * 1.8484 + 24.532) . "G\n");
+&Log("iSCSI[1|2]_1.vmdk will be (calculated) = $iscsi_size\n");
+
+if ( ($managed_vmdk_size * 1.8484 + 24.352) > $advertised_hdd_size ) {
+	print("ERROR: Your input for 'Advertised HDD Size'($advertised_hdd_size GB) is too small to accomodate your specified 'Total Size of Managed Thick-Provisioned VMs ($managed_vmdk_size GB)'.\nNOTE : An additional 33% is automatically allocated as Initial Freespace for the datastore after deployment of the VMs, so you have two choices:\n\n  1) You can increase the 'Advertised HDD Size' by acquiring additional physical storage or\n  2) You can reduce your specified 'Total Size of Managed Thick-Provisioned VMs' by as much as 15% or 20%, with the understanding that the mirrored iSCSI datastore will be left with less than 33% Initial Freespace for future expansion.\n\nPush return key");
+	my $tmp = <STDIN>;
+	exit 1;
+}
 
 # Main
 #-------------------------------------------------------------------------------
