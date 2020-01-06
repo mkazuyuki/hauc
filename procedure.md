@@ -96,7 +96,8 @@ Specify the size of volume or HDD which vMA and iSCSI VMs are stored.
 
 - Edit *hauc.conf* in the subfolder *cf*   
 
-		our $advertised_hdd_size	= "1200";
+		our $advertised_hdd_size = 1200;
+
   This is the Advertised HDD Size (in GB) of a single HDD/SSD or an array on which datastore2 resides. (i.e. 1200 for an advertised capacity of 1.2 TB)
 
 		our $managed_vmdk_size = 635;
