@@ -95,14 +95,18 @@ If a storage (HDD) dedicated for UC VMs is prepared on each ESXi, set up the sto
 Specify the size of volume or HDD which vMA and iSCSI VMs are stored.
 
 - Edit *hauc.conf* in the subfolder *cf*   
-e.x. Specify as following when the size of HDD is 1TB (1000GB).
 
-		our $advertised_hdd_size	= "1000G";
+		our $advertised_hdd_size	= "1200";
+  This is the Advertised HDD Size (in GB) of a single HDD/SSD or an array on which datastore2 resides. (i.e. 1200 for an advertised capacity of 1.2 TB)
+
+		our $managed_vmdk_size = 635;
+
+  This is the Total Size (in GB) of all of your Managed Thick-Provisioned VMs, including intended disk allocations and memory allocations for each VM. (i.e. 635, which will just fit into a 1.2TB HDD, allowing for 33% free space)
 
   **NOTE**
   - The size should be not Gibibyte but Gigabyte.
-  - Do not forget to specify unit symbol "G".
-  - The actual size of *iSCSI1 Datastore* is calculated and determined from this value.
+  - Just supply the interger value. (Do not speciy a unit symbol "G")
+  - The actual size of the *iSCSI1 Datastore* will be calculated from these two input values
 
 Create VMs of iSCSI1, iSCSI2, vMA1, vMA2.
 
@@ -212,4 +216,4 @@ Create vMA Cluster
   After the completion, open vMA Cluster WebUI (http://172.31.255.6:29003) and wait for the cluster to be started.
 
 ----
-2019.12.13 Miyamoto Kazuyuki <kazuyuki@nec.com>
+2020.01.06 Miyamoto Kazuyuki <kazuyuki@nec.com>
