@@ -122,7 +122,7 @@ sub PowerOffOpMode{
 	return 1 if ($powerop_mode !~ /^off|shutdown$/);
 	$ret = &execution("ssh $vmk vim-cmd vmsvc/power.${powerop_mode} $vmid");
 	if ($ret) {
-		&Log("[E][PowerOffOpMode] [$vmname] at [$vmk]: Could not stop ($powerop_mode)\n");
+		&Log("[E][PowerOffOpMode] [$vmk] failed to issue [$powerop_mode] for [$vmname].\n");
 		foreach (@lines){
 			if ( /vim.fault.QuestionPending/ ) {
 				# Countermeasure for when iSCSI Cluster gets failover while
@@ -133,7 +133,7 @@ sub PowerOffOpMode{
 		}
 		$ret = 1;
 	}else{
-		&Log("[I][PowerOffOpMode] [$vmname] at [$vmk] stopped. ($powerop_mode)\n");
+		&Log("[I][PowerOffOpMode] [$vmk] issued [$powerop_mode] for [$vmname].\n");
 		$ret = 0;
 	}
 	return $ret;
@@ -160,6 +160,15 @@ sub WaitPowerOff{
 		sleep $interval;
 	}
 	&Log("[E][WaitPowerOff] [$vmname] powered off not completed. (cnt=$max_cnt)\n");
+
+	# There is a case that this script successfully issued "shutdown" for the VM
+	# but the VM got stuck during shutdown.
+	# The VM kept powere-on and retry exceeded $max_cnt then
+	# thsi script failed to unregister the VM.
+	# To avoid such a situation, issuing "off" for the VM here just in case.
+	&Log("[D][WaitPowerOff] [$vmk] issued [off] for [$vmname] just in case.\n");
+	&PowerOffOpMode("off");
+
 	return 1;
 }
 #-------------------------------------------------------------------------------
