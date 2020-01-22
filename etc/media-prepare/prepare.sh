@@ -23,6 +23,7 @@ mv ECX4.x-Rep-lin2.key hauc-master/cf/
 
 # PUTTY
 cd hauc-master/cf
+curl -O https://www.chiark.greenend.org.uk/~sgtatham/putty/licence.html
 curl -O https://the.earth.li/~sgtatham/putty/latest/w64/putty.exe
 curl -O https://the.earth.li/~sgtatham/putty/latest/w64/plink.exe
 curl -O https://the.earth.li/~sgtatham/putty/latest/w64/pscp.exe
