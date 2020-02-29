@@ -50,12 +50,12 @@ my $vmid = "";
 my $vmhba = "";
 my @lines = ();
 
-my $tmp = `ip address | grep $vma1`;
+my $tmp = `ip address | grep $vma1/`;
 if ($? == 0) {
 	$vmk = $vmk1;
 	$vmhba = $vmhba1;
 } else {
-	$tmp = `ip address | grep $vma2`;
+	$tmp = `ip address | grep $vma2/`;
 	if ($? == 0) {
 		$vmk = $vmk2;
 		$vmhba = $vmhba2;
@@ -239,8 +239,8 @@ sub PowerOn{
 sub WaitPowerOn{
 	for (my $i = 0; $i < $max_cnt; $i++){
 		#
-		# RegisterVm ‚Å Invalid VM ‚ð¶‚ñ‚¾ŒãAInvalid VM ‚Ì PowerOn ‚ªŽ¸”s‚µ‚½‚Ü‚Ü
-		# ‚±‚±‚É“Ë“ü‚·‚éƒP[ƒX‚ª‚ ‚é‚Æ max_cnt ‰ñ‚Ìƒ‹[ƒv‚ÉŠ×‚é
+		# RegisterVm ã§ Invalid VM ã‚’ç”Ÿã‚“ã å¾Œã€Invalid VM ã® PowerOn ãŒå¤±æ•—ã—ãŸã¾ã¾
+		# ã“ã“ã«çªå…¥ã™ã‚‹ã‚±ãƒ¼ã‚¹ãŒã‚ã‚‹ã¨ max_cnt å›žã®ãƒ«ãƒ¼ãƒ—ã«é™¥ã‚‹
 		#
 		if (&IsPoweredOn()) {
 			&Log("[I][WaitPowerOn] [$vmname] power on completed. (cnt=$i)\n");
