@@ -39,12 +39,12 @@ my $vmx = $cfg_path;
 $vmx =~ s/^.*?([^\/]*\/[^\/]*$)/$1/;
 my @lines = ();
 
-my $tmp = `ip address | grep $vma1`;
+my $tmp = `ip address | grep $vma1/`;
 if ($? == 0) {
 	$vmk = $vmk1;
 	$vmhba = $vmhba1;
 } else {
-	$tmp = `ip address | grep $vma2`;
+	$tmp = `ip address | grep $vma2/`;
 	if ($? == 0) {
 		$vmk = $vmk2;
 		$vmhba = $vmhba2;
