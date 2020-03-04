@@ -33,7 +33,7 @@ my $ret	= 0;
 my $VMNAME	= "";
 my $VMIP	= "";
 my $VMK 	= "";
-my $tmp = `ip address | grep $VMIP1`;
+my $tmp = `ip address | grep $VMIP1/`;
 if ($? == 0) {
 	$VMNAME	= $VMNAME2;
 	$VMIP = $VMIP2;
