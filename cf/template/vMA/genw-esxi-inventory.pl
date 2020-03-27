@@ -32,7 +32,7 @@ $ENV{"HOME"} = "/root";
 my $vmk = "";	# vmk local
 my $vmkr = "";	# vmk remote
 my $vmhba = "";
-my $tmp = `ip address | grep $vma1`;
+my $tmp = `ip address | grep $vma1/`;
 if ($? == 0) {
 	$vmk = $vmk1;
 	$vmkr = $vmk2;

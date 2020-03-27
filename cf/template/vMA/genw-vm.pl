@@ -21,11 +21,11 @@ my $vma2 = "%%VMA2%%";
 
 #-------------------------------------------------------------------------------
 my $vmk = "";
-my $tmp = `ip address | grep $vma1`;
+my $tmp = `ip address | grep $vma1/`;
 if ($? == 0) {
 	$vmk = $vmk1;
 } else {
-	$tmp = `ip address | grep $vma2`;
+	$tmp = `ip address | grep $vma2/`;
 	if ($? == 0) {
 		$vmk = $vmk2;
 	} else {
