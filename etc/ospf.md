@@ -243,10 +243,10 @@ Add exec-resource "exec-gateway" which has following scripts to the cluster.
 	ret=0
 	ssh $ROUTER_STB ifdown $NIC
 	if [ $? -ne 0 ];then
-	        ret=1
-	        echo [E] [$ROUTER_STB] [$NIC] DOWN failed
+		# On NP, ifdown for $ROUTER_STB is impossible
+		echo [E] [$ROUTER_STB] [$NIC] DOWN failed
 	else
-	        echo [I] [$ROUTER_STB] [$NIC] DOWN
+		echo [I] [$ROUTER_STB] [$NIC] DOWN
 	fi
 
 	ssh $ROUTER_ACT ifup   $NIC
