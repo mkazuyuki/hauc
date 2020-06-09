@@ -66,12 +66,12 @@ However the VM still has GW1 as default-gateway, and so, the packet from the VM 
 
 ## Solution : Utilising dynamic routing protocol OSPF
 
-Before failover:
-Add a virtual router vR1 which have 192.168.75.251, 10.0.0.254 and GW1 as default gateway.
-Add a virtual router vR2 which have 192.168.75.252, 10.0.0.254 and GW2 as default-gateway.
-Set 10.0.0.1 as the IP address for the VM.
-Set a routing information for 10.0.0.0/24 network to vR1 so that hosts on 192.168.76.0/24 network are accessible to the VM.
-Configure the VM to have 10.0.0.254 as the default-gateway.
+Before failover:  
+Adding a virtual router vR1 which have 192.168.75.251, 10.0.0.254 and GW1 as default gateway.  
+Adding a virtual router vR2 which have 192.168.75.252, 10.0.0.254 and GW2 as default-gateway.  
+Setting 10.0.0.1 as the IP address for the VM.  
+Setting a routing information for 10.0.0.0/24 network to vR1 so that hosts on 192.168.76.0/24 network are accessible to the VM.  
+Configuring the VM to have 10.0.0.254 as the default-gateway.
 
 
 	          INTERNET
@@ -98,10 +98,10 @@ Configure the VM to have 10.0.0.254 as the default-gateway.
 
 
 After failover:
-VM is relocated to node-B.
-vR1 stoped 10.0.0.254 interface then 10.0.0.0/24 network became unreachable.
-vR2 started 10.0.0.254 intergace.
-The change of the routing information to 10.0.0.0/24 network is distributed to other routers by OSPF, then the hosts in 192.168.76.0/24 become accessible to the VM.
+VM is relocated to node-B.  
+vR1 stoped 10.0.0.254 interface then 10.0.0.0/24 network became unreachable.  
+vR2 started 10.0.0.254 interface.  
+The change of the routing information to 10.0.0.0/24 network is distributed to other routers by OSPF, then the hosts in 192.168.76.0/24 become accessible to the VM.  
 The VM sill has 10.0.0.254 as default-gateway, but default-gataway of vR2 is GW2, and so, the VM become accessible to the internet via GW2.
 
 	          INTERNET
