@@ -77,9 +77,9 @@ sub IsUnRegistered {
 	&execution("ssh $vmk vim-cmd vmsvc/getallvms");
 	my @tmp = @lines;
 	foreach (@tmp) {
-		if (/(\d+).*\s$vmname\s/) {
+		if (/^(\d+).*\s$vmname\s/) {
 			$vmid = $1;
-			&Log("[I][IsUnRegistered] [$vmname] in inventory.\n");
+			&Log("[I][IsUnRegistered] [$vmname][$vmid] in inventory.\n");
 		}
 		elsif (/^Skipping invalid VM \'(\d+)\'$/) {
 			&Log("[D][IsUnRegistered] unregistering invalid VM($1)\n");
