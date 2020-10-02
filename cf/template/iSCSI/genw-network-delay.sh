@@ -42,7 +42,6 @@ close(IN);
 if ($cnt >= $times) {
 	$msg .= "$threshold sec or more delay has been observed $cnt times in the last $term min. ";
 
-	&RetrieveSyncDiff();
 	&RetrieveDf(0);
 	&RetrieveDf(1);
 
@@ -53,6 +52,7 @@ print("$msg\n");
 # Retreaveing df (inode and 1K-blocks)
 sub RetrieveDf {
 	my $case = shift;
+	my $dksz = 0;
 	if ($case) {
 		open IN, "df    $dev | tail -n1 | awk '{print \$2, \$3, \$5}' |";
 	} else {
@@ -68,20 +68,27 @@ sub RetrieveDf {
 		$c =~ s/^.*?(\d*\%).*$/$1/;
 		if ($case) {
 			$msg .= "(1K-block use / total = $b / $a = $c) ";
+			$dksz = $a;
 		} else {
 			$msg .= "(inode use / total = $b / $a = $c) ";
 		}
 	}
 	close(IN);
+	if ($dksz){
+		&RetrieveSyncDiff($dksz);
+	}
 }
 
 # Retreaving SyncDiff, Cur (byte)
 sub RetrieveSyncDiff {
-	open(IN, "tail -n1 /opt/nec/clusterpro/perf/disk/nmp1.cur | ");
+	my $dkszKB = shift;
+	open(IN, "tail -n1 $file | ");
 	while(<IN>){
 		chomp;
 		s/^(\".*?\",){20}\"(\d{1,})\".*$/$2/;
-		$msg .= "(SyncDiff Cur = $_ byte) ";
+		my $curKB = $_ / 1024;
+		my $r = $curKB / $dkszKB * 100;
+		$msg .= sprintf("(SyncDiff Cur / 1K-block total = %d / $dkszKB = %d%%)", $curKB, $r);
 	}
 	close(IN);
 }
