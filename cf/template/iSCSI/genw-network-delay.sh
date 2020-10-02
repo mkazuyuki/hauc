@@ -26,7 +26,7 @@ open(IN, "tac $file | ");
 while(<IN>){
 	chomp;
 	# retrieving "MDC HB Time, Max2"
-	s/(\".*?\",){28}\"(.*?)\".*$/$2/;
+	s/^(\".*?\",){28}\"(.*?)\".*$/$2/;
 	if (looks_like_number $_) {
 		push (@delay, $_);
 	}
@@ -48,7 +48,7 @@ if ($cnt >= $times) {
 
 	system("clplogcmd -L WARN -m \"$msg\"");
 }
-print("clplogcmd -L WARN -m \"$msg\"");
+print("$msg\n");
 
 # Retreaveing df (inode and 1K-blocks)
 sub RetrieveDf {
@@ -80,7 +80,7 @@ sub RetrieveSyncDiff {
 	open(IN, "tail -n1 /opt/nec/clusterpro/perf/disk/nmp1.cur | ");
 	while(<IN>){
 		chomp;
-		s/^(\".*?\",){19}\"(\d{1,})\".*$/$2/;
+		s/^(\".*?\",){20}\"(\d{1,})\".*$/$2/;
 		$msg .= "(SyncDiff Cur = $_ byte) ";
 	}
 	close(IN);
