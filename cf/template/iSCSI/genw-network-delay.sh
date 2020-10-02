@@ -16,6 +16,8 @@ my $threshold	= 1.0;  # sec
 my $times	= 1;    # times
 my $file	= "/opt/nec/clusterpro/perf/disk/nmp1.cur";
 my $dev 	= "/dev/sda2";
+# my $mail	= "--mail";
+my $mail	= "";
 # ----------
 
 my @delay	= ();
@@ -45,7 +47,7 @@ if ($cnt >= $times) {
 	&RetrieveDf(0);
 	&RetrieveDf(1);
 
-	system("clplogcmd -L WARN -m \"$msg\"");
+	system("clplogcmd -L WARN $mail -m \"$msg\"");
 }
 print("$msg\n");
 
