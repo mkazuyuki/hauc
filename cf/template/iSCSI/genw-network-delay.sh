@@ -29,12 +29,12 @@ while(<IN>){
 	s/^(\".*?\",){28}\"(.*?)\".*$/$2/;
 	if (looks_like_number $_) {
 		push (@delay, $_);
-	}
-	if($_ >= $threshold){
-		$cnt++;
-	}
-	if(@delay >= $term){
-		last;
+		if($_ >= $threshold){
+			$cnt++;
+		}
+		if(@delay >= $term){
+			last;
+		}
 	}
 }
 close(IN);
