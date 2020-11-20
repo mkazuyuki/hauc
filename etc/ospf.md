@@ -158,37 +158,45 @@ Configure 1st NIC. Assign IP addresses which belong to existing network.
 
 On vSphere Host Client, for both vR1 and 2, connect CDROM (CentOS 7.6) then run the following commands.
 
-	# Setup dynamic NIC
-	nmcli connection modify ens224 ipv4.method manual ipv4.addresses 10.0.0.254/24 connection.autoconnect no
-	ifdown ens224
+```bash
+# Setup dynamic NIC
+nmcli connection modify ens224 ipv4.method manual ipv4.addresses 10.0.0.254/24 connection.autoconnect no
+ifdown ens224
 
-	# Configure firewalld
-	systemctl stop firewalld
-	systemctl disable firewalld
+# Configure firewalld
+systemctl stop firewalld
+systemctl disable firewalld
 
-	# Configure selinux
-	sed -i -e 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
+# Configure selinux
+sed -i -e 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
 
-	# Enable IP forwarding
-	echo 'net.ipv4.ip_forward = 1' >> /etc/sysctl.conf
-	sysctl -p
+# Enable IP forwarding
+echo 'net.ipv4.ip_forward = 1' >> /etc/sysctl.conf
+sysctl -p
 
-	# Install Quagga
-	# connect CentOS7 ISO to this VM
-	mkdir /media/cdrom
-	mount /dev/cdrom /media/cdrom
-	yum --disablerepo=* --enablerepo=c7-media -y install quagga
-	cp /usr/share/doc/quagga-0.99.22.4/ospfd.conf.sample            /etc/quagga/ospfd.conf
-	sed -i -e "s/^log .*/log file \/var\/log\/quagga\/ospfd.log/"   /etc/quagga/ospfd.conf
-	sed -i -e "s/^hostname .*/hostname ${HOSTNAME}/"                /etc/quagga/ospfd.conf
-	sed -i -e "s/^\!router/router/"                                 /etc/quagga/ospfd.conf
-	sed -i -e "s/^\!  network.*/  network 10.0.0.0\/24 area 0\n  network 192.168.75.0\/24 area 1/" /etc/quagga/ospfd.conf
-	sed -i -e "s/^log .*/log file \/var\/log\/quagga\/zebra.log/"   /etc/quagga/zebra.conf
-	# Start Quagga
-	systemctl enable zebra
-	systemctl enable ospfd
-	systemctl start zebra
-	systemctl start ospfd
+# connect CentOS7 ISO to this VM
+mkdir /media/cdrom
+mount /dev/cdrom /media/cdrom
+
+# Install Quagga
+yum --disablerepo=* --enablerepo=c7-media -y install quagga
+
+cp /usr/share/doc/quagga-0.99.22.4/ospfd.conf.sample            /etc/quagga/ospfd.conf
+sed -i -e "s/^log .*/log file \/var\/log\/quagga\/ospfd.log/"   /etc/quagga/ospfd.conf
+sed -i -e "s/^hostname .*/hostname ${HOSTNAME}/"                /etc/quagga/ospfd.conf
+sed -i -e "s/^\!router/router/"                                 /etc/quagga/ospfd.conf
+sed -i -e "s/^\!  network.*/  network 10.0.0.0\/24 area 0\n  network 192.168.75.0\/24 area 1/" /etc/quagga/ospfd.conf
+
+cp /usr/share/doc/quagga-0.99.22.4/zebra.conf.sample            /etc/quagga/zebra.conf
+sed -i -e "s/^hostname .*/hostname ${HOSTNAME}/"                /etc/quagga/zebra.conf
+sed -i -e "s/^\!log .*/log file \/var\/log\/quagga\/zebra.log/" /etc/quagga/zebra.conf
+
+# Start Quagga
+systemctl enable zebra
+systemctl enable ospfd
+systemctl start zebra
+systemctl start ospfd
+```
 
 ### Configure the cluster so that controls the vR1 and 2.
 
@@ -201,60 +209,127 @@ on both node-A and B
 
 Add exec-resource "exec-gateway" which has following scripts to the cluster.
 
-  No need to edit stop.sh.
-  edit start.sh like the sample below
+Edit start.sh like the sample below
 
-	#!/bin/sh
-	#**************
-	#*  start.sh  *
-	#**************
+```bash
+#!/bin/sh
+#**************
+#*  start.sh  *
+#**************
 	
-	# Parameters
-	#-----------
-	# Name of the failovr group
-	FOG=customer1
+# Parameters
+#-----------
+# Name of the failovr group
+FOG=customer1
 
-	# IP address of virtual routers
-	ROUTER1=192.168.75.251
-	ROUTER2=192.168.75.252
+# IP address of virtual routers
+ROUTER1=192.168.75.251
+ROUTER2=192.168.75.252
 
-	# Target NIC in the virtual routers to be controlled
-	NIC=ens224
-	#-----------
+# Target NIC in the virtual routers to be controlled
+NIC=ens224
+#-----------
 
+BUF=`clpstat --local`
+
+while [ "$BUF" = 'This command is already run.' ]; do
+	echo [D] busy clpstat
+	sleep 3
 	BUF=`clpstat --local`
-	PRI=`echo $BUF | sed -r 's/.*<server>[ *]{1,2}//'  | sed 's/ .*//'`
-	ACT=`echo $BUF | sed -r "s/.* $FOG ([^:]*:){2} //" | sed 's/ .*//'`
+done
 
-	echo [D] primary : [$PRI]
-	echo [D] active  : [$ACT]
+PRI=`echo $BUF | sed -r 's/.*<server>[ *]{1,2}//'  | sed 's/ .*//'`
+ACT=`echo $BUF | sed -r "s/.* $FOG ([^:]*:){2} //" | sed 's/ .*//'`
 
-	if [ $PRI = $ACT ]; then
-	        ROUTER_ACT=$ROUTER1
-	        ROUTER_STB=$ROUTER2
-	else
-	        ROUTER_ACT=$ROUTER2
-	        ROUTER_STB=$ROUTER1
-	fi
+echo [D] primary : [$PRI]
+echo [D] active  : [$ACT]
 
-	echo [D] active  : [$ROUTER_ACT]
-	echo [D] standby : [$ROUTER_STB]
+if [ $PRI = $ACT ]; then
+	ROUTER_ACT=$ROUTER1
+	ROUTER_STB=$ROUTER2
+else
+	ROUTER_ACT=$ROUTER2
+	ROUTER_STB=$ROUTER1
+fi
 
-	ret=0
-	ssh $ROUTER_STB ifdown $NIC
-	if [ $? -ne 0 ];then
-		# On NP, ifdown for $ROUTER_STB is impossible
-		echo [E] [$ROUTER_STB] [$NIC] DOWN failed
-	else
-		echo [I] [$ROUTER_STB] [$NIC] DOWN
-	fi
+echo [D] active  : [$ROUTER_ACT]
+echo [D] standby : [$ROUTER_STB]
 
-	ssh $ROUTER_ACT ifup   $NIC
-	if [ $? -ne 0 ];then
-	        ret=1
-	        echo [E] [$ROUTER_ACT] [$NIC] UP failed
-	else
-	        echo [I] [$ROUTER_ACT] [$NIC] UP
-	fi
+ret=0
+ssh $ROUTER_STB ifdown $NIC
+if [ $? -ne 0 ];then
+	# On NP, ifdown for $ROUTER_STB is impossible
+	echo [W] [$ROUTER_STB] [$NIC] DOWN failed
+else
+	echo [I] [$ROUTER_STB] [$NIC] DOWN
+fi
 
-	exit $ret
+ssh $ROUTER_ACT ifup   $NIC
+if [ $? -ne 0 ];then
+	ret=1
+	echo [E] [$ROUTER_ACT] [$NIC] UP failed
+else
+	echo [I] [$ROUTER_ACT] [$NIC] UP
+fi
+
+exit $ret
+```
+
+
+Edit stop.sh like the sample below
+
+```bash
+#!/bin/sh
+#**************
+#*  stop.sh  *
+#**************
+	
+# Parameters
+#-----------
+# Name of the failovr group
+FOG=customer1
+
+# IP address of virtual routers
+ROUTER1=192.168.75.251
+ROUTER2=192.168.75.252
+
+# Target NIC in the virtual routers to be controlled
+NIC=ens224
+#-----------
+
+BUF=`clpstat --local`
+
+while [ "$BUF" = 'This command is already run.' ]; do
+	echo [D] busy clpstat
+	sleep 3
+	BUF=`clpstat --local`
+done
+
+PRI=`echo $BUF | sed -r 's/.*<server>[ *]{1,2}//'  | sed 's/ .*//'`
+ACT=`echo $BUF | sed -r "s/.* $FOG ([^:]*:){2} //" | sed 's/ .*//'`
+
+echo [D] primary : [$PRI]
+echo [D] active  : [$ACT]
+
+if [ $PRI = $ACT ]; then
+	ROUTER_ACT=$ROUTER1
+	ROUTER_STB=$ROUTER2
+else
+	ROUTER_ACT=$ROUTER2
+	ROUTER_STB=$ROUTER1
+fi
+
+echo [D] active  : [$ROUTER_ACT]
+echo [D] standby : [$ROUTER_STB]
+
+ret=0
+
+ssh $ROUTER_ACT ifdown   $NIC
+if [ $? -ne 0 ];then
+	ret=1
+	echo [E] [$ROUTER_ACT] [$NIC] DOWN failed
+else
+	echo [I] [$ROUTER_ACT] [$NIC] DOWN
+fi
+
+exit $ret
