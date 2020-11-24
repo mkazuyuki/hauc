@@ -230,12 +230,17 @@ ROUTER2=192.168.75.252
 NIC=ens224
 #-----------
 
-BUF=`clpstat --local`
-
-while [ "$BUF" = 'This command is already run.' ]; do
-	echo [D] busy clpstat
-	sleep 3
+ret=1
+while [ $ret -ne 0 ]; do
 	BUF=`clpstat --local`
+	ret=$?
+	if [ $ret -eq  9 ]; then
+		echo [D] clpstat busy [$ret][$BUF]
+		sleep 3
+	elif [ $ret -ne 0 ]; then
+		echo [E] clpstat [$ret][$BUF]
+		exit $ret
+	fi
 done
 
 PRI=`echo $BUF | sed -r 's/.*<server>[ *]{1,2}//'  | sed 's/ .*//'`
@@ -297,12 +302,17 @@ ROUTER2=192.168.75.252
 NIC=ens224
 #-----------
 
-BUF=`clpstat --local`
-
-while [ "$BUF" = 'This command is already run.' ]; do
-	echo [D] busy clpstat
-	sleep 3
+ret=1
+while [ $ret -ne 0 ]; do
 	BUF=`clpstat --local`
+	ret=$?
+	if [ $ret -eq  9 ]; then
+		echo [D] clpstat busy [$ret][$BUF]
+		sleep 3
+	elif [ $ret -ne 0 ]; then
+		echo [E] clpstat [$ret][$BUF]
+		exit $ret
+	fi
 done
 
 PRI=`echo $BUF | sed -r 's/.*<server>[ *]{1,2}//'  | sed 's/ .*//'`
