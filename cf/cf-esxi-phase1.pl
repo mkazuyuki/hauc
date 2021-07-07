@@ -18,7 +18,7 @@ my @lines	= ();
 my @vswitch = ("vSwitch0", "Mirror_vswitch", "iSCSI_vswitch", "uc_vm_vswitch");
 
 my %portgroup = (
-	'vSwitch' => [ 'VM Network', 'Management Networ'],
+	'vSwitch' => [ 'VM Network', 'Management Network'],
 	'Mirror_vswitch' => ['Mirror_portgroup'],
 	'iSCSI_vswitch' => ['iSCSI_portgroup', 'iSCSI_Initiator'],
 	'uc_vm_vswitch' => ['uc_vm_portgroup']

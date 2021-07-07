@@ -12,27 +12,27 @@ It is made of 2 IA server boxes, vSphere ESXi, UC products running on Linux or W
 	![HAUC Architecture](HAUC-Architecture.png)
 
 2 boxes of green line stand for 2 of IA servers. ESXi is installed on both servers.  
-The *iSCSI Cluster* in the bottom half provides the iSCSI storage for both ESXi and becomes a Datastore for storing the configuration and disk-image files for UC VMs on it.
+*EXPRESSCLUSTER* in the bottom half provides the iSCSI storage for both ESXi and becomes a Datastore for storing the configuration and disk-image files for UC VMs on it.
 The iSCSI storage is made by 2 VMs where *iSCSI Target service* runs on CentOS and EXPRESSCLUSTER (data-mirroring configuration) protects it.  
-The *vMA Cluster* in the upper half provides the protection for UC VMs by controlling and monitoring them. When EXPRESSCLUSTER in the vMA Cluster detects an error on the active system (left side), it issues failover of UC VMs (SV9500 and UCE).
+And also it provides the protection for UC VMs by controlling and monitoring them. When EXPRESSCLUSTER detects an error on the active system (left side), it issues failover of UC VMs (SV9500 and UCE).
 
 The general procedure to deploy HAUC consists of the following major steps:
 
 1. Perform system planning to determine requirements and specify specific configuration settings.
 2. Set up Primary and Standby ESXi.
-3. Deploy *iSCSI Target Cluster* and *vMA Cluster*.
+3. Deploy *EC* VM.
 4. Connect ESXi hosts to the iSCSI Target.
 5. Deploy UC VMs.
-6. Configure *vMA Cluster* to manage the UC VMs. 
+6. Configure *EXPRESSCLUSTER* to manage the UC VMs. 
 
-## Software Requirements
+## Required Software
 
-- vSphere ESXi 6.0 or later (6.7 U3 was verified)
-- EXPRESSCLUSTER X 4.1 for Linux (4.1.1-1)
-	- EXPRESSCLUSTER X Replicator 4.1 for Linux (4.1.1-1)
-- CentOS 7.6 x86_64
-- Strawberry Perl 5.30.0.1 (64bit)   (http://strawberryperl.com/)
-- putty, plink, pscsp
+- vSphere ESXi 7.0 or later (7.0 U2 was verified)
+- EXPRESSCLUSTER X 4.3 for Linux (4.3.0-1)
+	- EXPRESSCLUSTER X Replicator 4.3 for Linux
+- CentOS 8.2 x86_64
+- Strawberry Perl 5.32.1.1 (64bit)   (http://strawberryperl.com/)
+- putty, plink, pscp
 
 ## System Requirements and Planning
 
@@ -40,22 +40,17 @@ The general procedure to deploy HAUC consists of the following major steps:
 
   | Portion	| Description 
   |:--		|:--
-  | CPU Cores	| (Cores for VMkernel) + (Cores for UC VMs) + (4 Cores for iSCSI VM) + (2 Cores for vMA VM)
-  | Memory	| (2GB for VMkernel) + (required amount for UC VMs) + (8GB for iSCSI VM) + (4GB for vMA VM)
+  | CPU Cores	| (Cores for VMkernel) + (Cores for UC VMs) + (4 Cores for EC VM)
+  | Memory	| (2 GB for VMkernel) + (required amount for UC VMs) + (8 ~ 32 GB for EC VM)
   | LAN Port	| LAN ports x4 (GBE required, 10GBE recommended)
-  | Storage	| (60GB for ESXi system) + (required amount for UC VMs) + (9GB for iSCSI VM) + (6GB for vMA VM)
+  | Storage	| (60 GB for ESXi system) + (required amount for UC VMs) + (9 GB for EC VM)
 
 * Network configuration
   ![Network configuraiton](HAUC-NW-Configuration.png)
 
-* ESXi configuration
+## Setup
 
-  |							| Primary ESXi	| Secondary ESXi	|
-  |:---							|:---		|:---			|
-  | IP address for Management				| 172.31.255.2	| 172.31.255.3		|
-  | IP address for VMkernel(Software iSCSI Adapter)	| 172.31.254.2	| 172.31.254.3		|
-
-## [Setup procedure](procedure.md)
+The procedure is described [here](procedure.md)
 
 ## Common Maintenance Tasks
 

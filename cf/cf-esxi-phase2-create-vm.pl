@@ -16,7 +16,6 @@ our $advertised_hdd_size;
 our $managed_vmdk_size;
 our @iscsi_ds;
 our @iscsi_vname;	# iSCSI VM Name
-our @vma_vname;	# vMA VM Name
 
 require "./hauc.conf" or die "file not found hauc.conf";
 
@@ -63,41 +62,30 @@ for my $i (0..1) {
 		&Log("[E] Failed to create iSCSI" . ($i+1) . "\n");
 	}
 	&Log("[I] iSCSI". ($i+1) . " created\n");
-
-	# Creating vMA VM
-	if (&execution($cmd . "-m ESXi-scripts/cf-vma-" . ($i + 1) .".sh")) {
-		&Log("[E] Failed to create vMA" . ($i+1) . "\n");
-	}
-	&Log("[I] vMA" . ($i+1) . " created\n");
-
 }
 # Validation
-my @vms = (	[ $iscsi_vname[0], $vma_vname[0] ],
-		[ $iscsi_vname[1], $vma_vname[1] ] );
 for my $i (0..1) {
 	my $cmd = ".\\plink.exe -no-antispoof -l root -pw \"$esxi_pw[$i]\" $esxi_ip[$i] ";
 	&execution("$cmd vim-cmd vmsvc/getallvms");
-	foreach my $n ( @{$vms[$i]} ) {
-		my $found = 0;
-		foreach (@lines) {
-			if (/ $n /) {
-				$found = 1;
-				last;
-			}
+	my $found = 0;
+	foreach (@lines) {
+		if (/ $iscsi_vname[$i] /) {
+			$found = 1;
+			last;
 		}
-		if (!$found) {
-			&Log("[E] *******************************************************\n");
-			&Log("[E] On ESXi#" . ($i+1) . ", [$n] was not found.\n");
-			&Log("[E] Check your configuration.\n");
-			&Log("[E] Push return key\n");
-			&Log("[E] *******************************************************\n");
-			my $tmp = <STDIN>;
-			exit;
-		}
+	}
+	if (!$found) {
+		&Log("[E] *******************************************************\n");
+		&Log("[E] On ESXi#" . ($i+1) . ", [$n] was not found.\n");
+		&Log("[E] Check your configuration.\n");
+		&Log("[E] Push return key\n");
+		&Log("[E] *******************************************************\n");
+		my $tmp = <STDIN>;
+		exit;
 	}
 }
 &Log("[I] ***********************************************\n");
-&Log("[I] All iSCSI and vMA VMs were found in right ESXi.\n");
+&Log("[I] All iSCSI VMs were found in right ESXi.\n");
 &Log("[I] This phase was successfully completed.\n");
 &Log("[I] Push return key\n");
 &Log("[I] ***********************************************\n");

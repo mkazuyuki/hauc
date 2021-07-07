@@ -8,7 +8,7 @@ Download [**hauc-master.zip**](https://github.com/mkazuyuki/hauc/archive/master.
 
 - Edit cf/hauc.conf so that match to your environment.
 
-Download [**ECX**](https://www.nec.com/en/global/prod/expresscluster/en/trial/zip/ecx41l_x64.zip)
+Download [**ECX**](https://www.nec.com/en/global/prod/expresscluster/en/trial/zip/ecx43l_x64.zip)
 
 -  Extract it and copy *expresscls-4.1.1-1.x86_64.rpm* in it to the subfolder *cf*.
 
