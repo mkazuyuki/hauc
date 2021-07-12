@@ -4,7 +4,7 @@ This document descrives detailed procedure for setting up HAUC on vSphere ESXi.
 
 ## Preparing 64bit Windows PC
 
-Download [**hauc-master.zip**](https://github.com/mkazuyuki/hauc/archive/master.zip) and extract.
+Download [**hauc-master.zip**](https://github.com/mkazuyuki/hauc/archive/refs/heads/ESXi7.0.zip) and extract.
 
 - Edit cf/hauc.conf so that match to your environment.
 
@@ -49,6 +49,22 @@ Install the licenses
 - On vSphere Host Client for both ESXi,
 	-  [Manage] in {Navigator] pane > [Licensing] tab > [Actions] > [Assign license]
 	-  enter the license key > [Check license] > [Assign license]
+
+- Access 172.31.255.2 and 172.31.255.3 with putty and configure ESXi to suppress the SSH disabe warning by issuing thefollowing command:
+
+	esxcli system settings advanced set -i 1 -o /UserVars/SuppressShellWarning
+	esxcfg-advcfg --set 1 /UserVars/SuppressShellWarning
+	esxcfg-advcfg --get   /UserVars/SuppressShellWarning
+	# esxcli system settings advanced list | grep -A 10 /UserVars/SuppressShellWarning
+
+- Disable TSO (TCP Segmentation Offload) and LRO (Large Receive Offload) if iSCSI performance is not enough.
+
+	esxcli system settings advanced set --option=/Net/UseHwTSO --int-value=0
+	esxcli system settings advanced set --option=/Net/UseHwTSO6 --int-value=0
+	esxcli system settings advanced set --option=/Net/TcpipDefLROEnabled --int-value=0
+	# esxcli system settings advanced list --option=/Net/UseHwTSO
+	# esxcli system settings advanced list --option=/Net/UseHwTSO6
+	# esxcli system settings advanced list --option=/Net/TcpipDefLROEnabled
 
 Setup NTP servers
 - On vSphere Host Client for both ESXi,

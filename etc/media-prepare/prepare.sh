@@ -4,24 +4,24 @@
 #export http_proxy=http://PROXY_SERVER:PORT/
 
 # HAUC
-curl -O https://codeload.github.com/mkazuyuki/hauc/zip/master
-unzip master
-rm master
+curl -O https://github.com/mkazuyuki/hauc/archive/refs/heads/ESXi7.0.zip
+unzip hauc-ESXi7.0.zip
+rm hauc-ESXi7.0.zip
 
 # EC
-curl -O https://www.nec.com/en/global/prod/expresscluster/en/trial/zip/ecx41l_x64.zip
-unzip -j ecx41l_x64.zip "*.rpm"
-rm ecx41l_x64.zip
-mv expresscls-4.1.1-1.x86_64.rpm hauc-master/cf/
+curl -O https://www.nec.com/en/global/prod/expresscluster/en/trial/zip/ecx43l_x64.zip
+unzip -j ecx43l_x64.zip ecx43l_x64/Linux/4.3/en/server/expresscls-4.3.0-1.x86_64.rpm
+rm ecx43l_x64.zip
+mv expresscls-4.3.0-1.x86_64.rpm hauc-ESXi7.0/cf/
 
 ##
-## Preparing trial license files is needed
+## Prepare trial license files in the current working directory to be moved to cf directory
 ##
 mv ECX4.x-lin1.key     hauc-master/cf/
 mv ECX4.x-Rep-lin1.key hauc-master/cf/
 mv ECX4.x-Rep-lin2.key hauc-master/cf/
 
-# PUTTY
+# Downloading PUTTY, strawbrry perl, CentOS
 cd hauc-master/cf
 curl -O https://www.chiark.greenend.org.uk/~sgtatham/putty/licence.html
 curl -O https://the.earth.li/~sgtatham/putty/latest/w64/putty.exe
