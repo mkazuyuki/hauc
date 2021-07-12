@@ -50,14 +50,12 @@ Install the licenses
 	-  [Manage] in {Navigator] pane > [Licensing] tab > [Actions] > [Assign license]
 	-  enter the license key > [Check license] > [Assign license]
 
-- Access 172.31.255.2 and 172.31.255.3 with putty and configure ESXi to suppress the SSH disabe warning by issuing thefollowing command:
+Access 172.31.255.2 and 172.31.255.3 with putty and configure ESXi to suppress the SSH disabe warning by issuing thefollowing command:
 
-	esxcli system settings advanced set -i 1 -o /UserVars/SuppressShellWarning
-	esxcfg-advcfg --set 1 /UserVars/SuppressShellWarning
-	esxcfg-advcfg --get   /UserVars/SuppressShellWarning
-	# esxcli system settings advanced list | grep -A 10 /UserVars/SuppressShellWarning
+	esxcli system settings advanced set --option=/UserVars/SuppressShellWarning --int-value=1
+	# esxcli system settings advanced list --option=/UserVars/SuppressShellWarning
 
-- Disable TSO (TCP Segmentation Offload) and LRO (Large Receive Offload) if iSCSI performance is not enough.
+Disable TSO (TCP Segmentation Offload) and LRO (Large Receive Offload) if iSCSI performance is not enough.
 
 	esxcli system settings advanced set --option=/Net/UseHwTSO --int-value=0
 	esxcli system settings advanced set --option=/Net/UseHwTSO6 --int-value=0
