@@ -30,91 +30,94 @@ Configure the Windows PC to have IP address such as 172.31.255.100/24 so that be
 
 Download CentOS 7.6 ([CentOS-7-x86_64-DVD-1810.iso](http://archive.kernel.org/centos-vault/7.6.1810/isos/x86_64/CentOS-7-x86_64-DVD-1810.iso)) and put it **/vmfs/volumes/datastore1/iso/** on ESXi#1 and ESXi#2. (The directory "iso" needs to be created under /vmfs/volumes/datastore1/.)
 
-## Setting up ESXi - Network
+## Configure ESXi - Network
 
-Install vSphere ESXi then set up IP address as following.
+Install vSphere ESXi then configure IP address for the *Management IP* as following.
 
 |		| Primary ESXi	| Secondary ESXi	|
 |:---		|:---		|:---			|
 | Management IP	| 172.31.255.2	| 172.31.255.3		|
 
-Start ssh service and configure it to start automatically.
-- Open vSphere Host Client for ESXi#1 (http://172.31.255.2/) and ESXi#2 (http://172.31.255.3/)
+Open vSphere Host Client for ESXi#1 (http://172.31.255.2/) and ESXi#2 (http://172.31.255.3/)
+- Install the licenses.
+  - Obtain the license keys for both ESXi.
+    - [Manage] in {Navigator] pane > [Licensing] tab > [Actions] > [Assign license]
+    -  enter the license key > [Check license] > [Assign license]
+- Start ssh service and configure it to start automatically.
   - [Manage] in [Navigator] pane > [Services] tab
     - [TSM-SSH] >  [Actions] > [Start]
     - [TSM-SSH] >  [Actions] > [Polilcy] > [Start and stop with host]
+- Configure NTP servers
+  - [Manage] in [Navigator] pane > [System] tab
+    - [Time and date] > [Edit settings]
+    - Select [Use Network Time Protocol (enable NTP client)] > Select [Start and stop with host] as [NTP service startup policy] > input IP address of NTP server for the configuring environment as [NTP servers]
 
-Install the licenses
-- Obtain the license keys for both ESXi.
-- On vSphere Host Client for both ESXi,
-	-  [Manage] in {Navigator] pane > [Licensing] tab > [Actions] > [Assign license]
-	-  enter the license key > [Check license] > [Assign license]
+Access ESXi#1 (172.31.255.2) and ESXi#2 (172.31.255.3) with putty, then issue the below commands for both to configure followings.
+- Configure ESXi to suppress the warning for disabling SSH.
+- Configure vSwitch, Physical NICs, Port groups.
+- Disable TSO (TCP Segmentation Offload) and LRO (Large Receive Offload) for the case of low iSCSI performance.
 
-Access 172.31.255.2 and 172.31.255.3 with putty and configure ESXi to suppress the SSH disabe warning by issuing thefollowing command:
+	  # Suppress shell warning
+	  esxcli system settings advanced set -i 1 -o /UserVars/  SuppressShellWarning
+	  # Make vSwitch
+	  esxcfg-vswitch -a Mirror_vswitch
+	  esxcfg-vswitch -a iSCSI_vswitch
+	  esxcfg-vswitch -a uc_vm_vswitch
+	  # Configure vSwitch to have vmnic
+	  esxcfg-vswitch -L vmnic1 Mirror_vswitch
+	  esxcfg-vswitch -L vmnic2 iSCSI_vswitch
+	  esxcfg-vswitch -L vmnic3 uc_vm_vswitch
+	  # Configure port group in vSwitch
+	  esxcfg-vswitch -A Mirror_portgroup Mirror_vswitch
+	  esxcfg-vswitch -A iSCSI_portgroup iSCSI_vswitch
+	  esxcfg-vswitch -A iSCSI_Initiator iSCSI_vswitch
+	  esxcfg-vswitch -A uc_vm_portgroup uc_vm_vswitch
+	  # Disabling TSO LRO
+	  esxcli system settings advanced set --option=/Net/UseHwTSO --int-  value=0
+	  esxcli system settings advanced set --option=/Net/UseHwTSO6 -- int- value=0
+	  esxcli system settings advanced set --option=/Net/TcpipDefLROEnabled --int-value=0
 
-	esxcli system settings advanced set --option=/UserVars/SuppressShellWarning --int-value=1
+<!--
 	# esxcli system settings advanced list --option=/UserVars/SuppressShellWarning
-
-Disable TSO (TCP Segmentation Offload) and LRO (Large Receive Offload) if iSCSI performance is not enough.
-
-	esxcli system settings advanced set --option=/Net/UseHwTSO --int-value=0
-	esxcli system settings advanced set --option=/Net/UseHwTSO6 --int-value=0
-	esxcli system settings advanced set --option=/Net/TcpipDefLROEnabled --int-value=0
+	# esxcfg-vswitch -l
 	# esxcli system settings advanced list --option=/Net/UseHwTSO
 	# esxcli system settings advanced list --option=/Net/UseHwTSO6
 	# esxcli system settings advanced list --option=/Net/TcpipDefLROEnabled
+-->
 
-Setup NTP servers
-- On vSphere Host Client for both ESXi,
-  - [Manage] in [Navigator] pane > [System] tab
-  - [Time and date] > [Edit settings]
-  - Select [Use Network Time Protocol (enable NTP client)] > Select [Start and stop with host] as [NTP service startup policy] > input IP address of NTP server for the configuring environment as [NTP servers]
+- Configure VMkernel NIC for iSCSI Initiator
+  - for ESXi#1
 
-Configure vSwitch, Physical NICs, Port groups, VMkernel NIC for iSCSI Initiator
+	    esxcfg-vmknic -a -i 172.31.254.2 -n 255.255.255.0 iSCSI_Initiator
+	    /etc/init.d/hostd restart
 
-- Run *cf-esxi-phase1.pl* in subfolder *cf*.
+  - for ESXi#2
 
-  - When you see the message like following, answer "y".
+	    esxcfg-vmknic -a -i 172.31.254.2 -n 255.255.255.0 iSCSI_Initiator
+	    /etc/init.d/hostd restart
 
-        2019/12/10 23:44:49 [D] | WARNING - POTENTIAL SECURITY BREACH!
-        2019/12/10 23:44:49 [D] | The server's host key does not match the one PuTTY has
-        2019/12/10 23:44:49 [D] | cached in the registry. This means that either the
-        2019/12/10 23:44:49 [D] | server administrator has changed the host key, or you
-        2019/12/10 23:44:49 [D] | have actually connected to another computer pretending
-        2019/12/10 23:44:49 [D] | to be the server.
-        2019/12/10 23:44:49 [D] | The new rsa2 key fingerprint is:
-        2019/12/10 23:44:49 [D] | ssh-rsa 2048 2f:7a:f6:f7:85:d5:fc:f4:f0:c5:9b:a2:59:19:46:60
-        2019/12/10 23:44:49 [D] | If you were expecting this change and trust the new key,
-        2019/12/10 23:44:49 [D] | enter "y" to update PuTTY's cache and continue connecting.
-        2019/12/10 23:44:49 [D] | If you want to carry on connecting but without updating
-        2019/12/10 23:44:49 [D] | the cache, enter "n".
-        2019/12/10 23:44:49 [D] | If you want to abandon the connection completely, press
-        2019/12/10 23:44:49 [D] | Return to cancel. Pressing Return is the ONLY guaranteed
-        2019/12/10 23:44:49 [D] | safe choice.
-        2019/12/10 23:44:57 [D] | Update cached key? (y/n, Return cancels connection) Connection abandoned.
+## Configure ESXi - Datastore
 
-## Setting up ESXi - Datastore
-
-If a storage (HDD) dedicated for UC VMs is prepared on each ESXi, set up the storage as **datastore2**.
+Configure **datastore1** with the storage (HDD) dedicated for UC VMs on each ESXi.
 
 - On vSphere Host Client for ESXi#1 and ESXi#2,
   - [Storage] in [Navigator] pane > [Datastores] tab > [New datastore] 
-    - Select [Create new VMFS datastore] > [Next] > input [datastore2] as [name] > Select the storege device for UC VMs.
+    - Select [Create new VMFS datastore] > [Next] > input [datastore1] as [name] > Select the storege device for UC VMs.
 - Edit the lines of @iscsi_ds in *hauc.conf* in subfolder *cf* as
 
-	  our @iscsi_ds	= ('datastore2', 'datastore2');
+	  our @iscsi_ds	= ('datastore1', 'datastore1');
 
-## Creating VMs for iSCSI Cluster and vMA Cluster
+## Create VMs for iSCSI Cluster
 
 Specify the size of volume or HDD which vMA and iSCSI VMs are stored.
 
 - Edit *hauc.conf* in the subfolder *cf*   
 
-		our $advertised_hdd_size = 1200;
+	  our $advertised_hdd_size = 1200;
 
-  This is the Advertised HDD Size (in GB) of a single HDD/SSD or an array on which datastore2 resides. (i.e. 1200 for an advertised capacity of 1.2 TB)
+  This is the Advertised HDD Size (in GB) of a single HDD/SSD or an array on which datastore1 resides. (i.e. 1200 for an advertised capacity of 1.2 TB)
 
-		our $managed_vmdk_size = 635;
+	  our $managed_vmdk_size = 635;
 
   This is the Total Size (in GB) of all of your Managed Thick-Provisioned VMs, including intended disk allocations and memory allocations for each VM. (i.e. 635, which will just fit into a 1.2TB HDD, allowing for 33% free space)
 
@@ -186,7 +189,7 @@ Create iSCSI Cluster.
   **NOTE**
   - While the synchronizing, the following error message is displayed and can be ignored.
 
-	Detected an error in monitoring mdw1. (65 : Both local and remote mirror disks are abnormal.(md1))
+	> Detected an error in monitoring mdw1. (65 : Both local and remote mirror disks are abnormal.(md1))
 
 ## Setting up ESXi - iSCSI Initiator
 
