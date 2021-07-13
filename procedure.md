@@ -102,7 +102,7 @@ Configure **datastore1** with the storage (HDD) dedicated for UC VMs on each ESX
 
 - On vSphere Host Client for ESXi#1 and ESXi#2,
   - [Storage] in [Navigator] pane > [Datastores] tab > [New datastore] 
-    - Select [Create new VMFS datastore] > [Next] > input [datastore1] as [name] > Select the storege device for UC VMs.
+    - Select [Create new VMFS datastore] > [Next] > input [datastore1] as [name] > Select the storege device for UC VMs. > [Next] > [Next] > [Finish] > [Yes]
 - Edit the lines of @iscsi_ds in *hauc.conf* in subfolder *cf* as
 
 	  our @iscsi_ds	= ('datastore1', 'datastore1');
@@ -111,7 +111,7 @@ Configure **datastore1** with the storage (HDD) dedicated for UC VMs on each ESX
 
 Specify the size of volume or HDD which vMA and iSCSI VMs are stored.
 
-- Edit *hauc.conf* in the subfolder *cf*   
+- Edit *hauc.conf* in the subfolder *cf*
 
 	  our $advertised_hdd_size = 1200;
 
@@ -124,15 +124,15 @@ Specify the size of volume or HDD which vMA and iSCSI VMs are stored.
   **NOTE**
   - The size should be not Gibibyte but Gigabyte.
   - Just supply the interger value. (Do not speciy a unit symbol "G")
-  - The actual size of the *iSCSI1 Datastore* will be calculated from these two input values
+  - The actual size of the *iSCSI Datastore* will be calculated from these two input values
 
-Create VMs of iSCSI1, iSCSI2, vMA1, vMA2.
+Create VMs of ec1, ec2
 
 - Run *cf-esxi-phase2-create-vm.pl* in subfolder *cf*, 
 
   **NOTE**
   - This takes a long time for making vmdk eager zeroed thick.
-  - If you run *cf-esxi-phase2-create-vm.pl* again, **delete** the VMs (iscsi1, iscsi2, vma1, vma2) before that by using vSphere Host Client, and confirm the ESXi datastore does not have the folders the VMs.
+  - If you run *cf-esxi-phase2-create-vm.pl* again, **delete** the VMs (ec1, ec2) before that by using vSphere Host Client, and confirm the ESXi datastore does not have the folders the VMs.
 
 <!--
 **NOTE** : **If you import OVA (exported VM file) of iSCSI VMs, before that, delete iSCSI1 and iSCSI2 at the both vSphere Host Client. And ignore the procedures regarding iSCSI VMs till the section "Setting up ESXi - iSCSI Initiator".**
