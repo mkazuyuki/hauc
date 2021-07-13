@@ -93,7 +93,7 @@ Access ESXi#1 (172.31.255.2) and ESXi#2 (172.31.255.3) with putty, then issue th
 
   - for ESXi#2
 
-	    esxcfg-vmknic -a -i 172.31.254.2 -n 255.255.255.0 iSCSI_Initiator
+	    esxcfg-vmknic -a -i 172.31.254.3 -n 255.255.255.0 iSCSI_Initiator
 	    /etc/init.d/hostd restart
 
 ## Configure ESXi - Datastore
