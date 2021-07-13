@@ -58,7 +58,7 @@ Access ESXi#1 (172.31.255.2) and ESXi#2 (172.31.255.3) with putty, then issue th
 - Disable TSO (TCP Segmentation Offload) and LRO (Large Receive Offload) for the case of low iSCSI performance.
 
 	  # Suppress shell warning
-	  esxcli system settings advanced set -i 1 -o /UserVars/  SuppressShellWarning
+	  esxcli system settings advanced set --option=/UserVars/SuppressShellWarning --int-value=1
 	  # Make vSwitch
 	  esxcfg-vswitch -a Mirror_vswitch
 	  esxcfg-vswitch -a iSCSI_vswitch
