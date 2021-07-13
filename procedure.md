@@ -73,8 +73,8 @@ Access ESXi#1 (172.31.255.2) and ESXi#2 (172.31.255.3) with putty, then issue th
 	  esxcfg-vswitch -A iSCSI_Initiator iSCSI_vswitch
 	  esxcfg-vswitch -A uc_vm_portgroup uc_vm_vswitch
 	  # Disabling TSO LRO
-	  esxcli system settings advanced set --option=/Net/UseHwTSO --int-  value=0
-	  esxcli system settings advanced set --option=/Net/UseHwTSO6 -- int- value=0
+	  esxcli system settings advanced set --option=/Net/UseHwTSO --int-value=0
+	  esxcli system settings advanced set --option=/Net/UseHwTSO6 --int-value=0
 	  esxcli system settings advanced set --option=/Net/TcpipDefLROEnabled --int-value=0
 
 <!--
