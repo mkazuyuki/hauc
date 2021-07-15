@@ -28,9 +28,9 @@ Download and install [Strawberry Perl](http://strawberryperl.com/).
 
 Configure the Windows PC to have IP address such as 172.31.255.100/24 so that becomes IP reachable to **172.31.255.0/24** network where the ESXi hosts exists.
 
-Download CentOS 7.6 ([CentOS-7-x86_64-DVD-1810.iso](http://archive.kernel.org/centos-vault/7.6.1810/isos/x86_64/CentOS-7-x86_64-DVD-1810.iso)) and put it **/vmfs/volumes/datastore1/iso/** on ESXi#1 and ESXi#2. (The directory "iso" needs to be created under /vmfs/volumes/datastore1/.)
+Download CentOS 8.2 ([CentOS-8.2.2004-x86_64-dvd1.iso](https://vault.centos.org/8.2.2004/isos/x86_64/CentOS-8.2.2004-x86_64-dvd1.iso)) and put it `/vmfs/volumes/datastore1/iso/` on ESXi#1 and ESXi#2 in the later step. (The directory `iso` needs to be created under `/vmfs/volumes/datastore1/`.)
 
-## Configure ESXi - Network
+## Configure ESXi
 
 Install vSphere ESXi then configure IP address for the *Management IP* as following.
 
@@ -51,8 +51,21 @@ Open vSphere Host Client for ESXi#1 (http://172.31.255.2/) and ESXi#2 (http://17
   - [Manage] in [Navigator] pane > [System] tab
     - [Time and date] > [Edit settings]
     - Select [Use Network Time Protocol (enable NTP client)] > Select [Start and stop with host] as [NTP service startup policy] > input IP address of NTP server for the configuring environment as [NTP servers]
+- Configure **datastore1** with the storage (HDD) dedicated for UC VMs on each ESXi.
+  - [Storage] in [Navigator] pane > [Datastores] tab > [New datastore] 
+    - Select [Create new VMFS datastore] > [Next] > input [datastore1] as [name] > Select the storege device for UC VMs. > [Next] > [Next] > [Finish] > [Yes]
+  - Make the directory `/vmfs/volumes/datastore1/iso` and put CentOS iso into it.
 
-Access ESXi#1 (172.31.255.2) and ESXi#2 (172.31.255.3) with putty, then issue the below commands for both to configure followings.
+	    plink -l root -pw "NEC123nec!" 172.31.255.2 mkdir /vmfs/volumes/datastore1/iso/
+	    plink -l root -pw "NEC123nec!" 172.31.255.3 mkdir /vmfs/volumes/datastore1/iso/
+	    pscp -l root -pw "NEC123nec!" CentOS-8.2.2004-x86_64-dvd1.iso 172.31.255.2:/vmfs/volumes/datastore1/iso/
+	    pscp -l root -pw "NEC123nec!" CentOS-8.2.2004-x86_64-dvd1.iso 172.31.255.3:/vmfs/volumes/datastore1/iso/
+
+  - Edit the lines of @iscsi_ds in *hauc.conf* in subfolder *cf* as
+
+	    our @iscsi_ds	= ('datastore1', 'datastore1');
+
+Access ESXi#1 (172.31.255.2) and ESXi#2 (172.31.255.3) with putty, then issue the below commands for both ESXi to configure followings.
 - Configure ESXi to suppress the warning for disabling SSH.
 - Configure vSwitch, Physical NICs, Port groups.
 - Disable TSO (TCP Segmentation Offload) and LRO (Large Receive Offload) for the case of low iSCSI performance.
@@ -96,35 +109,22 @@ Access ESXi#1 (172.31.255.2) and ESXi#2 (172.31.255.3) with putty, then issue th
 	    esxcfg-vmknic -a -i 172.31.254.3 -n 255.255.255.0 iSCSI_Initiator
 	    /etc/init.d/hostd restart
 
-## Configure ESXi - Datastore
+## Create EXPRESSCUSTER VMs - iSCSI Target
 
-Configure **datastore1** with the storage (HDD) dedicated for UC VMs on each ESXi.
+Edit *hauc.conf* in the subfolder *cf*
 
-- On vSphere Host Client for ESXi#1 and ESXi#2,
-  - [Storage] in [Navigator] pane > [Datastores] tab > [New datastore] 
-    - Select [Create new VMFS datastore] > [Next] > input [datastore1] as [name] > Select the storege device for UC VMs. > [Next] > [Next] > [Finish] > [Yes]
-- Edit the lines of @iscsi_ds in *hauc.conf* in subfolder *cf* as
-
-	  our @iscsi_ds	= ('datastore1', 'datastore1');
-
-## Create VMs for iSCSI Cluster
-
-Specify the size of volume or HDD which vMA and iSCSI VMs are stored.
-
-- Edit *hauc.conf* in the subfolder *cf*
+- Specify the Advertised HDD Size (in GB) of a single HDD/SSD or an array on which datastore1 resides. (i.e. 1200 for an advertised capacity of 1.2 TB)
 
 	  our $advertised_hdd_size = 1200;
 
-  This is the Advertised HDD Size (in GB) of a single HDD/SSD or an array on which datastore1 resides. (i.e. 1200 for an advertised capacity of 1.2 TB)
+- Specify the Total Size (in GB) of all of your Managed Thick-Provisioned VMs, including intended disk allocations and memory allocations for each VM. (i.e. 635, which will just fit into a 1.2TB HDD, allowing for 33% free space)
 
 	  our $managed_vmdk_size = 635;
 
-  This is the Total Size (in GB) of all of your Managed Thick-Provisioned VMs, including intended disk allocations and memory allocations for each VM. (i.e. 635, which will just fit into a 1.2TB HDD, allowing for 33% free space)
-
-  **NOTE**
-  - The size should be not Gibibyte but Gigabyte.
-  - Just supply the interger value. (Do not speciy a unit symbol "G")
-  - The actual size of the *iSCSI Datastore* will be calculated from these two input values
+**NOTE**
+- The size should be not Gibibyte but Gigabyte.
+- Just supply the interger value. (Do not speciy a unit symbol "G")
+- The actual size of the *iSCSI Datastore* will be calculated from these two input values
 
 Create VMs of ec1, ec2
 
@@ -144,37 +144,27 @@ Boot all the VMs and install CentOS.
 
 Configure the first network of the VMs.
 
-- Open two ESXi Host Client ( https://172.31.255.2 and https://172.31.255.3 ), open the console of iSCSI and vMA VMs and login to them as root user, then run the below command to set IP address so that Windows client can access to the VMs.
+- Open two ESXi Host Client ( https://172.31.255.2 and https://172.31.255.3 ), open the VM consoles of ec1 and 2, login to them as root user, then run the below command to set IP address so that Windows client can access to the VMs.
 
-  - on iSCSI1 console:
+  - on ec1 console:
 
-		nmcli c m ens192 ipv4.method manual ipv4.addresses 172.31.255.11/24 connection.autoconnect yes
+	    nmcli c m ens192 ipv4.method manual ipv4.addresses 172.31.255.11/24 connection.autoconnect yes
 
-  - on iSCSI2 console:
+  - on ec2 console:
 
-		nmcli c m ens192 ipv4.method manual ipv4.addresses 172.31.255.12/24 connection.autoconnect yes
+	    nmcli c m ens192 ipv4.method manual ipv4.addresses 172.31.255.12/24 connection.autoconnect yes
 
-  - on vMA1 console:
-
-		nmcli c m ens160 ipv4.method manual ipv4.addresses 172.31.255.6/24 connection.autoconnect yes
-
-  - on vMA2 console:
-
-		nmcli c m ens160 ipv4.method manual ipv4.addresses 172.31.255.7/24 connection.autoconnect yes
-
-Confirm accessibility to the following six IP addresses from Windows PC by using putty.
+Confirm accessibility to the following IP addresses from Windows PC by using putty.
 **Do not omit this process**. The procedure hereafter assumes that SSH Hostkey entries of these IP addresses are made on Windows registry by this process.
 
   - 172.31.255.2 (ESXi#1)
   - 172.31.255.3 (ESXi#2)
-  - 172.31.255.6 (vMA1)
-  - 172.31.255.7 (vMA2)
   - 172.31.255.11 (iSCSI1)
   - 172.31.255.12 (iSCSI2)
 
-## Setting up iSCSI Cluster
+## Configure EXPRESSCLUSTER VM
 
-Configure iSCSI VMs to fill prerequisite conditions for creating iSCSI Cluster.
+Configure EC VMs to meet prerequisite conditions for creating iSCSI Cluster.
 
 - Run *cf-iscsi-phase1.pl* in the subfolder *cf*.  
   On the completion, both VMs are rebooted. Wait the completion of the reboot.

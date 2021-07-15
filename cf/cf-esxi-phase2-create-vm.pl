@@ -47,6 +47,7 @@ for my $i (0..1) {
 		@buf = <IN>;
 		close(IN);
 		foreach(@buf){
+			s/^VM_NAME=.*$/VM_NAME=${iscsi_vname[$i]}/;
 			s/^VM_DISK_SIZE2=.*$/VM_DISK_SIZE2=${iscsi_size}/;
 			s/^DATASTORE_PATH=.*/DATASTORE_PATH=\/vmfs\/volumes\/${iscsi_ds[$i]}/;
 		}
@@ -59,9 +60,9 @@ for my $i (0..1) {
 
 	# Creating iSCSI VM
 	if (&execution($cmd . "-m ESXi-scripts/cf-iscsi-" . ($i + 1) .".sh")) {
-		&Log("[E] Failed to create iSCSI" . ($i+1) . "\n");
+		&Log("[E] Failed to create $iscsi_vname[$i]\n");
 	}
-	&Log("[I] iSCSI". ($i+1) . " created\n");
+	&Log("[I] $iscsi_vname[$i] created\n");
 }
 # Validation
 for my $i (0..1) {
@@ -76,7 +77,7 @@ for my $i (0..1) {
 	}
 	if (!$found) {
 		&Log("[E] *******************************************************\n");
-		&Log("[E] On ESXi#" . ($i+1) . ", [$n] was not found.\n");
+		&Log("[E] On ESXi#" . ($i+1) . ", [$iscsi_vname[$i]] was not found.\n");
 		&Log("[E] Check your configuration.\n");
 		&Log("[E] Push return key\n");
 		&Log("[E] *******************************************************\n");
@@ -121,7 +122,7 @@ sub Log{
 	my $date = sprintf "%d/%02d/%02d %02d:%02d:%02d", $year, $mon, $mday, $hour, $min, $sec;
 	print "$date $_[0]";
 
-	open(LOG, ">> phase2.log");
+	open(LOG, ">> cf-esxi-phase2-create-vm.log");
 	print LOG "$date $_[0]";
 	close(LOG);
 

@@ -2,16 +2,16 @@
 
 # (0) Parameters
 DATASTORE_PATH=/vmfs/volumes/datastore1
-ISO_FILE=/vmfs/volumes/datastore1/iso/CentOS-7-x86_64-DVD-1810.iso
-VM_NAME=iSCSI2
+ISO_FILE=/vmfs/volumes/datastore1/iso/CentOS-8.2.2004-x86_64-dvd1.iso
+VM_NAME=ec2
 VM_CPU_NUM=4
 VM_MEM_SIZE=8192
 VM_NETWORK_NAME1="VM Network"
 VM_NETWORK_NAME2="Mirror_portgroup"
 VM_NETWORK_NAME3="iSCSI_portgroup"
-VM_GUEST_OS=centos7-64
+VM_GUEST_OS=centos8-64
 VM_CDROM_DEVICETYPE=cdrom-image
-VM_DISK_SIZE1=9G
+VM_DISK_SIZE1=16G
 VM_DISK_SIZE2=500G
 
 VM_DISK_PATH1=$DATASTORE_PATH/$VM_NAME/${VM_NAME}.vmdk

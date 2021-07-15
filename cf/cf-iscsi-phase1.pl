@@ -31,7 +31,7 @@ for my $i (0..1) {
 	my $cmd = ".\\plink.exe -no-antispoof -l root -pw \"$iscsi_pw[$i]\" $iscsi_ip ";
 	&execution($cmd . "\"mkdir /media/cdrom; mount /dev/cdrom /media/cdrom\"");
 	&execution($cmd . "\"yum --disablerepo=* --enablerepo=c7-media install -y targetcli targetd perl\"");
-	&execution($cmd . "\"hostnamectl set-hostname iscsi" . ($i+1) . "\"");
+	&execution($cmd . "\"hostnamectl set-hostname " . $iscsi_vname[$i] . "\"");
 	&execution($cmd . "\"systemctl stop firewalld.service; systemctl disable firewalld.service\"");
 	&execution($cmd . "\"sed -i -e 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config\"");
 	&execution($cmd . "\"yes no | ssh-keygen -t rsa -f /root/.ssh/id_rsa -N \\\"\\\"\"");
