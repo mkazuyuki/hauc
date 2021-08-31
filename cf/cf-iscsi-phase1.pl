@@ -29,13 +29,13 @@ for my $i (0..1) {
 	$iscsi_ip =~ s/\/.*//;
 
 	my $cmd = ".\\plink.exe -no-antispoof -l root -pw \"$iscsi_pw[$i]\" $iscsi_ip ";
-	&execution($cmd . "\"mkdir /media/cdrom; mount /dev/cdrom /media/cdrom\"");
-	&execution($cmd . "\"yum --disablerepo=* --enablerepo=c7-media install -y targetcli targetd perl\"");
+	&execution($cmd . "\"mkdir /media/CentOS; mount /dev/cdrom /media/CentOS\"");
+	&execution($cmd . "\"yum --disablerepo=* --enablerepo=c8-media-BaseOS,c8-media-AppStream install -y targetcli target-restore perl\"");
 	&execution($cmd . "\"hostnamectl set-hostname " . $iscsi_vname[$i] . "\"");
 	&execution($cmd . "\"systemctl stop firewalld.service; systemctl disable firewalld.service\"");
 	&execution($cmd . "\"sed -i -e 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config\"");
 	&execution($cmd . "\"yes no | ssh-keygen -t rsa -f /root/.ssh/id_rsa -N \\\"\\\"\"");
-	&execution($cmd . "\"umount /media/cdrom\"");
+	&execution($cmd . "\"umount /media/CentOS\"");
 
 	#&execution($cmd . "\"nmcli c m ens192 ipv4.method manual ipv4.addresses $iscsi_ip1[$i] connection.autoconnect yes\"");
 	&execution($cmd . "\"nmcli c m ens224 ipv4.method manual ipv4.addresses $iscsi_ip2[$i] connection.autoconnect yes\"");
@@ -43,7 +43,7 @@ for my $i (0..1) {
 	&execution($cmd . "\"yes | parted /dev/sdb --script 'mklabel msdos mkpart primary 0% 1025MiB mkpart primary 1025MiB 100%'\"");
 
 	&execution(".\\pscp.exe -l root -pw \"$iscsi_pw[$i]\" template/iSCSI/saveconfig.json $iscsi_ip:/etc/target/");
-	&execution(".\\pscp.exe -l root -pw \"$iscsi_pw[$i]\" expresscls-4.1.1-1.x86_64.rpm $iscsi_ip:/root/");
+	&execution(".\\pscp.exe -l root -pw \"$iscsi_pw[$i]\" expresscls-4.3.0-1.x86_64.rpm $iscsi_ip:/root/");
 	&execution(".\\pscp.exe -l root -pw \"$iscsi_pw[$i]\" ECX4.x-lin1.key $iscsi_ip:/root/");
 	&execution(".\\pscp.exe -l root -pw \"$iscsi_pw[$i]\" ECX4.x-Rep-lin1.key $iscsi_ip:/root/");
 	&execution(".\\pscp.exe -l root -pw \"$iscsi_pw[$i]\" ECX4.x-Rep-lin2.key $iscsi_ip:/root/");
