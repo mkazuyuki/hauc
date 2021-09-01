@@ -112,7 +112,7 @@ Access ESXi#1 (172.31.255.2) and ESXi#2 (172.31.255.3) with putty, then issue th
 ## Create EXPRESSCUSTER VMs - iSCSI Target
 
 Specs
-- 4 CPU, 8 GB Memory
+- 4 CPU, 16 GB Memory
 - 2 HDDs. 1 for system with 16 GB, 1 for mirror disk with required and sufficient size. Both should be `Thick provisioned, eagerly zeroed`
 - 3 NICs. 1st NIC connect to `VM Network`, 2nd NIC `Mirror_portgroup`, 3rd `iSCSI_portgroup`
 - 1 CDROM connect to CentOS DVD iso file `datastore1/iso/CentOS`
