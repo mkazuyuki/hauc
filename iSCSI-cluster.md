@@ -187,10 +187,11 @@ Run the below commands. The disk size for the Mirror-disk which will become iSCS
 
 ### Installing and configuring OS on both EC VMs
 
-Boot both EC VMs, then install CentOS. During the installation, what to be specified are follows and no need to set hostname and IP address, these will be configured after the installation.
+Boot both EC VMs, then install CentOS. During the installation, what to be specified are follows. Other things will be configured after the installation.
 
-- the disk1 (16GB) for installing the OS.
-- 
+- "installation Destination" > "16 GiB sda"
+- "Software Selsection" > "Minimal Install"
+- Root Password
 
 Login to EC VMs then issue the below commands
 
@@ -213,12 +214,11 @@ Put ECX rpm file and license files (name them ECX4.x-[A-Z].key) on `/root` of ec
 	mkdir /media/CentOS;
 	mount /dev/cdrom /media/CentOS
 	yum --disablerepo=* --enablerepo=c8-media-BaseOS,c8-media-AppStream install -y targetcli target-restore perl
-	# yum --disablerepo=* --enablerepo=c8-media-BaseOS,c8-media-AppStream install -y targetcli target-restore perl open-vm-tools
 	umount /media/CentOS
 	systemctl stop firewalld.service; systemctl disable firewalld.service
 	sed -i -e 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
 	yes no | ssh-keygen -t rsa -f /root/.ssh/id_rsa -N ""
-	parted /dev/sdb mklabel msdos mkpart primary 1MiB 1025MiB mkpart primary 1025MiB 100%
+	parted /dev/sdb mklabel msdos mkpart primary 0% 1025MiB mkpart primary 1025MiB 100%
 	rpm -ivh expresscls.*.rpm
 	clplcnsc -i ECX4.x-*.key
 	reboot
@@ -406,7 +406,6 @@ On ec1, create block backstore and configure it as backstore for the iSCSI Targe
 
 	  > cd /backstores/block
 	  > create name=idisk1 dev=/dev/NMP1
-	  > create name=idisk2 dev=/dev/NMP2
 
 - Creating IQN
 
@@ -417,7 +416,6 @@ On ec1, create block backstore and configure it as backstore for the iSCSI Targe
 
 	  > cd /iscsi/iqn.1996-10.com.ec/tpg1/luns
 	  > create /backstores/block/idisk1
-	  > create /backstores/block/idisk2
 
 - Allow machine (IQN of iSCSI Initiator) to scan the iSCSI target
 
