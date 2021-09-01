@@ -66,30 +66,30 @@ Open vSphere Host Client for ESXi#1 (http://172.31.255.2/) and ESXi#2 (http://17
 	    our @iscsi_ds	= ('datastore1', 'datastore1');
 
 Access ESXi#1 (172.31.255.2) and ESXi#2 (172.31.255.3) with putty, then issue the below commands for both ESXi to configure followings.
-- Configure ESXi to suppress the warning for disabling SSH.
 - Configure vSwitch, Physical NICs, Port groups.
-- Disable TSO (TCP Segmentation Offload) and LRO (Large Receive Offload) for the case of low iSCSI performance.
+- Disable TSO (TCP Segmentation Offload), LRO (Large Receive Offload) and ATS (Atimic Test and Set) for the case of low iSCSI performance.
+- Configure ESXi to suppress the warning for disabling SSH on vSphere Host Client.
 
-	  # Suppress shell warning
-	  esxcli system settings advanced set --option=/UserVars/SuppressShellWarning --int-value=1
 	  # Make vSwitch
-	  esxcfg-vswitch -a Mirror_vswitch
-	  esxcfg-vswitch -a iSCSI_vswitch
-	  esxcfg-vswitch -a uc_vm_vswitch
+	  esxcfg-vswitch --add Mirror_vswitch
+	  esxcfg-vswitch --add iSCSI_vswitch
+	  esxcfg-vswitch --add user_vswitch
 	  # Configure vSwitch to have vmnic
-	  esxcfg-vswitch -L vmnic1 Mirror_vswitch
-	  esxcfg-vswitch -L vmnic2 iSCSI_vswitch
-	  esxcfg-vswitch -L vmnic3 uc_vm_vswitch
+	  esxcfg-vswitch --link=vmnic1 Mirror_vswitch
+	  esxcfg-vswitch --link=vmnic2 iSCSI_vswitch
+	  esxcfg-vswitch --link=vmnic3 user_vswitch
 	  # Configure port group in vSwitch
-	  esxcfg-vswitch -A Mirror_portgroup Mirror_vswitch
-	  esxcfg-vswitch -A iSCSI_portgroup iSCSI_vswitch
-	  esxcfg-vswitch -A iSCSI_Initiator iSCSI_vswitch
-	  esxcfg-vswitch -A uc_vm_portgroup uc_vm_vswitch
-	  # Disabling TSO LRO
+	  esxcfg-vswitch --add-pg=Mirror_portgroup Mirror_vswitch
+	  esxcfg-vswitch --add-pg=iSCSI_portgroup iSCSI_vswitch
+	  esxcfg-vswitch --add-pg=iSCSI_Initiator iSCSI_vswitch
+	  esxcfg-vswitch --add-pg=user_portgroup usuer_vswitch
+	  # Disabling TSO LRO ATS
 	  esxcli system settings advanced set --option=/Net/UseHwTSO --int-value=0
 	  esxcli system settings advanced set --option=/Net/UseHwTSO6 --int-value=0
 	  esxcli system settings advanced set --option=/Net/TcpipDefLROEnabled --int-value=0
-
+	  esxcli system settings advanced set --option /VMFS3/UseATSForHBOnVMFS5 --int-value=0
+	  # Suppress shell warning
+	  esxcli system settings advanced set --option=/UserVars/SuppressShellWarning --int-value=1
 <!--
 	# esxcli system settings advanced list --option=/UserVars/SuppressShellWarning
 	# esxcfg-vswitch -l
@@ -101,15 +101,22 @@ Access ESXi#1 (172.31.255.2) and ESXi#2 (172.31.255.3) with putty, then issue th
 - Configure VMkernel NIC for iSCSI Initiator
   - for ESXi#1
 
-	    esxcfg-vmknic -a -i 172.31.254.2 -n 255.255.255.0 iSCSI_Initiator
+	    esxcfg-vmknic --add --ip 172.31.254.2 --netmask 255.255.255.0 iSCSI_Initiator
 	    /etc/init.d/hostd restart
 
   - for ESXi#2
 
-	    esxcfg-vmknic -a -i 172.31.254.3 -n 255.255.255.0 iSCSI_Initiator
+	    esxcfg-vmknic --add --ip 172.31.254.3 --netmask 255.255.255.0 iSCSI_Initiator
 	    /etc/init.d/hostd restart
 
 ## Create EXPRESSCUSTER VMs - iSCSI Target
+
+Specs
+- 4 CPU, 8 GB Memory
+- 2 HDDs. 1 for system with 16 GB, 1 for mirror disk with required and sufficient size. Both should be `Thick provisioned, eagerly zeroed`
+- 3 NICs. 1st NIC connect to `VM Network`, 2nd NIC `Mirror_portgroup`, 3rd `iSCSI_portgroup`
+- 1 CDROM connect to CentOS DVD iso file `datastore1/iso/CentOS`
+
 
 Edit *hauc.conf* in the subfolder *cf*
 
@@ -222,6 +229,3 @@ Create vMA Cluster
 - Run *cf-vma-phase3.pl* in the subfolder *cf*.
 
   After the completion, open vMA Cluster WebUI (http://172.31.255.6:29003) and wait for the cluster to be started.
-
-----
-2020.01.06 Miyamoto Kazuyuki <kazuyuki@nec.com>
