@@ -2,15 +2,17 @@
 
 This document descrives detailed procedure for setting up HAUC on vSphere ESXi.
 
-## Preparing 64bit Windows PC
+## Preparing 64bit Windows client for setup
 
 Download [**hauc-master.zip**](https://github.com/mkazuyuki/hauc/archive/refs/heads/ESXi7.0.zip) and extract.
 
+<!--
 - Edit cf/hauc.conf so that match to your environment.
+-->
 
 Download [**ECX**](https://www.nec.com/en/global/prod/expresscluster/en/trial/zip/ecx43l_x64.zip)
 
--  Extract it and copy *expresscls-4.1.1-1.x86_64.rpm* in it to the subfolder *cf*.
+-  Extract it and copy *expresscls-4.3.0-1.x86_64.rpm* in it to the subfolder *cf*.
 
 Put the (trial) license files of ECX to the subfolder *cf*.
 
