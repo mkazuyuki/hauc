@@ -30,16 +30,17 @@
 | WWN for ESXi#2 iSCSI Initiator	| iqn.1998-01.com.vmware:2	| <-- |
 
 ## Overall Setup Procedure
-- Creating VMs (*ec1* and *ec2*) on both ESXi
+- Creating VMs (ec1 and ec2) on both ESXi, then installing Linux on them.
 - Setting up ECX then iSCSI Target on them.
 
 ## Procedure
 
 ### Creating VMs on both ESXi
 
-Download CetOS iso file and put it on `/vmfs/volumes/datastore1/iso` of ESXi#1 and #2.
+Download CetOS iso file and put it on `/vmfs/volumes/datastore1/iso/CentOS-8.2.2004-x86_64-dvd1.iso` of ESXi#1 and #2.
 
-Run the below commands. The disk size for the Mirror-disk which will become iSCSI Datastore can be specified as `VM_DISK_SIZE2=500GB` in the commands.
+Login to the ESXi console shell by Putty/Teraterm > Run the below commands.
+The disk size for the Mirror-disk which will become iSCSI Datastore can be specified as `VM_DISK_SIZE2=500GB` in the commands.
 
 - on esxi1
 
@@ -187,13 +188,13 @@ Run the below commands. The disk size for the Mirror-disk which will become iSCS
 
 ### Installing and configuring OS on both EC VMs
 
-Boot both EC VMs, then install CentOS. During the installation, what to be specified are follows. Other things will be configured after the installation.
+Open vSphere Host Client > Boot both EC VMs > Open the consoles of EC VMs > Install CentOS. During the installation, what to be specified are follows. Other things will be configured after the installation.
 
-- "installation Destination" > "16 GiB sda"
+- "Installation Destination" > "16 GiB sda"
 - "Software Selsection" > "Minimal Install"
 - Root Password
 
-Login to EC VMs then issue the below commands
+After the completion of reboot at the end of the CentOS installation, Login to EC VMs, then issue the below commands to set hostname and IP address.
 
 - On ec1
 
@@ -209,19 +210,24 @@ Login to EC VMs then issue the below commands
 	  nmcli c m ens224 ipv4.method manual ipv4.addresses 172.31.253.12/24 connection.autoconnect yes
 	  nmcli c m ens256 ipv4.method manual ipv4.addresses 172.31.254.12/24 connection.autoconnect yes
 
-Put ECX rpm file and license files (name them ECX4.x-[A-Z].key) on `/root` of ec1 and ec2, then issue the below commands on both ec1 and 2
+Put ECX rpm file and license files (name them ECX4.x-[A-Z].key) on `/root` of ec1 and ec2, then issue the below commands on both ec1 and 2 for doing the followings.
 
-	mkdir /media/CentOS;
-	mount /dev/cdrom /media/CentOS
-	yum --disablerepo=* --enablerepo=c8-media-BaseOS,c8-media-AppStream install -y targetcli target-restore perl
-	umount /media/CentOS
-	systemctl stop firewalld.service; systemctl disable firewalld.service
-	sed -i -e 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
-	yes no | ssh-keygen -t rsa -f /root/.ssh/id_rsa -N ""
-	parted /dev/sdb mklabel msdos mkpart primary 0% 1025MiB mkpart primary 1025MiB 100%
-	rpm -ivh expresscls.*.rpm
-	clplcnsc -i ECX4.x-*.key
-	reboot
+- Installing required packages
+- Disabling firewall and SELinux
+- Making partitions on vHDD (sdb)
+- Installing EC and its license
+
+	  mkdir /media/CentOS;
+	  mount /dev/cdrom /media/CentOS
+	  yum --disablerepo=* --enablerepo=c8-media-BaseOS,c8-media-AppStream install -y targetcli target-restore perl
+	  umount /media/CentOS
+	  systemctl stop firewalld.service; systemctl disable firewalld.service
+	  sed -i -e 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
+	  yes no | ssh-keygen -t rsa -f /root/.ssh/id_rsa -N ""
+	  parted -s /dev/sdb mklabel msdos mkpart primary 0% 1025MiB mkpart primary 1025MiB 100%
+	  rpm -ivh expresscls.*.rpm
+	  clplcnsc -i ECX4.x-*.key
+	  reboot
 
 ### Configuring EC
 
@@ -291,7 +297,7 @@ for md2 do the same like md1 by using
 
 #### Adding the execute resource for controlling target service
 - Click [Add resource] button in right side of [failover-vm]
-- Select [EXEC resource] as [Type] > set *exec1* as [Name] > [Next]
+- Select [EXEC resource] as [Type] > set *exec-target* as [Name] > [Next]
 - [Next]
 - [Next]
 - Select start.sh then click [Edit]
@@ -309,7 +315,7 @@ for md2 do the same like md1 by using
 		systemctl stop target
 		echo "Stopped  iSCSI Target ($?)"
 		exit 0
-
+- [Tuning] > [Maintenance] tab > input `/opt/nec/clusterpro/log/exec-target.log` as [Log Output Path] > check [Rotate Log] > [OK]
 - [Finish]
 
 #### Adding floating IP resource for iSCSI Target
@@ -390,7 +396,44 @@ for md2 do the same like md1 by using
 - Click [Apply the Configuration File]
 - Reboot ec1, ec2 and wait for the completion of starting of the cluster *failover-vm*
 
+
+### Obtaining IQN for iSCSI Software Adapter on **ESXi#1 and 2**.
+
+On the client PC, download [plink.exe](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html) > Open cmd.exe > Issue the plink command like follows. You need to understand the IP address of the ESXi#1 and 2, and root password, in the folloing sample 172.31.255.2, 172.31.255.3 and PASSWORD
+
+	plink root@172.31.255.2 -pw PASSWORD -no-antispoof "VMHBA=`esxcli iscsi adapter list | grep 'iSCSI Software Adapter' | sed -r 's/\s.*iSCSI Software Adapter$//'`;esxcli iscsi adapter get --adapter=$VMHBA | grep '   Name:' | sed -r 's/[^:]*: //'
+	
+	plink root@172.31.255.3 -pw PASSWORD -no-antispoof "VMHBA=`esxcli iscsi adapter list | grep 'iSCSI Software Adapter' | sed -r 's/\s.*iSCSI Software Adapter$//'`;esxcli iscsi adapter get --adapter=$VMHBA | grep '   Name:' | sed -r 's/[^:]*: //'
+
+On the execution of `plink` command, you might see the following. Answer `y` in the case.
+
+	The server's host key is not cached in the registry. You
+	have no guarantee that the server is the computer you
+	think it is.
+	The server's ecdsa-sha2-nistp256 key fingerprint is:
+	ecdsa-sha2-nistp256 256 29:c9:7e:cf:fc:af:25:0c:14:be:70:9b:b6:06:5a:e8
+	If you trust this host, enter "y" to add the key to
+	PuTTY's cache and carry on connecting.
+	If you want to carry on connecting just once, without
+	adding the key to the cache, enter "n".
+	If you do not trust this host, press Return to abandon the
+	connection.
+	Store key in cache? (y/n)
+
+Then you will see the **IQN of iSCSI Initiator on ESXi#1 and 2** as follows likely. In this sample `iqn.1998-01.com.vmware:localhost:1983516280:65` is IQN of ESXi#1 and `iqn.1998-01.com.vmware:esxi7u2-b1:956052037:65`is IQN of ESXi#2.
+
+	Keyboard-interactive authentication prompts from server:
+	End of keyboard-interactive prompts from server
+	iqn.1998-01.com.vmware:localhost:1983516280:65
+
+	Keyboard-interactive authentication prompts from server:
+	End of keyboard-interactive prompts from server
+	iqn.1998-01.com.vmware:esxi7u2-b1:956052037:65
+
+These are used as *IQN of iSCSI Initiator* in the next section to configure iSCSI Target.
+
 ### Configuring iSCSI Target
+
 On ec1, create block backstore and configure it as backstore for the iSCSI Target.
 - Login to the console of ec1
 
@@ -417,11 +460,11 @@ On ec1, create block backstore and configure it as backstore for the iSCSI Targe
 	  > cd /iscsi/iqn.1996-10.com.ec/tpg1/luns
 	  > create /backstores/block/idisk1
 
-- Allow machine (IQN of iSCSI Initiator) to scan the iSCSI target
+- Allow ESXi#1 and 2 (*IQN of iSCSI Initiator* which were obtaind in the previous section) to scan the iSCSI target
 
 	  > cd /iscsi/iqn.1996-10.com.ecx/tpg1/acls
-	  > create iqn.1998-01.com.vmware:1
-	  > create iqn.1998-01.com.vmware:2
+	  > create iqn.1998-01.com.vmware:localhost:1983516280:65
+	  > create iqn.1998-01.com.vmware:esxi7u2-b1:956052037:65
 
 - Save config and exit
 
