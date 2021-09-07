@@ -213,7 +213,7 @@ After the completion of reboot at the end of the CentOS installation, Login to E
 Put ECX rpm file and license files (name them ECX4.x-[A-Z].key) on `/root` of ec1 and ec2, then issue the below commands on both ec1 and 2 for doing the followings.
 
 - Installing required packages
-- Disabling firewall and SELinux
+- Disabling firewall, SELinux and dnf-makecache
 - Making partitions on vHDD (sdb)
 - Installing EC and its license
 
@@ -221,7 +221,7 @@ Put ECX rpm file and license files (name them ECX4.x-[A-Z].key) on `/root` of ec
 	  mount /dev/cdrom /media/CentOS
 	  yum --disablerepo=* --enablerepo=c8-media-BaseOS,c8-media-AppStream install -y targetcli target-restore perl
 	  umount /media/CentOS
-	  systemctl stop firewalld.service; systemctl disable firewalld.service
+	  systemctl disable firewalld.service; systemctl disable dnf-makecache.timer
 	  sed -i -e 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
 	  yes no | ssh-keygen -t rsa -f /root/.ssh/id_rsa -N ""
 	  parted -s /dev/sdb mklabel msdos mkpart primary 0% 1025MiB mkpart primary 1025MiB 100%
@@ -399,7 +399,8 @@ for md2 do the same like md1 by using
 
 ### Obtaining IQN for iSCSI Software Adapter on **ESXi#1 and 2**.
 
-On the client PC, download [plink.exe](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html) > Open cmd.exe > Issue the plink command like follows. You need to understand the IP address of the ESXi#1 and 2, and root password, in the folloing sample 172.31.255.2, 172.31.255.3 and PASSWORD
+On the client PC, download [plink.exe](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)
+Open cmd.exe > Issue the plink command like follows. You need to understand the IP address of the ESXi#1 and 2, and root password, in the folloing sample 172.31.255.2, 172.31.255.3 and PASSWORD
 
 	plink root@172.31.255.2 -pw PASSWORD -no-antispoof "VMHBA=`esxcli iscsi adapter list | grep 'iSCSI Software Adapter' | sed -r 's/\s.*iSCSI Software Adapter$//'`;esxcli iscsi adapter get --adapter=$VMHBA | grep '   Name:' | sed -r 's/[^:]*: //'
 	
