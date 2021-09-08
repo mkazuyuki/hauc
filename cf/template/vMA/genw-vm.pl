@@ -15,17 +15,17 @@ my $cfg_path = '%%VMX%%';
 my $vmk1 = "%%VMK1%%";
 my $vmk2 = "%%VMK2%%";
 
-# IP addresses of vMA VMs
-my $vma1 = "%%VMA1%%";
-my $vma2 = "%%VMA2%%";
+# IP addresses of EC VMs
+my $ec1 = "%%EC1%%";
+my $ec2 = "%%EC2%%";
 
 #-------------------------------------------------------------------------------
 my $vmk = "";
-my $tmp = `ip address | grep $vma1/`;
+my $tmp = `ip address | grep $ec1/`;
 if ($? == 0) {
 	$vmk = $vmk1;
 } else {
-	$tmp = `ip address | grep $vma2/`;
+	$tmp = `ip address | grep $ec2/`;
 	if ($? == 0) {
 		$vmk = $vmk2;
 	} else {

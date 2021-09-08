@@ -20,9 +20,9 @@ my $datastore = "%%DATASTORE%%";
 my $vmk1 = "%%VMK1%%";
 my $vmk2 = "%%VMK2%%";
 
-# IP addresses of vMA VMs
-my $vma1 = "%%VMA1%%";
-my $vma2 = "%%VMA2%%";
+# IP addresses of EC VMs
+my $ec1 = "%%EC1%%";
+my $ec2 = "%%EC2%%";
 #-------------------------------------------------------------------------------
 # The interval to check the vm status. (second)
 my $interval = 6;
@@ -39,12 +39,12 @@ my $vmx = $cfg_path;
 $vmx =~ s/^.*?([^\/]*\/[^\/]*$)/$1/;
 my @lines = ();
 
-my $tmp = `ip address | grep $vma1/`;
+my $tmp = `ip address | grep $ec1/`;
 if ($? == 0) {
 	$vmk = $vmk1;
 	$vmhba = $vmhba1;
 } else {
-	$tmp = `ip address | grep $vma2/`;
+	$tmp = `ip address | grep $ec2/`;
 	if ($? == 0) {
 		$vmk = $vmk2;
 		$vmhba = $vmhba2;
