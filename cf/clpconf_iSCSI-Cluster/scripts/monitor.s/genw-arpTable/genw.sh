@@ -5,7 +5,7 @@
 
 ulimit -s unlimited
 
-fip=`clpstat --rsc fip | grep IP | awk -F: '{print $2}' | sed -e 's/ //g'`
+fip=`clpstat --rsc fip1 | grep IP | awk -F: '{print $2}' | sed -e 's/ //g'`
 svnames=`clpstat --sv | grep "Server"`
 host1=`echo "$svnames" | awk 'NR==1' | awk '{print $3}' | sed -e '{s/]//g}'`
 host2=`echo "$svnames" | awk 'NR==2' | awk '{print $3}' | sed -e '{s/]//g}'`
