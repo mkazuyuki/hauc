@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -eu
 
 # IQN for iSCSI Software Adapter on ESXi#1
 IQN='iqn.1998-01.com.vmware:1'
@@ -24,15 +24,7 @@ echo [I] Do not exit the script.
 echo [I] Please wait.
 echo [I] *************************************************
 
-i=1
-for DEVICE in `esxcli storage core device list | grep "Display Name: LIO-ORG" | sed -r 's/^.*\((.*)\)/\1/' | xargs`; do
-    END_SECTOR=$(eval expr $(partedUtil getptbl /vmfs/devices/disks/${DEVICE} | tail -1 | awk '{print $1 " \\* " $2 " \\* " $3}') - 1)
-    partedUtil setptbl "/vmfs/devices/disks/${DEVICE}" "gpt" "1 2048 ${END_SECTOR} AA31E02A400F11DB9590000C2911D1B8 0"
-    /sbin/vmkfstools -C vmfs6 -b 1m -S iSCSI${i}  /vmfs/devices/disks/${DEVICE}:1
-    i=$(($i + 1))
-done
-
-# Disable ATS Heartbeat
-esxcli system settings advanced list -o /VMFS3/UseATSForHBonVMFS5
-esxcli system settings advanced set -i 0 -o /VMFS3/UseATSForHBOnVMFS5
-esxcli system settings advanced list -o /VMFS3/UseATSForHBonVMFS5
+DEVICE=`esxcli storage core device list | grep "Display Name: LIO-ORG" | sed -r 's/^.*\((.*)\)/\1/'`
+END_SECTOR=$(eval expr $(partedUtil getptbl /vmfs/devices/disks/${DEVICE} | tail -1 | awk '{print $1 " \\* " $2 " \\* " $3}') - 1)
+partedUtil setptbl "/vmfs/devices/disks/${DEVICE}" "gpt" "1 2048 ${END_SECTOR} AA31E02A400F11DB9590000C2911D1B8 0"
+/sbin/vmkfstools -C vmfs6 -b 1m -S EC_iSCSI /vmfs/devices/disks/${DEVICE}:1
