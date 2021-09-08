@@ -13,10 +13,10 @@ use warnings;
 # Configuration
 
 # VM Display Name in the ESXi inventory and IP addresses of the VM
-my $VMDN1	= 'iSCSI1';
+my $VMDN1	= 'ec1';
 my $VMIP1	= "172.31.255.11";
 
-my $VMDN2	= 'iSCSI2';
+my $VMDN2	= 'ec2';
 my $VMIP2	= "172.31.255.12";
 
 # IP address of VMKernel port
