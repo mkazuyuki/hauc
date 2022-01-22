@@ -82,9 +82,7 @@ foreach (@cfg_paths){
 		sleep $storage_check_interval;
 	}
 	if (&Register()) {
-		if (&Register()) {
-			$r = 1;
-		}
+		$r = 1;
 		next;
 	}
 	if (&PowerOn()) {
