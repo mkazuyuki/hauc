@@ -226,8 +226,6 @@ sub PowerOn{
 			&Log("[D] \t: $_\n");
 			if (/^Power on failed/) {
 				$ret = 1;
-			} else {
-				$ret = 0;
 			}
 		}
 	}
