@@ -142,7 +142,7 @@ sub StorageReady {
 		&Log("[E][StorageReady] datastore [$datastore] state not found\n");
 		return 1;
 	} else {
-		&Log("[E][StorageReady] datastore [$datastore] state found\n");
+		&Log("[D][StorageReady] datastore [$datastore] state found\n");
 	}
 	return 0;
 }
